@@ -3,6 +3,7 @@
 #include <glm\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// stores all directions
 enum Key {
 	W, // forward
 	S, // backward
@@ -11,8 +12,8 @@ enum Key {
 };
 
 // default camera values
-static const float MOVEMENT_SPEED = 0.5f;
-static const float MOUSE_SENSITIVITY = 0.05f;
+static const float MOVEMENT_SPEED = 1.0f;
+static const float MOUSE_SENSITIVITY = 0.1f;
 
 class Camera {
 
@@ -20,6 +21,8 @@ protected:
 	
 	// camera attributes
 	glm::vec3 position;
+	glm::mat4 viewMatrix;
+	glm::mat4 projectionMatrix;
 	glm::vec3 front;
 	glm::vec3 right;
 	glm::vec3 up;
@@ -28,24 +31,44 @@ protected:
 	float yaw;
 	float pitch;
 
-	// camera options
-	float movementSpeed;
-	float mouseSensitivity;
-
 	void updateCameraVectors();
 
 public:
 	
-	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f));
-	
+	/**
+	 * CONSTRUCTOR
+	 * Creates a FPS camera.
+	 *
+	 * @param position: position of the camera
+	 * @param fieldOfView: the field of view used for calculating the projection matrix
+	 * @param aspectRatio: the ratio of window width to window height (width / height)
+	 */
+	Camera(glm::vec3 position, float fieldOfView, float aspectRatio);
+
 	~Camera();
 
-	void processKeyEvent(Key key, float deltaTime);
+	/**
+	 * Updates the camera concerning the pressed key.
+	 * 
+	 * @param key: the pressed key
+	 * @param isRunning: true if velocity should be higher as usual (running character)
+	 * @param deltaTime: time between current frame and last frame
+	 */
+	void processKeyEvent(Key key, bool isRunning, float deltaTime);
 
+	/**
+	 * Updates the camera concerning the mouse movement.
+	 *
+	 * @param xOffset: the distance of the cursor between current frame and last frame concerning the x-axis
+	 * @param yOffset: the distance of the cursor between current frame and last frame concerning the y-axis
+	 * @param constraintPitch: when pitch is out of bounds, screen doesn't get flipped
+	 */
 	void processMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
 
 	glm::vec3 getPosition();
 
 	glm::mat4 getViewMatrix();
+
+	glm::mat4 getProjectionMatrix();
 
 };

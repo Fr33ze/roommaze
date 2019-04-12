@@ -11,33 +11,34 @@
 #include "LightCollection.h"
 #include "Geometry.h"
 
-/* -------------------------------------------------- */
+/* ----------- */
 // PROTOTYPES
-/* -------------------------------------------------- */
+/* ----------- */
 
-static void init();
-static void update(float deltaT);
-static void draw();
-static void cleanup();
+void init();
+void update(float deltaT);
+void draw();
+void cleanup();
 
-static void processInput(GLFWwindow *window);
-static void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos);
-static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+void processInput(GLFWwindow *window);
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos);
+void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 
-static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam);
-static std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg);
+void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam);
+std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg);
 
-/* -------------------------------------------------- */
+/* ----------------- */
 // GLOBAL VARIABLES
-/* -------------------------------------------------- */
+/* ----------------- */
 
 // settings
-static const unsigned int WINDOW_WIDTH = 1000;
-static const unsigned int WINDOW_HEIGHT = 500;
-static const bool FULLSCREEN = false;
+const unsigned int WINDOW_WIDTH = 1000;
+const unsigned int WINDOW_HEIGHT = 500;
+const bool FULLSCREEN = false;
 
 // camera
-Camera camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+Camera camera = Camera(glm::vec3(0.0f, 0.0f, 2.0f), 50.0f, WINDOW_WIDTH / WINDOW_HEIGHT);
 float lastXPosition = WINDOW_WIDTH / 2.0f;
 float lastYPosition = WINDOW_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -48,15 +49,15 @@ float deltaTime;
 // geometry objects
 std::vector<Geometry> geometries;
 
-/* -------------------------------------------------- */
+/* ----- */
 // MAIN
-/* -------------------------------------------------- */
+/* ----- */
 
 int main(int argc, char **argv) {
 
-	/* -------------------------------------------------- */
+	/* ------------------------- */
 	// SETTING UP OPENGL WINDOW
-	/* -------------------------------------------------- */
+	/* ------------------------- */
 
 	// init glfw
 	if (!glfwInit()) {
@@ -95,9 +96,9 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 
-	/* -------------------------------------------------- */
+	/* ---------------------------- */
 	// REGISTER CALLBACK FUNCTIONS
-	/* -------------------------------------------------- */
+	/* ---------------------------- */
 
 #if _DEBUG
 	// Query the OpenGL function to register your callback function.
@@ -120,14 +121,15 @@ int main(int argc, char **argv) {
 	}
 #endif
 
+	glfwSetKeyCallback(window, keyCallback);
 	glfwSetCursorPosCallback(window, mouseMovementCallback);
 	glfwSetMouseButtonCallback(window, mouseButtonCallback);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	/* -------------------------------------------------- */
+	/* --------------- */
     // MAIN GAME LOOP
-	/* -------------------------------------------------- */
+	/* --------------- */
 
 	float timeCurrentFrame = (float) glfwGetTime();
 	float timeLastFrame = timeCurrentFrame;
@@ -137,31 +139,22 @@ int main(int argc, char **argv) {
 
 
 
-
-
-
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
+	// SOLLTE EIGENTLICH IN init() PASSIEREN! HAUT ABER NOCH NED HIN ... GLAUB DER VECTOR IST SCHULD!
+	// ==================================================================================================== //
 	// shader
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shader/phong.vert", "assets/shader/phong.frag");
 
 	// materials
-	std::string path = "";
-	std::shared_ptr<Material> material = std::make_shared<Material>(shader, glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), 100.0f, 1.0f, path, path, path, path, path);
+	std::shared_ptr<Material> containerMaterial = std::make_shared<Material>(shader, glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), 100.0f, 1.0f, "assets/textures/container.png", "assets/textures/container.png", "assets/textures/container_specular.png", "", "");
 
 	// light collection
 	LightCollection lightCollection = LightCollection(shader);
-	lightCollection.addDirectionalLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+	lightCollection.addDirectionalLight(glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(1.0f, 1.0f, 0.0f));
 
-	// objects
-	GeometryData geometryData = Geometry::createCube(1.5f, 1.5f, 1.5f);
-	Geometry geometry = Geometry(geometryData, shader, material, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f));
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	
-
-
+	// geometry objects
+	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);
+	Geometry geometry = Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f));
+	// ==================================================================================================== //
 
 
 
@@ -182,7 +175,7 @@ int main(int argc, char **argv) {
 		update(deltaTime);
 
 		// draw all game components
-		draw();
+		//draw();
 		geometry.setUniformsAndDraw(camera);
 		glfwSwapBuffers(window);
 
@@ -198,41 +191,61 @@ int main(int argc, char **argv) {
 	return EXIT_SUCCESS;
 }
 
-static void init() {
+void init() {
+	// scene stuff
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+}
+
+void update(float deltaT) {
+
+}
+
+void draw() {
+	for (unsigned int i = 0; i < geometries.size(); i++) {
+		geometries.at(i).setUniformsAndDraw(camera);
+	}
+}
+
+void cleanup() {
 	
 }
 
-static void update(float deltaT) {
-
-}
-
-static void draw() {
-
-}
-
-static void cleanup() {
-	
-}
-
-static void processInput(GLFWwindow *window) {
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	// ESC = exit
+	// F = toggle nightvision on / off
+	// SPACE = insert new battery into the camera
+
+	if (action != GLFW_RELEASE)
+		return;
+
+	switch (key) {
+	case GLFW_KEY_ESCAPE:
+		glfwSetWindowShouldClose(window, true);
+		break;
+	case GLFW_KEY_F:
+		std::cout << "TOGGLE NIGHTVISION" << std::endl;
+		break;
+	case GLFW_KEY_SPACE:
+		std::cout << "INSERT NEW BATTERY" << std::endl;
+		break;
+	}
+}
+
+void processInput(GLFWwindow *window) {
 	// W = move character forward
 	// S = move character backward
 	// A = move character left
 	// D = move character right
-	// F = toggle nightvision on / off
-	// SPACE = insert new battery into the camera
 	
-	float cameraSpeed = 2.5f * deltaTime;
-
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) glfwSetWindowShouldClose(window, true);
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera.processKeyEvent(W, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera.processKeyEvent(S, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.processKeyEvent(A, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.processKeyEvent(D, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera.processKeyEvent(W, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera.processKeyEvent(S, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.processKeyEvent(A, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.processKeyEvent(D, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
 }
 
-static void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
+void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 	if (firstMouse) {
 		lastXPosition = (float) xPos;
 		lastYPosition = (float) yPos;
@@ -248,17 +261,17 @@ static void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) 
 	camera.processMouseMovement(xOffset, yOffset);
 }
 
-static void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
+void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 
 }
 
-static void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam) {
+void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam) {
 	if (id == 131185 || id == 131218) return; // ignore performance warnings from NVIDIA
 	std::string error = FormatDebugOutput(source, type, id, severity, message);
 	std::cout << error << std::endl;
 }
 
-static std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg) {
+std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg) {
 	std::stringstream stringStream;
 	std::string sourceString;
 	std::string typeString;

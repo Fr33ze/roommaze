@@ -4,9 +4,9 @@
 #define AMOUNT_OF_POINT_LIGHTS 0
 #define AMOUNT_OF_SPOT_LIGHTS 0
 
-/* -------------------------------------------------- */
+/* -------- */
 // STRUCTS
-/* -------------------------------------------------- */
+/* -------- */
 
 struct Material {
 	vec3 ambientColor;
@@ -42,9 +42,9 @@ struct SpotLight {
 	vec3 attenuation;
 };
 
-/* -------------------------------------------------- */
+/* ------------------------------ */
 // UNIFORMS, IN- & OUT-VARIABLES
-/* -------------------------------------------------- */
+/* ------------------------------ */
 
 uniform vec3 cameraPosition;
 
@@ -62,25 +62,24 @@ in VertexData {
 
 out vec4 color;
 
-/* -------------------------------------------------- */
+/* ----------- */
 // PROTOTYPES
-/* -------------------------------------------------- */
+/* ----------- */
 
 vec3 calculateDirectionalLight(int i);
 vec3 calculatePointLight(int i);
 vec3 calculateSpotLight(int i);
 
-/* -------------------------------------------------- */
+/* ----- */
 // MAIN
-/* -------------------------------------------------- */
+/* ----- */
 
 void main() {
 
-	// AMBIENT LIGHT (ambientIntensity x ambientColor)
-	// ============================================================
+	// AMBIENT LIGHT (ambientIntensity x ambientColor x ambientTexture)
+	// ================================================================
 	vec3 ambientIntensity = vec3(1.0, 1.0, 1.0);
-	vec3 ambientLight =  ambientIntensity * material.ambientColor;
-	ambientLight = texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb * ambientLight;
+	vec3 ambientLight =  ambientIntensity * material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb;
 
 	// LIGHT & COLOR
 	// =============
@@ -103,33 +102,33 @@ void main() {
 vec3 calculateDirectionalLight(int i) {
 
 	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
-	// ======================================================================================
+	// =========================================================================
 	vec3 normalizedNormal = normalize(vertexData.normal);
 	vec3 normalizedLightDirection = normalize(-directionalLights[i].direction);
 
 	vec3 diffuseLight = directionalLights[i].color * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
 
 	// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
-	// ======================================================================================================================
+	// =================================================================================================
 	vec3 normalizedViewDirection = normalize(cameraPosition - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
 	vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-	return (texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb * diffuseLight) + (texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb * specularLight);
+	return (diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb);
 }
 
 vec3 calculatePointLight(int i) {
 
 	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
-	// ======================================================================================
+	// =========================================================================
 	vec3 normalizedNormal = normalize(vertexData.normal);
 	vec3 normalizedLightDirection = normalize(pointLights[i].position - vertexData.positionWorld);
 
 	vec3 diffuseLight = pointLights[i].color * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
 
 	// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
-	// ======================================================================================================================
+	// =================================================================================================
 	vec3 normalizedViewDirection = normalize(cameraPosition - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
@@ -140,7 +139,7 @@ vec3 calculatePointLight(int i) {
 	float distanceToLight = length(pointLights[i].position - vertexData.positionWorld);
 	float attenuation = 1.0 / (pointLights[i].attenuation[0] + (pointLights[i].attenuation[1] * distanceToLight) + (pointLights[i].attenuation[2] * (distanceToLight * distanceToLight)));
 
-	return attenuation * ((texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb * diffuseLight) + (texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb * specularLight));
+	return attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
 }
 
 vec3 calculateSpotLight(int i) {
@@ -152,13 +151,13 @@ vec3 calculateSpotLight(int i) {
 	if (theta > spotLights[i].outerCutOff) {
 		
 		// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
-		// ======================================================================================
+		// =========================================================================
 		vec3 normalizedNormal = normalize(vertexData.normal);
 
 		vec3 diffuseLight = spotLights[i].intensity * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
 
 		// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
-		// ======================================================================================================================
+		// =================================================================================================
 		vec3 normalizedViewDirection = normalize(cameraPosition - vertexData.positionWorld);
 		vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
@@ -174,7 +173,7 @@ vec3 calculateSpotLight(int i) {
 		float epsilon = spotLights[i].innerCutOff - spotLights[i].outerCutOff;
 		float coneIntensity = clamp((theta - spotLights[i].outerCutOff) / epsilon, 0.0, 1.0);
 
-		return coneIntensity * attenuation * ((texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb * diffuseLight) + (texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb * specularLight));
+		return coneIntensity * attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
 	}
 
 	// return black light if outside light cone

@@ -3,17 +3,17 @@
 Geometry::Geometry(GeometryData &geometryData, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material, std::shared_ptr<LightCollection> lightCollection, glm::mat4 modelMatrix)
 	: elements(geometryData.indices.size()), shader(shader), material(material), lightCollection(lightCollection), modelMatrix(modelMatrix) {
 
-	/* -------------------------------------------------- */
+	/* --------------------------- */
 	// VAO (VERTEX BUFFER OBJECT)
-	/* -------------------------------------------------- */
+	/* --------------------------- */
 
 	// create one VAO and bind it
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 
-	/* -------------------------------------------------- */
+	/* ----------------------------- */
 	// VBOs (VERTEX BUFFER OBJECTs)
-	/* -------------------------------------------------- */
+	/* ----------------------------- */
 
 	// create one VBO for vertex positions
 	glGenBuffers(1, &vboVertexPositions);
@@ -61,19 +61,15 @@ Geometry::Geometry(GeometryData &geometryData, std::shared_ptr<Shader> shader, s
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-	/* -------------------------------------------------- */
+	/* ---------- */
 	// UNBINDING
-	/* -------------------------------------------------- */
+	/* ---------- */
 
 	// unbind VAO
 	glBindVertexArray(0);
 	// unbind VBOs
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-Geometry::Geometry() {
-
 }
 
 Geometry::~Geometry() {
@@ -89,6 +85,7 @@ void Geometry::setUniformsAndDraw(Camera &camera) {
 
 	shader->setUniform("modelMatrix", modelMatrix);
 	shader->setUniform("viewMatrix", camera.getViewMatrix());
+	shader->setUniform("projectionMatrix", camera.getProjectionMatrix());
 	shader->setUniform("cameraPosition", camera.getPosition());
 
 	material->setTextures();
@@ -114,9 +111,9 @@ void Geometry::resetModelMatrix() {
 GeometryData Geometry::createCube(float width, float height, float depth) {
 	GeometryData geometryData;
 
-	/* --------------------------------------------- */
+	/* ----------------- */
 	// VERTEX POSITIONS
-	/* --------------------------------------------- */
+	/* ----------------- */
 
 	float x = width / 2.0f;
 	float y = height / 2.0f;
@@ -153,9 +150,9 @@ GeometryData Geometry::createCube(float width, float height, float depth) {
 	geometryData.vertexPositions.push_back(glm::vec3(-x, -y, -z)); // 22
 	geometryData.vertexPositions.push_back(glm::vec3(-x, -y, z)); // 23
 
-	/* --------------------------------------------- */
+	/* -------- */
 	// NORMALS
-	/* --------------------------------------------- */
+	/* -------- */
 
 	// right
 	geometryData.normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -188,9 +185,9 @@ GeometryData Geometry::createCube(float width, float height, float depth) {
 	geometryData.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
 	geometryData.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
 
-	/* --------------------------------------------- */
+	/* -------- */
 	// INDICES
-	/* --------------------------------------------- */
+	/* -------- */
 
 	// right
 	geometryData.indices.push_back(0);

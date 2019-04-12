@@ -18,10 +18,6 @@ struct GeometryData {
 	std::vector<glm::vec2> UVCoords;
 };
 
-/* -------------------------------------------------- */
-// VARIABLES & METHODS
-/* -------------------------------------------------- */
-
 class Geometry {
 
 protected:
@@ -61,8 +57,6 @@ public:
 	 * @param modelMatrix: model matrix of the object
 	 */
 	Geometry(GeometryData &geometryData, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material, std::shared_ptr<LightCollection> lightCollection, glm::mat4 modelMatrix);
-
-	Geometry();
 
 	~Geometry();
 

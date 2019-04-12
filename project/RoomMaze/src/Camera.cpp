@@ -1,9 +1,11 @@
 #include "Camera.h"
 
-Camera::Camera(glm::vec3 position)
-	: position(position), front(glm::vec3(0.0f, 0.0f, -1.0f)), yaw(-90.0f), pitch(0.0f), movementSpeed(MOVEMENT_SPEED), mouseSensitivity(MOUSE_SENSITIVITY) {
+Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
+	: position(position), projectionMatrix(glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f)), front(glm::vec3(0.0f, 0.0f, -1.0f)), yaw(-90.0f), pitch(0.0f) {
 	
+	updateCameraVectors();
 }
+
 
 Camera::~Camera() {
 
@@ -20,8 +22,8 @@ void Camera::updateCameraVectors() {
 	up = glm::normalize(glm::cross(right, front));
 }
 
-void Camera::processKeyEvent(Key key, float deltaTime) {
-	float velocity = movementSpeed * deltaTime;
+void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
+	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 
 	switch (key) {
 	case(W):
@@ -38,18 +40,18 @@ void Camera::processKeyEvent(Key key, float deltaTime) {
 		break;
 	}
 
-	// makes sure the user stays at the ground level
+	// user stays at ground level (no flying camery system)
 	position.y = 0.0f;
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset, bool constrainPitch) {
-	xOffset *= mouseSensitivity;
-	yOffset *= mouseSensitivity;
+	xOffset *= MOUSE_SENSITIVITY;
+	yOffset *= MOUSE_SENSITIVITY;
 
 	yaw += xOffset;
 	pitch += yOffset;
 
-	// Makes sure that when pitch is out of bounds, screen doesn't get flipped.
+	// when pitch is out of bounds, screen doesn't get flipped
 	if (constrainPitch) {
 		if (pitch > 89.0f) pitch = 89.0f;
 		if (pitch < -89.0f) pitch = -89.0f;
@@ -65,4 +67,8 @@ glm::vec3 Camera::getPosition() {
 
 glm::mat4 Camera::getViewMatrix() {
 	return glm::lookAt(position, position + front, up);
+}
+
+glm::mat4 Camera::getProjectionMatrix() {
+	return projectionMatrix;
 }

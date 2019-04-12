@@ -1,11 +1,12 @@
 #version 430 core
 
-/* -------------------------------------------------- */
+/* ------------------------------ */
 // UNIFORMS, IN- & OUT-VARIABLES
-/* -------------------------------------------------- */
+/* ------------------------------ */
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
@@ -17,13 +18,13 @@ out VertexData {
 	vec2 UVCoords;
 } vertexData;
 
-/* -------------------------------------------------- */
+/* ----- */
 // MAIN
-/* -------------------------------------------------- */
+/* ----- */
 
 void main() {
 
-	gl_Position = viewMatrix * modelMatrix * vec4(position, 1.0);
+	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0);
 
 	// Calculation in world space, not in view space (in view space also possible -> no need of the uniform cameraPosition)).
 	// ======================================================================================================================
