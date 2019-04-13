@@ -137,28 +137,6 @@ int main(int argc, char **argv) {
 	// init game content
 	init();
 
-
-
-	// SOLLTE EIGENTLICH IN init() PASSIEREN! HAUT ABER NOCH NED HIN ... GLAUB DER VECTOR IST SCHULD!
-	// ==================================================================================================== //
-	// shader
-	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shader/phong.vert", "assets/shader/phong.frag");
-
-	// materials
-	std::shared_ptr<Material> containerMaterial = std::make_shared<Material>(shader, glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), 100.0f, 1.0f, "assets/textures/container.png", "assets/textures/container.png", "assets/textures/container_specular.png", "", "");
-
-	// light collection
-	LightCollection lightCollection = LightCollection(shader);
-	lightCollection.addDirectionalLight(glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(1.0f, 1.0f, 0.0f));
-
-	// geometry objects
-	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);
-	//geometries.push_back(Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f)));
-	Geometry geometry = Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f));
-	// ==================================================================================================== //
-
-
-
 	while (!glfwWindowShouldClose(window)) {
 		// clear the frame and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -176,9 +154,7 @@ int main(int argc, char **argv) {
 		update(deltaTime);
 
 		// draw all game components
-		//draw();
-		//geometries.at(0).setUniformsAndDraw(camera);
-		geometry.setUniformsAndDraw(camera);
+		draw();
 		glfwSwapBuffers(window);
 
 		// check for errors
@@ -198,6 +174,21 @@ void init() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
+	// shader
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shader/phong.vert", "assets/shader/phong.frag");
+
+	// materials
+	std::shared_ptr<Material> containerMaterial = std::make_shared<Material>(shader, glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), 100.0f, 1.0f, "assets/textures/container.png", "assets/textures/container.png", "assets/textures/container_specular.png", "", "");
+
+	// light collection
+	LightCollection lightCollection = LightCollection(shader);
+	lightCollection.addDirectionalLight(glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(1.0f, 1.0f, 0.0f));
+
+	// geometry objects
+	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);
+	Geometry geometry = Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f));
+	geometries.push_back(geometry);
 }
 
 void update(float deltaT) {
