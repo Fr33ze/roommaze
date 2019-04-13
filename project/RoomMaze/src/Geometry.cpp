@@ -115,9 +115,9 @@ void Geometry::resetModelMatrix() {
 GeometryData Geometry::createCube(float width, float height, float depth) {
 	GeometryData geometryData;
 
-	/* ----------------- */
+	/* --------------------------------------------- */
 	// VERTEX POSITIONS
-	/* ----------------- */
+	/* --------------------------------------------- */
 
 	float x = width / 2.0f;
 	float y = height / 2.0f;
@@ -154,9 +154,9 @@ GeometryData Geometry::createCube(float width, float height, float depth) {
 	geometryData.vertexPositions.push_back(glm::vec3(-x, -y, -z)); // 22
 	geometryData.vertexPositions.push_back(glm::vec3(-x, -y, z)); // 23
 
-	/* -------- */
+	/* --------------------------------------------- */
 	// NORMALS
-	/* -------- */
+	/* --------------------------------------------- */
 
 	// right
 	geometryData.normals.push_back(glm::vec3(1.0f, 0.0f, 0.0f));
@@ -189,9 +189,9 @@ GeometryData Geometry::createCube(float width, float height, float depth) {
 	geometryData.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
 	geometryData.normals.push_back(glm::vec3(0.0f, -1.0f, 0.0f));
 
-	/* -------- */
+	/* --------------------------------------------- */
 	// INDICES
-	/* -------- */
+	/* --------------------------------------------- */
 
 	// right
 	geometryData.indices.push_back(0);
@@ -235,6 +235,28 @@ GeometryData Geometry::createCube(float width, float height, float depth) {
 	geometryData.indices.push_back(21);
 	geometryData.indices.push_back(20);
 	geometryData.indices.push_back(23);
+
+	/* --------------------------------------------- */
+	// UV COORDS
+	/* --------------------------------------------- */
+
+	// right, back, left, front
+	for (int i = 0; i < 4; i++) {
+		geometryData.UVCoords.push_back(glm::vec2(0.0f, 1.0f));
+		geometryData.UVCoords.push_back(glm::vec2(0.0f, 0.0f));
+		geometryData.UVCoords.push_back(glm::vec2(1.0f, 1.0f));
+		geometryData.UVCoords.push_back(glm::vec2(1.0f, 0.0f));
+	}
+	// top
+	geometryData.UVCoords.push_back(glm::vec2(1.0f, 0.0f));
+	geometryData.UVCoords.push_back(glm::vec2(1.0f, 1.0f));
+	geometryData.UVCoords.push_back(glm::vec2(0.0f, 1.0f));
+	geometryData.UVCoords.push_back(glm::vec2(0.0f, 0.0f));
+	// bottom
+	geometryData.UVCoords.push_back(glm::vec2(1.0f, 1.0f));
+	geometryData.UVCoords.push_back(glm::vec2(1.0f, 0.0f));
+	geometryData.UVCoords.push_back(glm::vec2(0.0f, 0.0f));
+	geometryData.UVCoords.push_back(glm::vec2(0.0f, 1.0f));
 
 	return geometryData;
 }

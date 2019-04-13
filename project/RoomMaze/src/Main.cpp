@@ -62,7 +62,8 @@ int main(int argc, char **argv) {
 	// init glfw
 	if (!glfwInit()) {
 		std::cout << "Failed to init glfw." << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 
@@ -83,7 +84,8 @@ int main(int argc, char **argv) {
 	if (!window) {
 		glfwTerminate();
 		std::cout << "Failed to open window." << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 
@@ -93,7 +95,8 @@ int main(int argc, char **argv) {
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK) {
 		std::cout << "Failed to initialize glew." << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 
@@ -184,7 +187,7 @@ void init() {
 
 	// light collection
 	LightCollection lightCollection = LightCollection(shader);
-	lightCollection.addDirectionalLight(glm::vec3(0.4f, 0.4f, 0.4f), glm::vec3(1.0f, 1.0f, 0.0f));
+	lightCollection.addDirectionalLight(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 0.0f));
 
 	// geometry objects
 	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);

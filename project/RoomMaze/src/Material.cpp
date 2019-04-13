@@ -49,6 +49,9 @@ void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle)
 	}
 	else {
 		std::cout << "Failed to load texture from: " + pathTextureMap << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
 	}
 
 	stbi_image_free(data);

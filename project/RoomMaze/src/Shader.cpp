@@ -17,7 +17,8 @@ void Shader::loadShader(std::string filePathVertexShader, std::string filePathFr
 	program = glCreateProgram();
 	if (program == 0) {
 		std::cout << "Failed to create shader program." << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 
@@ -42,7 +43,8 @@ void Shader::loadShader(std::string filePathVertexShader, std::string filePathFr
 		glGetShaderInfoLog(program, logSize, nullptr, message);
 		std::cout << "Failed to link shader program." << std::endl;
 		std::cout << message << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		delete[] message;
 		exit(-1);
 	}
@@ -64,7 +66,8 @@ GLuint Shader::compileShader(GLenum shaderType, std::string filePath) {
 	GLuint handle = glCreateShader(shaderType);
 	if (handle == 0) {
 		std::cout << "Failed to create shader: " + filePath << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 
@@ -84,7 +87,8 @@ GLuint Shader::compileShader(GLenum shaderType, std::string filePath) {
 		glGetShaderInfoLog(handle, logSize, nullptr, message);
 		std::cout << "Failed to compile shader: " + filePath << std::endl;
 		std::cout << message << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		delete[] message;
 		exit(-1);
 	}
@@ -102,7 +106,8 @@ std::string Shader::readFile(std::string filePath) {
 	}
 	else {
 		std::cout << "Failed to open shader file: " << filePath << std::endl;
-		system("PAUSE");
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 }
