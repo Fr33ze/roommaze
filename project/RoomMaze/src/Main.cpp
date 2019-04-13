@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
 #endif
 	glfwWindowHint(GLFW_REFRESH_RATE, 60);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// open window
 	GLFWwindow* window = glfwCreateWindow(1000, 500, "RoomMaze", FULLSCREEN ? glfwGetPrimaryMonitor() : nullptr, nullptr);
@@ -202,7 +203,9 @@ void draw() {
 }
 
 void cleanup() {
-	
+	for (unsigned int i = 0; i < geometries.size(); i++) {
+		geometries.at(i).destroy();
+	}
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {

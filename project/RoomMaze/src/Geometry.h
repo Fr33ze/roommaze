@@ -60,6 +60,9 @@ public:
 
 	~Geometry();
 
+	// Delete VAO and VBOs.
+	void destroy();
+
 	/**
 	 * Sets the uniforms of the shader and draws the object.
 	 *

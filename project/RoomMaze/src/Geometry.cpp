@@ -73,11 +73,15 @@ Geometry::Geometry(GeometryData &geometryData, std::shared_ptr<Shader> shader, s
 }
 
 Geometry::~Geometry() {
-	/*glDeleteBuffers(1, &vboVertexPositions);
+	
+}
+
+void Geometry::destroy() {
+	glDeleteBuffers(1, &vboVertexPositions);
 	glDeleteBuffers(1, &vboNormals);
 	glDeleteBuffers(1, &vboIndices);
 	glDeleteBuffers(1, &vboUVCoords);
-	glDeleteVertexArrays(1, &vao);*/
+	glDeleteVertexArrays(1, &vao);
 }
 
 void Geometry::setUniformsAndDraw(Camera &camera) {
