@@ -153,6 +153,7 @@ int main(int argc, char **argv) {
 
 	// geometry objects
 	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);
+	//geometries.push_back(Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f)));
 	Geometry geometry = Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f));
 	// ==================================================================================================== //
 
@@ -176,6 +177,7 @@ int main(int argc, char **argv) {
 
 		// draw all game components
 		//draw();
+		//geometries.at(0).setUniformsAndDraw(camera);
 		geometry.setUniformsAndDraw(camera);
 		glfwSwapBuffers(window);
 
