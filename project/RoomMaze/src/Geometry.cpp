@@ -88,9 +88,8 @@ void Geometry::setUniformsAndDraw(Camera &camera) {
 	shader->use();
 
 	shader->setUniform("modelMatrix", modelMatrix);
-	shader->setUniform("viewMatrix", camera.getViewMatrix());
-	shader->setUniform("projectionMatrix", camera.getProjectionMatrix());
-	shader->setUniform("cameraPosition", camera.getPosition());
+	
+	camera.setUniforms(shader);
 
 	material->setTextures();
 	material->setUniforms();

@@ -27,12 +27,14 @@ void LightCollection::setUniforms() {
 		shader->setUniform("directionalLights[" + std::to_string(i) + "].color", directionalLights.at(i).color);
 		shader->setUniform("directionalLights[" + std::to_string(i) + "].direction", directionalLights.at(i).direction);
 	}
+	shader->setUniform("amountOfDirectionalLights", directionalLights.size());
 
 	for (unsigned int i = 0; i < pointLights.size(); i++) {
 		shader->setUniform("pointLights[" + std::to_string(i) + "].color", pointLights.at(i).color);
 		shader->setUniform("pointLights[" + std::to_string(i) + "].position", pointLights.at(i).position);
 		shader->setUniform("pointLights[" + std::to_string(i) + "].attenuation", pointLights.at(i).attenuation);
 	}
+	shader->setUniform("amountOfPointLights", pointLights.size());
 
 	for (unsigned int i = 0; i < spotLights.size(); i++) {
 		shader->setUniform("spotLights[" + std::to_string(i) + "].position", spotLights.at(i).position);
@@ -42,4 +44,5 @@ void LightCollection::setUniforms() {
 		shader->setUniform("spotLights[" + std::to_string(i) + "].outerCutOff", glm::cos(glm::radians(spotLights.at(i).outerAngle)));
 		shader->setUniform("spotLights[" + std::to_string(i) + "].attenuation", spotLights.at(i).attenuation);
 	}
+	shader->setUniform("amountOfSpotLights", spotLights.size());
 }

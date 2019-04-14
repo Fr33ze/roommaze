@@ -3,6 +3,8 @@
 #include <glm\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Shader.h"
+
 // stores all directions
 enum Key {
 	W, // forward
@@ -27,11 +29,22 @@ protected:
 	glm::vec3 right;
 	glm::vec3 up;
 
+	// the light of the camera is a spot light
+	struct CameraLight {
+		glm::vec3 intensity;
+		float innerAngle;
+		float outerAngle;
+		glm::vec3 attenuation;
+	};
+	CameraLight cameraLight;
+
 	// eurler angles
 	float yaw;
 	float pitch;
 
 	void updateCameraVectors();
+
+	glm::mat4 getViewMatrix();
 
 public:
 	
@@ -44,6 +57,23 @@ public:
 	 * @param aspectRatio: the ratio of window width to window height (width / height)
 	 */
 	Camera(glm::vec3 position, float fieldOfView, float aspectRatio);
+
+	/**
+	 * Sets the parameters of the camera's spot light.
+	 *
+	 * @param intensity: intensity (= color) of the light
+	 * @param innerAngle: inner angle of the light cone
+	 * @param outerAngle: outer angle of the light cone
+	 * @param attenuation: vec3 of floats that stores the attenuation of the light (constant, linear, quadratic)
+	 */
+	void setSpotLightParameters(glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation);
+
+	/**
+	 * Sets camera's parameters as uniforms in the specified shader.
+	 *
+	 * @param shader: shader used for rendering this camera
+	 */
+	void setUniforms(std::shared_ptr<Shader> shader);
 
 	~Camera();
 
@@ -64,11 +94,5 @@ public:
 	 * @param constraintPitch: when pitch is out of bounds, screen doesn't get flipped
 	 */
 	void processMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
-
-	glm::vec3 getPosition();
-
-	glm::mat4 getViewMatrix();
-
-	glm::mat4 getProjectionMatrix();
 
 };

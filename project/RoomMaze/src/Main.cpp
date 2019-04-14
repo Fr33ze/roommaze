@@ -177,21 +177,20 @@ void init() {
 	// scene stuff
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE); // render only the front side of every face
 
 	// shader
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shader/phong.vert", "assets/shader/phong.frag");
 
-	// materials
-	std::shared_ptr<Material> containerMaterial = std::make_shared<Material>(shader, glm::vec3(1.0f), glm::vec3(1.0f), glm::vec3(1.0f), 100.0f, 1.0f, "assets/textures/container.png", "assets/textures/container.png", "assets/textures/container_specular.png", "", "");
+	// camera
+	camera.setSpotLightParameters(glm::vec3(1.0f, 1.0f, 1.0f), 10.0f, 14.0f, glm::vec3(0.4f, 0.2f, 0.2f));
 
-	// light collection
-	LightCollection lightCollection = LightCollection(shader);
-	lightCollection.addDirectionalLight(glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(1.0f, 1.0f, 0.0f));
+	// materials
+	std::shared_ptr<Material> containerMaterial = std::make_shared<Material>(shader, glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f), 64.0f, 1.0f, "assets/textures/container.png", "assets/textures/container.png", "assets/textures/container_specular.png", "", "");
 
 	// geometry objects
 	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);
-	Geometry geometry = Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(lightCollection), glm::mat4(1.0f));
+	Geometry geometry = Geometry(cubeGeometryData, shader, containerMaterial, std::make_shared<LightCollection>(shader), glm::mat4(1.0f));
 	geometries.push_back(geometry);
 }
 

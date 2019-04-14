@@ -1,12 +1,19 @@
 #version 430 core
 
-#define AMOUNT_OF_DIRECTIONAL_LIGHTS 1
-#define AMOUNT_OF_POINT_LIGHTS 0
-#define AMOUNT_OF_SPOT_LIGHTS 0
-
 /* -------- */
 // STRUCTS
 /* -------- */
+
+struct Camera {
+	vec3 position;
+
+	// light stuff
+	vec3 direction;
+	vec3 intensity;
+	float innerCutOff;
+	float outerCutOff;
+	vec3 attenuation;
+};
 
 struct Material {
 	vec3 ambientColor;
@@ -46,13 +53,16 @@ struct SpotLight {
 // UNIFORMS, IN- & OUT-VARIABLES
 /* ------------------------------ */
 
-uniform vec3 cameraPosition;
+uniform Camera camera;
 
 uniform Material material;
 
 uniform DirectionalLight directionalLights[10];
+uniform uint amountOfDirectionalLights;
 uniform PointLight pointLights[10];
+uniform uint amountOfPointLights;
 uniform SpotLight spotLights[10];
+uniform uint amountOfSpotLights;
 
 in VertexData {
 	vec3 positionWorld;
@@ -69,6 +79,7 @@ out vec4 color;
 vec3 calculateDirectionalLight(int i);
 vec3 calculatePointLight(int i);
 vec3 calculateSpotLight(int i);
+vec3 calculateCameraLight();
 
 /* ----- */
 // MAIN
@@ -76,26 +87,25 @@ vec3 calculateSpotLight(int i);
 
 void main() {
 
-	// AMBIENT LIGHT (ambientIntensity x ambientColor x ambientTexture)
-	// ================================================================
-	vec3 ambientIntensity = vec3(1.0, 1.0, 1.0);
-	vec3 ambientLight =  ambientIntensity * material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb;
+	// AMBIENT LIGHT (ambientColor x ambientTexture)
+	// =============================================
+	vec3 ambientLight =  material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb;
 
 	// LIGHT & COLOR
 	// =============
 	vec3 directionalLight = vec3(0.0, 0.0, 0.0);
-	for (int i = 0; i < AMOUNT_OF_DIRECTIONAL_LIGHTS; i++)
+	for (int i = 0; i < amountOfDirectionalLights; i++)
 		directionalLight += calculateDirectionalLight(i);
 
 	vec3 pointLight = vec3(0.0, 0.0, 0.0);
-	for (int i = 0; i < AMOUNT_OF_POINT_LIGHTS; i++)
+	for (int i = 0; i < amountOfPointLights; i++)
 		pointLight += calculatePointLight(i);
 
 	vec3 spotLight = vec3(0.0, 0.0, 0.0);
-	for (int i = 0; i < AMOUNT_OF_SPOT_LIGHTS; i++)
+	for (int i = 0; i < amountOfSpotLights; i++)
 		spotLight += calculateSpotLight(i);
 
-	vec3 light = ambientLight + directionalLight + pointLight + spotLight;
+	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight();
 	color = vec4(light, 1.0);
 }
 
@@ -110,11 +120,13 @@ vec3 calculateDirectionalLight(int i) {
 
 	// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
 	// =================================================================================================
-	vec3 normalizedViewDirection = normalize(cameraPosition - vertexData.positionWorld);
+	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
 	vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
+	// TEXTURING
+	// =========
 	return (diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb);
 }
 
@@ -129,7 +141,7 @@ vec3 calculatePointLight(int i) {
 
 	// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
 	// =================================================================================================
-	vec3 normalizedViewDirection = normalize(cameraPosition - vertexData.positionWorld);
+	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
 	vec3 specularLight = pointLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
@@ -139,44 +151,70 @@ vec3 calculatePointLight(int i) {
 	float distanceToLight = length(pointLights[i].position - vertexData.positionWorld);
 	float attenuation = 1.0 / (pointLights[i].attenuation[0] + (pointLights[i].attenuation[1] * distanceToLight) + (pointLights[i].attenuation[2] * (distanceToLight * distanceToLight)));
 
+	// TEXTURING
+	// =========
 	return attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
 }
 
 vec3 calculateSpotLight(int i) {
-
-	// check if inside light cone
-	// ==========================
-	vec3 normalizedLightDirection = normalize(spotLights[i].position - vertexData.positionWorld);
-	float theta = dot(normalizedLightDirection, normalize(-spotLights[i].direction));
-	if (theta > spotLights[i].outerCutOff) {
 		
-		// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
-		// =========================================================================
-		vec3 normalizedNormal = normalize(vertexData.normal);
+	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
+	// =========================================================================
+	vec3 normalizedNormal = normalize(vertexData.normal);
+	vec3 normalizedLightDirection = normalize(spotLights[i].position - vertexData.positionWorld);
 
-		vec3 diffuseLight = spotLights[i].intensity * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
+	vec3 diffuseLight = spotLights[i].intensity * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
 
-		// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
-		// =================================================================================================
-		vec3 normalizedViewDirection = normalize(cameraPosition - vertexData.positionWorld);
-		vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
+	// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
+	// =================================================================================================
+	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
+	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
-		vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+	vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-		// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
-		// ===============================================================================================================
-		float distanceToLight = length(spotLights[i].position - vertexData.positionWorld);
-		float attenuation = 1.0 / (spotLights[i].attenuation[0] + (spotLights[i].attenuation[1] * distanceToLight) + (spotLights[i].attenuation[2] * (distanceToLight * distanceToLight)));
+	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
+	// ===============================================================================================================
+	float distanceToLight = length(spotLights[i].position - vertexData.positionWorld);
+	float attenuation = 1.0 / (spotLights[i].attenuation[0] + (spotLights[i].attenuation[1] * distanceToLight) + (spotLights[i].attenuation[2] * (distanceToLight * distanceToLight)));
 
-		// some calculations for a smooth light cone edge
-		// ==============================================
-		float epsilon = spotLights[i].innerCutOff - spotLights[i].outerCutOff;
-		float coneIntensity = clamp((theta - spotLights[i].outerCutOff) / epsilon, 0.0, 1.0);
+	// check if inside light cone and if so calculate a smooth light cone edge
+	// =======================================================================
+	float theta = dot(normalizedLightDirection, normalize(-spotLights[i].direction));
+	float epsilon = spotLights[i].innerCutOff - spotLights[i].outerCutOff;
+	float coneIntensity = clamp((theta - spotLights[i].outerCutOff) / epsilon, 0.0, 1.0); // if outside only black color will be returned
 
-		return coneIntensity * attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
-	}
+	// TEXTURING
+	// =========
+	return coneIntensity * attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
+}
 
-	// return black light if outside light cone
-	// ========================================
-	return vec3(0.0, 0.0, 0.0);
+vec3 calculateCameraLight() {
+	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
+	// =========================================================================
+	vec3 normalizedNormal = normalize(vertexData.normal);
+	vec3 normalizedLightDirection = normalize(camera.position - vertexData.positionWorld);
+
+	vec3 diffuseLight = camera.intensity * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
+
+	// SPECULAR LIGHT (lightIntensity x specularColor x (viewDirection x reflectionDirection)^shininess)
+	// =================================================================================================
+	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
+	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
+
+	vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+
+	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
+	// ===============================================================================================================
+	float distanceToLight = length(camera.position - vertexData.positionWorld);
+	float attenuation = 1.0 / (camera.attenuation[0] + (camera.attenuation[1] * distanceToLight) + (camera.attenuation[2] * (distanceToLight * distanceToLight)));
+
+	// check if inside light cone and if so calculate a smooth light cone edge
+	// =======================================================================
+	float theta = dot(normalizedLightDirection, normalize(camera.direction));
+	float epsilon = camera.innerCutOff - camera.outerCutOff;
+	float coneIntensity = clamp((theta - camera.outerCutOff) / epsilon, 0.0, 1.0); // if outside only black color will be returned
+
+	// TEXTURING
+	// =========
+	return coneIntensity * attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
 }
