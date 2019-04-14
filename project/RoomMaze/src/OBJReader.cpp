@@ -17,13 +17,16 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 	glm::vec3 ks = glm::vec3(1.0f, 1.0f, 1.0f);;
 	float alpha = 1.0f;
 	float shininess = 0.0f;
-	char map_ka[40];
-	char map_kd[40];
-	char map_ks[40];
-	char mat_name[40];
+	char map_ka[256];
+	char map_kd[256];
+	char map_ks[256];
+	char map_bump[256];
+	char map_d[256];
+	char mat_name[256];
 	map_ka[0] = 0;
 	map_kd[0] = 0;
 	map_ks[0] = 0;
+	map_bump[0] = 0;
 	mat_name[0] = 0;
 
 	//start reading .mtl file line by line
@@ -47,7 +50,17 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 				full_ks.clear();
 			else
 				full_ks += map_ks;
-			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, "", "");
+			std::string full_bump = std::string(path);
+			if (map_bump[0] == 0)
+				full_bump.clear();
+			else
+				full_bump += map_bump;
+			std::string full_d = std::string(path);
+			if (map_d[0] == 0)
+				full_d.clear();
+			else
+				full_d += map_d;
+			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_bump, full_d);
 			matMap[mat_name] = m;
 			break;
 		}
@@ -82,13 +95,19 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 				fscanf_s(mtlfile, "%f\n", &shininess);
 			}
 			else if (strcmp(lineheader, "map_Ka") == 0) {
-				fscanf_s(mtlfile, "%s\n", &map_ka, 40);
+				fscanf_s(mtlfile, "%s\n", &map_ka, 256);
 			}
 			else if (strcmp(lineheader, "map_Kd") == 0) {
-				fscanf_s(mtlfile, "%s\n", &map_kd, 40);
+				fscanf_s(mtlfile, "%s\n", &map_kd, 256);
 			}
 			else if (strcmp(lineheader, "map_Ks") == 0) {
-				fscanf_s(mtlfile, "%s\n", &map_ks, 40);
+				fscanf_s(mtlfile, "%s\n", &map_ks, 256);
+			}
+			else if (strcmp(lineheader, "map_Bump") == 0) {
+				fscanf_s(mtlfile, "%s\n", &map_bump, 256);
+			}
+			else if (strcmp(lineheader, "map_d") == 0) {
+				fscanf_s(mtlfile, "%s\n", &map_d, 256);
 			}
 			else if (strcmp(lineheader, "newmtl") == 0) {
 				//add material to map unless it is the first iteration and mat_name hasn't been set
@@ -108,7 +127,17 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 						full_ks.clear();
 					else
 						full_ks += map_ks;
-					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, "", "");
+					std::string full_bump = std::string(path);
+					if (map_bump[0] == 0)
+						full_bump.clear();
+					else
+						full_bump += map_bump;
+					std::string full_d = std::string(path);
+					if (map_d[0] == 0)
+						full_d.clear();
+					else
+						full_d += map_d;
+					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_bump, full_d);
 					matMap[mat_name] = m;
 				}
 
@@ -121,9 +150,11 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 				memset(map_ka, 0, sizeof(map_ka));
 				memset(map_kd, 0, sizeof(map_kd));
 				memset(map_ks, 0, sizeof(map_ks));
+				memset(map_bump, 0, sizeof(map_bump));
+				memset(map_d, 0, sizeof(map_d));
 				memset(mat_name, 0, sizeof(mat_name));
 
-				fscanf_s(mtlfile, "%s\n", &mat_name, 40);
+				fscanf_s(mtlfile, "%s\n", &mat_name, 256);
 			}
 		}
 	}

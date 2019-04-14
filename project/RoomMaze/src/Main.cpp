@@ -188,7 +188,7 @@ void init() {
 	camera.setSpotLightParameters(glm::vec3(1.0f), 10.0f, 14.0f, glm::vec3(0.4f, 0.2f, 0.2f));
 
 	// load simple box object
-	geometries = OBJReader::ReadObject("assets/objects/box/box.obj", shader);
+	geometries = OBJReader::ReadObject("C:/Users/lukas/Desktop/capsule.obj", shader);
 }
 
 void update(float deltaT) {
