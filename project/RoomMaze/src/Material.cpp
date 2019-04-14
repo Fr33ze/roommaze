@@ -5,27 +5,27 @@ Material::Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 spe
 
 	if (!pathAmbientTextureMap.empty()) {
 		hasAmbientTextureMap = true;
-		initTexture(pathAmbientTextureMap, ambientTextureMapHandle, false);
+		initTexture(pathAmbientTextureMap, ambientTextureMapHandle);
 	}
 	
 	if (!pathDiffuseTextureMap.empty()) {
 		hasDiffuseTextureMap = true;
-		initTexture(pathDiffuseTextureMap, diffuseTextureMapHandle, false);
+		initTexture(pathDiffuseTextureMap, diffuseTextureMapHandle);
 	}
 
 	if (!pathSpecularTextureMap.empty()) {
 		hasSpecularTextureMap = true;
-		initTexture(pathSpecularTextureMap, specularTextureMapHandle, false);
+		initTexture(pathSpecularTextureMap, specularTextureMapHandle);
 	}
 
 	if (!pathAlphaTextureMap.empty()) {
 		hasAlphaTextureMap = true;
-		initTexture(pathAlphaTextureMap, alphaTextureMapHandle, true);
+		initTexture(pathAlphaTextureMap, alphaTextureMapHandle);
 	}
 
 	if (!pathNormalTextureMap.empty()) {
 		hasNormalTextureMap = true;
-		initTexture(pathNormalTextureMap, normalTextureMapHandle, false);
+		initTexture(pathNormalTextureMap, normalTextureMapHandle);
 	}
 }
 
@@ -33,7 +33,7 @@ Material::~Material() {
 
 }
 
-void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle, bool isTransparent) {
+void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle) {
 	glGenTextures(1, &textureMapHandle);
 	glBindTexture(GL_TEXTURE_2D, textureMapHandle);
 
@@ -44,7 +44,7 @@ void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle,
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load(pathTextureMap.c_str(), &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, isTransparent ? GL_RGBA : GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, nrChannels == 3 ? GL_RGB : GL_RGBA, width, height, 0, nrChannels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {

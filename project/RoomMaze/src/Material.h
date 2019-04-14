@@ -40,7 +40,7 @@ protected:
 	bool hasNormalTextureMap = false;
 	GLuint normalTextureMapHandle;
 
-	void initTexture(std::string pathTextureMap, GLuint &textureMapHandle, bool isTransparent);
+	void initTexture(std::string pathTextureMap, GLuint &textureMapHandle);
 
 public:
 
@@ -52,7 +52,7 @@ public:
 	 * @param diffuseColor: Kd
 	 * @param specularColor: Ks
 	 * @param shininess: Ns
-	 * @param alpha: Tr
+	 * @param alpha: Tr / d
 	 * @param pathAmbientTextureMap: map_Ka
 	 * @param pathDiffuseTextureMap: map_Kd
 	 * @param pathSpecularTextureMap: map_Ks

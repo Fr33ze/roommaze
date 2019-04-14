@@ -8,7 +8,6 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Material.h"
-#include "LightCollection.h"
 #include "Geometry.h"
 #include "OBJReader.h"
 
