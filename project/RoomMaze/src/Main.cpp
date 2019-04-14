@@ -10,6 +10,7 @@
 #include "Material.h"
 #include "LightCollection.h"
 #include "Geometry.h"
+#include "OBJReader.h"
 
 /* ----------- */
 // PROTOTYPES
@@ -182,17 +183,13 @@ void init() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
 	// shader
-	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shader/phong.vert", "assets/shader/phong.frag");
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera
 	camera.setSpotLightParameters(glm::vec3(1.0f), 10.0f, 14.0f, glm::vec3(0.4f, 0.2f, 0.2f));
 
-	// materials
-	std::shared_ptr<Material> containerMaterial = std::make_shared<Material>(glm::vec3(0.2f), glm::vec3(0.5f), glm::vec3(1.0f), 64.0f, 1.0f, "assets/textures/container.png", "assets/textures/container.png", "assets/textures/container_specular.png", "", "");
-	
-	// geometry objects
-	GeometryData cubeGeometryData = Geometry::createCube(1.0f, 1.0f, 1.0f);
-	geometries.push_back(Geometry(cubeGeometryData, glm::mat4(1.0f), shader, containerMaterial));
+	// load simple box object
+	geometries = OBJReader::ReadObject("assets/objects/box/box.obj", shader);
 }
 
 void update(float deltaT) {

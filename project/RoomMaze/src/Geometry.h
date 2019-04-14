@@ -74,16 +74,4 @@ public:
 
 	// Resets the model matrix to the identity matrix.
 	void resetModelMatrix();
-
-	/**
-	 * Creates a cube geometry.
-	 *
-	 * @param width: width of the cube
-	 * @param height: height of the cube
-	 * @param depth: depth of the cube
-	 *
-	 * @return all cube data
-	 */
-	static GeometryData createCube(float width, float height, float depth);
-
 };
