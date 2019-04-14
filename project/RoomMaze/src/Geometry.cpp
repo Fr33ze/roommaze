@@ -1,7 +1,7 @@
 #include "Geometry.h"
 
-Geometry::Geometry(GeometryData &geometryData, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material, std::shared_ptr<LightCollection> lightCollection, glm::mat4 modelMatrix)
-	: elements(geometryData.indices.size()), shader(shader), material(material), lightCollection(lightCollection), modelMatrix(modelMatrix) {
+Geometry::Geometry(GeometryData &geometryData, glm::mat4 modelMatrix, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material)
+	: elements(geometryData.indices.size()), modelMatrix(modelMatrix), shader(shader), material(material) {
 
 	/* --------------------------- */
 	// VAO (VERTEX BUFFER OBJECT)
@@ -92,9 +92,7 @@ void Geometry::setUniformsAndDraw(Camera &camera) {
 	camera.setUniforms(shader);
 
 	material->setTextures();
-	material->setUniforms();
-
-	lightCollection->setUniforms();
+	material->setUniforms(shader);
 
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, elements, GL_UNSIGNED_INT, nullptr);

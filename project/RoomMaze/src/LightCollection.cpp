@@ -1,10 +1,8 @@
 #include "LightCollection.h"
 
-LightCollection::LightCollection(std::shared_ptr<Shader> shader)
-	: shader(shader) {
+LightCollection::LightCollection() {
 
 }
-
 
 LightCollection::~LightCollection() {
 
@@ -22,7 +20,7 @@ void LightCollection::addSpotLight(glm::vec3 position, glm::vec3 direction, glm:
 	spotLights.push_back({ position, direction, intensity, innerAngle, outerAngle, attenuation });
 }
 
-void LightCollection::setUniforms() {
+void LightCollection::setUniforms(std::shared_ptr<Shader> shader) {
 	for (unsigned int i = 0; i < directionalLights.size(); i++) {
 		shader->setUniform("directionalLights[" + std::to_string(i) + "].color", directionalLights.at(i).color);
 		shader->setUniform("directionalLights[" + std::to_string(i) + "].direction", directionalLights.at(i).direction);

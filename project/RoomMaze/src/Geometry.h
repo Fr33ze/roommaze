@@ -8,7 +8,6 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Material.h"
-#include "LightCollection.h"
 
 // stores all data for a geometry object
 struct GeometryData {
@@ -32,17 +31,14 @@ protected:
 	// number of elements (faces) to be rendered
 	unsigned int elements;
 
-	// shader used for rendering this object
+	// model matrix of the object
+	glm::mat4 modelMatrix;
+
+	// shader used for rendering
 	std::shared_ptr<Shader> shader;
 
 	// material of the object
 	std::shared_ptr<Material> material;
-
-	// light collection of the object
-	std::shared_ptr<LightCollection> lightCollection;
-
-	// model matrix of the object
-	glm::mat4 modelMatrix;
 
 public:
 
@@ -51,12 +47,11 @@ public:
 	 * Creates VAO and VBOs and binds them.
 	 *
 	 * @param geometryData: geometryData for the object
-	 * @param shader: shader used for rendering this object
-	 * @param material: material of the object
-	 * @param lightCollection: light collection of the object
 	 * @param modelMatrix: model matrix of the object
+	 * @param shader: shader used for rendering
+	 * @param material: material of the object
 	 */
-	Geometry(GeometryData &geometryData, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material, std::shared_ptr<LightCollection> lightCollection, glm::mat4 modelMatrix);
+	Geometry(GeometryData &geometryData, glm::mat4 modelMatrix, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material);
 
 	~Geometry();
 

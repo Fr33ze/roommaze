@@ -25,8 +25,8 @@ struct Material {
 	sampler2D ambientTextureMapUnit;
 	sampler2D diffuseTextureMapUnit;
 	sampler2D specularTextureMapUnit;
-	sampler2D shininessTextureMapUnit;
 	sampler2D alphaTextureMapUnit;
+	sampler2D normalTextureMapUnit;
 };
 
 struct DirectionalLight {
@@ -106,7 +106,7 @@ void main() {
 		spotLight += calculateSpotLight(i);
 
 	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight();
-	color = vec4(light, 1.0);
+	color = vec4(light, material.alpha);
 }
 
 vec3 calculateDirectionalLight(int i) {

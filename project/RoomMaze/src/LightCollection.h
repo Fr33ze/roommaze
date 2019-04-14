@@ -32,9 +32,6 @@ protected:
 		glm::vec3 attenuation;
 	};
 
-	// shader used for rendering this light collection
-	std::shared_ptr<Shader> shader;
-
 	// storage for all lights
 	std::vector<DirectionalLight> directionalLights;
 	std::vector<PointLight> pointLights;
@@ -45,10 +42,8 @@ public:
 	/**
 	 * CONSTRUCTOR
 	 * Creates a light collection.
-	 *
-	 * @param shader: shader used for rendering this object
 	 */
-	LightCollection(std::shared_ptr<Shader> shader);
+	LightCollection();
 
 	~LightCollection();
 
@@ -81,7 +76,11 @@ public:
 	 */
 	void addSpotLight(glm::vec3 position, glm::vec3 direction, glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation);
 
-	// Sets light collection's parameters as uniforms in its specified shader.
-	void setUniforms();
+	/** 
+	 * Sets light collection's parameters as uniforms in the given shader.
+	 *
+	 * @param shader: shader used for rendering
+	 */
+	void setUniforms(std::shared_ptr<Shader> shader);
 
 };

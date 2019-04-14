@@ -3,10 +3,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <GL\glew.h>
 #include <glm\glm.hpp>
-#include <glm/gtc/constants.hpp>
-#include <vector>
-#include <memory>
 
 #include "stb_image.h"
 #include "Shader.h"
@@ -14,9 +12,6 @@
 class Material {
 
 protected:
-
-	// shader used for rendering this material
-	std::shared_ptr<Shader> shader;
 
 	// Ka
 	glm::vec3 ambientColor;
@@ -38,29 +33,44 @@ protected:
 	// map_Ks
 	bool hasSpecularTextureMap = false;
 	GLuint specularTextureMapHandle;
-	// map_Ns
-	bool hasShininessTextureMap = false;
-	GLuint shininessTextureMapHandle;
 	// map_d
 	bool hasAlphaTextureMap = false;
 	GLuint alphaTextureMapHandle;
+	// map_n
+	bool hasNormalTextureMap = false;
+	GLuint normalTextureMapHandle;
 
-	void initTexture(std::string pathTextureMap, GLuint &textureMapHandle);
+	void initTexture(std::string pathTextureMap, GLuint &textureMapHandle, bool isTransparent);
 
 public:
 
 	/**
 	 * CONSTRUCTOR
 	 * Creates a material.
+	 *
+	 * @param ambientColor: Ka
+	 * @param diffuseColor: Kd
+	 * @param specularColor: Ks
+	 * @param shininess: Ns
+	 * @param alpha: Tr
+	 * @param pathAmbientTextureMap: map_Ka
+	 * @param pathDiffuseTextureMap: map_Kd
+	 * @param pathSpecularTextureMap: map_Ks
+	 * @param pathAlphaTextureMap: map_d
+	 * @param pathNormalMap: map_n
 	 */
-	Material(std::shared_ptr<Shader> shader, glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathShininessTextureMap, std::string pathAlphaTextureMap);
+	Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathShininessTextureMap, std::string pathAlphaTextureMap);
 
 	~Material();
 
 	// Activates and binds material's textures.
 	void setTextures();
 
-	// Sets material's parameters as uniforms in its specified shader.
-	void setUniforms();
+	/**
+	 * Sets material's parameters as uniforms in the given shader.
+	 *
+	 * @param shader: shader used for rendering
+	 */
+	void setUniforms(std::shared_ptr<Shader> shader);
 
 };

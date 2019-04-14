@@ -69,9 +69,9 @@ public:
 	void setSpotLightParameters(glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation);
 
 	/**
-	 * Sets camera's parameters as uniforms in the specified shader.
+	 * Sets camera's parameters as uniforms in the given shader.
 	 *
-	 * @param shader: shader used for rendering this camera
+	 * @param shader: shader used for rendering
 	 */
 	void setUniforms(std::shared_ptr<Shader> shader);
 

@@ -1,31 +1,31 @@
 #include "Material.h"
 
-Material::Material(std::shared_ptr<Shader> shader, glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathShininessTextureMap, std::string pathAlphaTextureMap)
-	: shader(shader), ambientColor(ambientColor), diffuseColor(diffuseColor), specularColor(specularColor), shininess(shininess), alpha(alpha) {
+Material::Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathAlphaTextureMap, std::string pathNormalTextureMap)
+	: ambientColor(ambientColor), diffuseColor(diffuseColor), specularColor(specularColor), shininess(shininess), alpha(alpha) {
 
 	if (!pathAmbientTextureMap.empty()) {
 		hasAmbientTextureMap = true;
-		initTexture(pathAmbientTextureMap, ambientTextureMapHandle);
+		initTexture(pathAmbientTextureMap, ambientTextureMapHandle, false);
 	}
 	
 	if (!pathDiffuseTextureMap.empty()) {
 		hasDiffuseTextureMap = true;
-		initTexture(pathDiffuseTextureMap, diffuseTextureMapHandle);
+		initTexture(pathDiffuseTextureMap, diffuseTextureMapHandle, false);
 	}
 
 	if (!pathSpecularTextureMap.empty()) {
 		hasSpecularTextureMap = true;
-		initTexture(pathSpecularTextureMap, specularTextureMapHandle);
-	}
-
-	if (!pathShininessTextureMap.empty()) {
-		hasShininessTextureMap = true;
-		initTexture(pathShininessTextureMap, shininessTextureMapHandle);
+		initTexture(pathSpecularTextureMap, specularTextureMapHandle, false);
 	}
 
 	if (!pathAlphaTextureMap.empty()) {
 		hasAlphaTextureMap = true;
-		initTexture(pathAlphaTextureMap, alphaTextureMapHandle);
+		initTexture(pathAlphaTextureMap, alphaTextureMapHandle, true);
+	}
+
+	if (!pathNormalTextureMap.empty()) {
+		hasNormalTextureMap = true;
+		initTexture(pathNormalTextureMap, normalTextureMapHandle, false);
 	}
 }
 
@@ -33,7 +33,7 @@ Material::~Material() {
 
 }
 
-void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle) {
+void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle, bool isTransparent) {
 	glGenTextures(1, &textureMapHandle);
 	glBindTexture(GL_TEXTURE_2D, textureMapHandle);
 
@@ -44,7 +44,7 @@ void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle)
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load(pathTextureMap.c_str(), &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, isTransparent ? GL_RGBA : GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
@@ -73,18 +73,18 @@ void Material::setTextures() {
 		glBindTexture(GL_TEXTURE_2D, specularTextureMapHandle);
 	}
 
-	if (hasShininessTextureMap) {
+	if (hasAlphaTextureMap) {
 		glActiveTexture(GL_TEXTURE3);
-		glBindTexture(GL_TEXTURE_2D, shininessTextureMapHandle);
+		glBindTexture(GL_TEXTURE_2D, alphaTextureMapHandle);
 	}
 
-	if (hasAlphaTextureMap) {
+	if (hasNormalTextureMap) {
 		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, alphaTextureMapHandle);
+		glBindTexture(GL_TEXTURE_2D, normalTextureMapHandle);
 	}
 }
 
-void Material::setUniforms() {
+void Material::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("material.ambientColor", ambientColor);
 	shader->setUniform("material.diffuseColor", diffuseColor);
 	shader->setUniform("material.specularColor", specularColor);
@@ -94,6 +94,6 @@ void Material::setUniforms() {
 	if (hasAmbientTextureMap) shader->setUniform("material.ambientTextureMapUnit", 0);
 	if (hasDiffuseTextureMap) shader->setUniform("material.diffuseTextureMapUnit", 1);
 	if (hasSpecularTextureMap) shader->setUniform("material.specularTextureMapUnit", 2);
-	if (hasShininessTextureMap) shader->setUniform("material.shininessTextureMapUnit", 3);
-	if (hasAlphaTextureMap) shader->setUniform("material.alphaTextureMapUnit", 4);
+	if (hasAlphaTextureMap) shader->setUniform("material.alphaTextureMapUnit", 3);
+	if (hasNormalTextureMap) shader->setUniform("material.normalTextureMapUnit", 4);
 }
