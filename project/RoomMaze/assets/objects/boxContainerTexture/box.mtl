@@ -1,0 +1,10 @@
+newmtl cube
+Ns 64.0000
+d 1.0000
+Tr 0.0000
+Ka 0.1000 0.1000 0.1000
+Kd 0.5880 0.5880 0.5880
+Ks 1.0000 1.0000 1.0000
+map_Ka box.jpg
+map_Kd box.jpg
+map_Ks box_specular.jpg

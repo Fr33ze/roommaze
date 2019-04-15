@@ -103,8 +103,7 @@ std::string Shader::readFile(std::string filePath) {
 		std::string code = std::string(std::istreambuf_iterator<char>(shaderFile), std::istreambuf_iterator<char>());
 		shaderFile.close();
 		return code;
-	}
-	else {
+	} else {
 		std::cout << "Failed to open shader file: " << filePath << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
 		getchar();

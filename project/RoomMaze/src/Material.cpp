@@ -37,15 +37,24 @@ void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle)
 	glGenTextures(1, &textureMapHandle);
 	glBindTexture(GL_TEXTURE_2D, textureMapHandle);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 	// load texture
 	int width, height, nrChannels;
 	unsigned char *data = stbi_load(pathTextureMap.c_str(), &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, nrChannels == 3 ? GL_RGB : GL_RGBA, width, height, 0, nrChannels == 3 ? GL_RGB : GL_RGBA, GL_UNSIGNED_BYTE, data);
+		switch (nrChannels) {
+		case 1:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+			break;
+		case 3:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			break;
+		case 4:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			break;
+		}
 		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
 	else {
 		std::cout << "Failed to load texture from: " + pathTextureMap << std::endl;
@@ -90,10 +99,39 @@ void Material::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("material.specularColor", specularColor);
 	shader->setUniform("material.shininess", shininess);
 	shader->setUniform("material.alpha", alpha);
-	
-	if (hasAmbientTextureMap) shader->setUniform("material.ambientTextureMapUnit", 0);
-	if (hasDiffuseTextureMap) shader->setUniform("material.diffuseTextureMapUnit", 1);
-	if (hasSpecularTextureMap) shader->setUniform("material.specularTextureMapUnit", 2);
-	if (hasAlphaTextureMap) shader->setUniform("material.alphaTextureMapUnit", 3);
-	if (hasNormalTextureMap) shader->setUniform("material.normalTextureMapUnit", 4);
+
+	if (hasAmbientTextureMap) {
+		shader->setUniform("material.hasAmbientTextureMap", true);
+		shader->setUniform("material.ambientTextureMapUnit", 0);
+	} else {
+		shader->setUniform("material.hasAmbientTextureMap", false);
+	}
+
+	if (hasDiffuseTextureMap) {
+		shader->setUniform("material.hasDiffuseTextureMap", true);
+		shader->setUniform("material.diffuseTextureMapUnit", 1);
+	} else {
+		shader->setUniform("material.hasDiffuseTextureMap", false);
+	}
+
+	if (hasSpecularTextureMap) {
+		shader->setUniform("material.hasSpecularTextureMap", true);
+		shader->setUniform("material.specularTextureMapUnit", 2);
+	} else {
+		shader->setUniform("material.hasSpecularTextureMap", false);
+	}
+
+	if (hasAlphaTextureMap) {
+		shader->setUniform("material.hasAlphaTextureMap", true);
+		shader->setUniform("material.alphaTextureMapUnit", 3);
+	} else {
+		shader->setUniform("material.hasAlphaTextureMap", false);
+	}
+
+	if (hasNormalTextureMap) {
+		shader->setUniform("material.hasNormalTextureMap", true);
+		shader->setUniform("material.normalTextureMapUnit", 4);
+	} else {
+		shader->setUniform("material.hasNormalTextureMap", false);
+	}
 }

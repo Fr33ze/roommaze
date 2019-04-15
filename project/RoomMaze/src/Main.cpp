@@ -47,7 +47,8 @@ bool firstMouse = true;
 float deltaTime;
 
 // geometry objects
-std::vector<Geometry> geometries;
+std::vector<Geometry> geometryBoxContainerTexture;
+std::vector<Geometry> geometryBoxTileTexture;
 
 /* ----- */
 // MAIN
@@ -166,7 +167,7 @@ int main(int argc, char **argv) {
 			std::cout << "GL ERROR DETECTED!!!" << std::endl;
 	}
 
-	// clean up!
+	// clean up
 	cleanup();
 	glfwTerminate();
 
@@ -185,10 +186,14 @@ void init() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera
-	camera.setSpotLightParameters(glm::vec3(1.0f), 10.0f, 14.0f, glm::vec3(0.4f, 0.2f, 0.2f));
+	camera.setSpotLightParameters(glm::vec3(1.0f), 12.0f, 20.0f, glm::vec3(0.4f, 0.8f, 0.4f));
 
 	// load simple box object
-	geometries = OBJReader::ReadObject("C:/Users/lukas/Desktop/capsule.obj", shader);
+	geometryBoxContainerTexture = OBJReader::ReadObject("assets/objects/boxContainerTexture/box.obj", shader);
+	geometryBoxContainerTexture.at(0).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+
+	geometryBoxTileTexture = OBJReader::ReadObject("assets/objects/boxTileTexture/box.obj", shader);
+	geometryBoxTileTexture.at(0).transform(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 }
 
 void update(float deltaT) {
@@ -196,14 +201,20 @@ void update(float deltaT) {
 }
 
 void draw() {
-	for (unsigned int i = 0; i < geometries.size(); i++) {
-		geometries.at(i).setUniformsAndDraw(camera);
+	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
+		geometryBoxContainerTexture.at(i).setUniformsAndDraw(camera);
+	}
+	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
+		geometryBoxTileTexture.at(i).setUniformsAndDraw(camera);
 	}
 }
 
 void cleanup() {
-	for (unsigned int i = 0; i < geometries.size(); i++) {
-		geometries.at(i).destroy();
+	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
+		geometryBoxContainerTexture.at(i).destroy();
+	}
+	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
+		geometryBoxTileTexture.at(i).destroy();
 	}
 }
 

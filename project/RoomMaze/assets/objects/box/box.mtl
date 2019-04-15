@@ -1,9 +1,0 @@
-newmtl cube
-Ns 64.0000
-d 1.0000
-Tr 0.0000
-Ka 0.2000 0.2000 0.2000
-Kd 0.5880 0.5880 0.5880
-Ks 1.0000 1.0000 1.0000
-map_Kd box_diff.png
-map_Ks box_spec.png

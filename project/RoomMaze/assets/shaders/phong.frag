@@ -22,10 +22,15 @@ struct Material {
 	float shininess;
 	float alpha;
 
+	bool hasAmbientTextureMap;
 	sampler2D ambientTextureMapUnit;
+	bool hasDiffuseTextureMap;
 	sampler2D diffuseTextureMapUnit;
+	bool hasSpecularTextureMap;
 	sampler2D specularTextureMapUnit;
+	bool hasAlphaTextureMap;
 	sampler2D alphaTextureMapUnit;
+	bool hasNormalTextureMap;
 	sampler2D normalTextureMapUnit;
 };
 
@@ -89,7 +94,7 @@ void main() {
 
 	// AMBIENT LIGHT (ambientColor x ambientTexture)
 	// =============================================
-	vec3 ambientLight =  material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb;
+	vec3 ambientLight =  material.hasAmbientTextureMap ?  material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor;
 
 	// LIGHT & COLOR
 	// =============
@@ -127,7 +132,7 @@ vec3 calculateDirectionalLight(int i) {
 
 	// TEXTURING
 	// =========
-	return (diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb);
+	return (material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight);
 }
 
 vec3 calculatePointLight(int i) {
@@ -153,7 +158,7 @@ vec3 calculatePointLight(int i) {
 
 	// TEXTURING
 	// =========
-	return attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
+	return attenuation * ((material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight));
 }
 
 vec3 calculateSpotLight(int i) {
@@ -185,7 +190,7 @@ vec3 calculateSpotLight(int i) {
 
 	// TEXTURING
 	// =========
-	return coneIntensity * attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
+	return coneIntensity * attenuation * ((material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight));
 }
 
 vec3 calculateCameraLight() {
@@ -216,5 +221,5 @@ vec3 calculateCameraLight() {
 
 	// TEXTURING
 	// =========
-	return coneIntensity * attenuation * ((diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb) + (specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).rgb));
+	return coneIntensity * attenuation * ((material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight));
 }

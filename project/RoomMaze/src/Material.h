@@ -21,7 +21,7 @@ protected:
 	glm::vec3 specularColor;
 	// Ns
 	float shininess;
-	// Tr = 1 - d (fully opaque if Tr == 0.0 || d == 1.0)
+	// d (fully opaque if d == 1.0)
 	float alpha;
 
 	// map_Ka
@@ -52,12 +52,12 @@ public:
 	 * @param diffuseColor: Kd
 	 * @param specularColor: Ks
 	 * @param shininess: Ns
-	 * @param alpha: Tr / d
-	 * @param pathAmbientTextureMap: map_Ka
-	 * @param pathDiffuseTextureMap: map_Kd
-	 * @param pathSpecularTextureMap: map_Ks
-	 * @param pathAlphaTextureMap: map_d
-	 * @param pathNormalMap: map_n
+	 * @param alpha: d
+	 * @param pathAmbientTextureMap: map_Ka (RGB)
+	 * @param pathDiffuseTextureMap: map_Kd (RGB)
+	 * @param pathSpecularTextureMap: map_Ks (R)
+	 * @param pathAlphaTextureMap: map_d (R)
+	 * @param pathNormalMap: map_n (RGB)
 	 */
 	Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathShininessTextureMap, std::string pathAlphaTextureMap);
 
