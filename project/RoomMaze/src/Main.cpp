@@ -178,7 +178,7 @@ void init() {
 	// scene stuff
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE); // render only the front side of every face (DISABLE for correct blending)
+	glEnable(GL_CULL_FACE); // render only the front side of every face (DISABLE for correct blending)
 	glEnable(GL_BLEND); // enable rendering semi-transparent materials
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
@@ -193,7 +193,7 @@ void init() {
 	geometryBoxContainerTexture = OBJReader::ReadObject("assets/objects/boxContainerTexture/box.obj", shader);
 	geometryBoxContainerTexture.at(0).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
 
-	geometryBoxTileTexture = OBJReader::ReadObject("assets/objects/boxTileTexture/box.obj", shader);
+	geometryBoxTileTexture = OBJReader::ReadObject("assets/objects/grass/grass.obj", shader);
 	geometryBoxTileTexture.at(0).transform(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 }
 

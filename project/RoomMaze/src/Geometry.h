@@ -74,4 +74,5 @@ public:
 
 	// Resets the model matrix to the identity matrix.
 	void resetModelMatrix();
+
 };

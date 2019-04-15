@@ -111,7 +111,7 @@ void main() {
 		spotLight += calculateSpotLight(i);
 
 	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight();
-	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).r : material.alpha;
+	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).a : material.alpha;
 	if (alphaChannel < 0.1)
 		discard;
 	color = vec4(light, alphaChannel);
