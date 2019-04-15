@@ -91,7 +91,6 @@ void Geometry::setUniformsAndDraw(Camera &camera) {
 	
 	camera.setUniforms(shader);
 
-	material->setTextures();
 	material->setUniforms(shader);
 
 	glBindVertexArray(vao);

@@ -94,7 +94,7 @@ void main() {
 
 	// AMBIENT LIGHT (ambientColor x ambientTexture)
 	// =============================================
-	vec3 ambientLight =  material.hasAmbientTextureMap ?  material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor;
+	vec3 ambientLight =  material.hasAmbientTextureMap ? material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor;
 
 	// LIGHT & COLOR
 	// =============
@@ -111,7 +111,10 @@ void main() {
 		spotLight += calculateSpotLight(i);
 
 	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight();
-	color = vec4(light, material.alpha);
+	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).r : material.alpha;
+	if (alphaChannel < 0.1)
+		discard;
+	color = vec4(light, alphaChannel);
 }
 
 vec3 calculateDirectionalLight(int i) {

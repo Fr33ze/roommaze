@@ -63,11 +63,8 @@ public:
 
 	~Material();
 
-	// Activates and binds material's textures.
-	void setTextures();
-
 	/**
-	 * Sets material's parameters as uniforms in the given shader.
+	 * Sets material's parameters as uniforms in the given shader (also activates and binds material's textures).
 	 *
 	 * @param shader: shader used for rendering
 	 */

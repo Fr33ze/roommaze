@@ -178,7 +178,7 @@ void init() {
 	// scene stuff
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE); // render only the front side of every face
+	//glEnable(GL_CULL_FACE); // render only the front side of every face (DISABLE for correct blending)
 	glEnable(GL_BLEND); // enable rendering semi-transparent materials
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
