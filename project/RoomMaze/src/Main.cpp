@@ -38,7 +38,7 @@ const unsigned int WINDOW_HEIGHT = 1000;
 const bool FULLSCREEN = false;
 
 // camera
-Camera camera = Camera(glm::vec3(0.0f, 0.0f, 2.0f), 50.0f, WINDOW_WIDTH / WINDOW_HEIGHT);
+Camera camera;
 float lastXPosition = WINDOW_WIDTH / 2.0f;
 float lastYPosition = WINDOW_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -186,6 +186,7 @@ void init() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera
+	camera = Camera(glm::vec3(0.0f, 0.0f, 2.0f), 50.0f, WINDOW_WIDTH / WINDOW_HEIGHT);
 	camera.setSpotLightParameters(glm::vec3(1.0f), 12.0f, 20.0f, glm::vec3(0.4f, 0.8f, 0.4f));
 
 	// load simple box object

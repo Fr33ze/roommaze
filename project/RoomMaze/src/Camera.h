@@ -58,6 +58,10 @@ public:
 	 */
 	Camera(glm::vec3 position, float fieldOfView, float aspectRatio);
 
+	Camera();
+
+	~Camera();
+
 	/**
 	 * Sets the parameters of the camera's spot light.
 	 *
@@ -74,8 +78,6 @@ public:
 	 * @param shader: shader used for rendering
 	 */
 	void setUniforms(std::shared_ptr<Shader> shader);
-
-	~Camera();
 
 	/**
 	 * Updates the camera concerning the pressed key.

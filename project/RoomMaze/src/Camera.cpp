@@ -25,6 +25,10 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("camera.attenuation", cameraLight.attenuation);
 }
 
+Camera::Camera() {
+
+}
+
 Camera::~Camera() {
 
 }
