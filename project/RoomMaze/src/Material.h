@@ -59,7 +59,7 @@ public:
 	 * @param pathAlphaTextureMap: map_d (R)
 	 * @param pathNormalMap: map_n (RGB)
 	 */
-	Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathShininessTextureMap, std::string pathAlphaTextureMap);
+	Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathAlphaTextureMap, std::string pathNormalTextureMap);
 
 	~Material();
 
