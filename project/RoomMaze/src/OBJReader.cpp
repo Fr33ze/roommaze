@@ -7,6 +7,8 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 	errno_t err = fopen_s(&mtlfile, fullpath.c_str(), "r");
 	if (err != 0) {
 		std::cout << "Unable to open file " << fullpath << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
 		exit(-1);
 	}
 	//define temporary map
@@ -60,7 +62,7 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 				full_d.clear();
 			else
 				full_d += map_d;
-			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_bump, full_d);
+			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_bump);
 			matMap[mat_name] = m;
 			break;
 		}
@@ -137,7 +139,7 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 						full_d.clear();
 					else
 						full_d += map_d;
-					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_bump, full_d);
+					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_bump);
 					matMap[mat_name] = m;
 				}
 
@@ -173,6 +175,9 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 	errno_t err = fopen_s(&objfile, filename, "r");
 	if (err != 0) {
 		std::cout << "Unable to open file " << filename << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
 	}
 
 	//define temporary lists

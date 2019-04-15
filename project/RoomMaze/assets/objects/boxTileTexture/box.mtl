@@ -1,11 +1,10 @@
 newmtl cube
 Ns 64.0000
-d 1.0000
-Tr 0.5000
+d 0.5000
 Ka 0.1500 0.1500 0.1500
 Kd 0.5880 0.5880 0.5880
 Ks 1.0000 1.0000 1.0000
 map_Ka tile.jpg
 map_Kd tile.jpg
 map_Ks tile_specular.jpg
-map_d tile_alpha.png
+#map_d tile_alpha.png

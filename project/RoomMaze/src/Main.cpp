@@ -33,8 +33,8 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 /* ----------------- */
 
 // settings
-const unsigned int WINDOW_WIDTH = 1000;
-const unsigned int WINDOW_HEIGHT = 500;
+const unsigned int WINDOW_WIDTH = 2000;
+const unsigned int WINDOW_HEIGHT = 1000;
 const bool FULLSCREEN = false;
 
 // camera
@@ -81,7 +81,7 @@ int main(int argc, char **argv) {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// open window
-	GLFWwindow* window = glfwCreateWindow(1000, 500, "RoomMaze", FULLSCREEN ? glfwGetPrimaryMonitor() : nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RoomMaze", FULLSCREEN ? glfwGetPrimaryMonitor() : nullptr, nullptr);
 	if (!window) {
 		glfwTerminate();
 		std::cout << "Failed to open window." << std::endl;
