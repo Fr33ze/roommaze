@@ -130,8 +130,14 @@ vec3 calculateDirectionalLight(int i) {
 	// =================================================================================================
 	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
+	
+	// phong model
+	//vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-	vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
+
+	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// TEXTURING
 	// =========
@@ -152,7 +158,13 @@ vec3 calculatePointLight(int i) {
 	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
-	vec3 specularLight = pointLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+	// phong model
+	//vec3 specularLight = pointLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
+
+	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 specularLight = pointLights[i].color * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
 	// ===============================================================================================================
@@ -178,7 +190,13 @@ vec3 calculateSpotLight(int i) {
 	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
-	vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+	// phong model
+	//vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
+
+	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
 	// ===============================================================================================================
@@ -209,7 +227,13 @@ vec3 calculateCameraLight() {
 	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
 	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
 
-	vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+	// phong model
+	//vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
+
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
+
+	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
 	// ===============================================================================================================
