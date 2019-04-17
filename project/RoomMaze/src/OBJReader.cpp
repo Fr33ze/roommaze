@@ -216,6 +216,10 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			else if (strcmp(lineheader, "vt") == 0) {
 				glm::vec2 uv;
 				fscanf_s(objfile, "%f %f\n", &uv.x, &uv.y);
+
+				//Note: OpenGL texture are loaded left to right, bottom to top.
+				uv.x = 1 - uv.x;
+				uv.y = 1 - uv.y;
 				uvs.push_back(uv);
 			}
 			//normals
@@ -248,8 +252,8 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 			//set current material
 			else if (strcmp(lineheader, "usemtl") == 0) {
-				char material[40];
-				fscanf_s(objfile, "%s\n", &material, 40);
+				char material[256];
+				fscanf_s(objfile, "%s\n", &material, 256);
 
 				//skip if its first iteration (currentMaterial is empty in first iteration)
 				if (!currentMaterial.empty()) {
@@ -271,8 +275,8 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 			//load all materials and its names and insert them into mans
 			else if (strcmp(lineheader, "mtllib") == 0) {
-				char mtllib[40];
-				fscanf_s(objfile, "%s\n", &mtllib, 40);
+				char mtllib[256];
+				fscanf_s(objfile, "%s\n", &mtllib, 256);
 				materialNameMap = ReadMaterials(SplitFilename(filename).c_str(), mtllib);
 			}
 		}
@@ -281,30 +285,72 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 	std::vector<Geometry> allGeometries;
 	for (std::map<std::string, std::vector<std::vector<unsigned int>>>::iterator iter = materialFaceMap.begin(); iter != materialFaceMap.end(); iter++) {
 		//iter->first is material_name
-		//iter->second is material
+		//iter->second are its faces
+
 		GeometryData gd;
+
+		//to reuse already created vertices for face construction
+		std::map<std::string, unsigned int> reuseVertexMap;
+		unsigned int reuseCount = 0;
+
 		for (std::vector<unsigned int> &face : iter->second) {
+			std::string first = std::to_string(face[0]);
+			first += face[1];
+			first += face[2];
+			std::string second = std::to_string(face[3]);
+			second += face[4];
+			second += face[5];
+			std::string third = std::to_string(face[6]);
+			third += face[7];
+			third += face[8];
+
+			//create vertices only if they do not exist (to save resources)
 			//always substract 1 from face[i] because indexing starts at 0 in c++
-			gd.vertexPositions.push_back(positions[face[0] - 1]);
-			gd.UVCoords.push_back(uvs[face[1] - 1]);
-			gd.normals.push_back(normals[face[2] - 1]);
+			if (!reuseVertexMap.count(first)) {
+				gd.vertexPositions.push_back(positions[face[0] - 1]);
+				gd.UVCoords.push_back(uvs[face[1] - 1]);
+				gd.normals.push_back(normals[face[2] - 1]);
+				unsigned int index = gd.indices.size() - reuseCount;
+				reuseVertexMap[first] = index;
+				gd.indices.push_back(index);
+			}
+			else {
+				gd.indices.push_back(reuseVertexMap[first]);
+				reuseCount++;
+			}
 
-			gd.vertexPositions.push_back(positions[face[3] - 1]);
-			gd.UVCoords.push_back(uvs[face[4] - 1]);
-			gd.normals.push_back(normals[face[5] - 1]);
+			if (!reuseVertexMap.count(second)) {
+				gd.vertexPositions.push_back(positions[face[3] - 1]);
+				gd.UVCoords.push_back(uvs[face[4] - 1]);
+				gd.normals.push_back(normals[face[5] - 1]);
+				unsigned int index = gd.indices.size() - reuseCount;
+				reuseVertexMap[second] = index;
+				gd.indices.push_back(index);
+			}
+			else {
+				gd.indices.push_back(reuseVertexMap[second]);
+				reuseCount++;
+			}
 
-			gd.vertexPositions.push_back(positions[face[6] - 1]);
-			gd.UVCoords.push_back(uvs[face[7] - 1]);
-			gd.normals.push_back(normals[face[8] - 1]);
-
-			gd.indices.push_back(gd.indices.size());
-			gd.indices.push_back(gd.indices.size());
-			gd.indices.push_back(gd.indices.size());
+			if (!reuseVertexMap.count(third)) {
+				gd.vertexPositions.push_back(positions[face[6] - 1]);
+				gd.UVCoords.push_back(uvs[face[7] - 1]);
+				gd.normals.push_back(normals[face[8] - 1]);
+				unsigned int index = gd.indices.size() - reuseCount;
+				reuseVertexMap[third] = index;
+				gd.indices.push_back(index);
+			}
+			else {
+				gd.indices.push_back(reuseVertexMap[third]);
+				reuseCount++;
+			}
 		}
 		allGeometries.push_back(Geometry(gd, glm::mat4(1.0f), shader, materialNameMap[iter->first]));
 
-		//reset GeometryData gd for next material
+		//reset GeometryData gd and reuseVertexMap for next material
 		gd = {};
+		reuseVertexMap.clear();
+		reuseCount = 0;
 	}
 
 	return allGeometries;
