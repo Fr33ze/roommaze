@@ -128,6 +128,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\INIReader.cpp" />
     <ClCompile Include="src\OBJReader.cpp" />
     <ClCompile Include="src\Geometry.cpp" />
     <ClCompile Include="src\LightCollection.cpp" />
@@ -138,6 +139,7 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\OBJReader.h" />
     <ClInclude Include="src\Geometry.h" />
     <ClInclude Include="src\LightCollection.h" />

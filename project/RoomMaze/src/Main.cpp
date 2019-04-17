@@ -10,6 +10,7 @@
 #include "Material.h"
 #include "Geometry.h"
 #include "OBJReader.h"
+#include "INIReader.h"
 
 /* ----------- */
 // PROTOTYPES
@@ -32,15 +33,13 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 // GLOBAL VARIABLES
 /* ----------------- */
 
-// settings
-const unsigned int WINDOW_WIDTH = 2000;
-const unsigned int WINDOW_HEIGHT = 1000;
-const bool FULLSCREEN = false;
+//settings
+INIReader::Settings settings;
 
 // camera
 Camera camera;
-float lastXPosition = WINDOW_WIDTH / 2.0f;
-float lastYPosition = WINDOW_HEIGHT / 2.0f;
+float lastXPosition;
+float lastYPosition;
 bool firstMouse = true;
 
 // time between current frame and last frame
@@ -55,6 +54,8 @@ std::vector<Geometry> geometryBoxTileTexture;
 /* ----- */
 
 int main(int argc, char **argv) {
+	// read settings.ini file
+	settings = INIReader::ReadSettings();
 
 	/* ------------------------- */
 	// SETTING UP OPENGL WINDOW
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 	// open window
-	GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "RoomMaze", FULLSCREEN ? glfwGetPrimaryMonitor() : nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(settings.width, settings.height, "RoomMaze", settings.fullscreen ? glfwGetPrimaryMonitor() : nullptr, nullptr);
 	if (!window) {
 		glfwTerminate();
 		std::cout << "Failed to open window." << std::endl;
@@ -175,6 +176,10 @@ int main(int argc, char **argv) {
 }
 
 void init() {
+	// mouse stuff
+	lastXPosition = settings.width / 2.0f;
+	lastYPosition = settings.height / 2.0f;
+
 	// scene stuff
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
@@ -186,7 +191,7 @@ void init() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera
-	camera = Camera(glm::vec3(0.0f, 0.0f, 2.0f), 50.0f, WINDOW_WIDTH / WINDOW_HEIGHT);
+	camera = Camera(glm::vec3(0.0f, 0.0f, 2.0f), settings.field_of_view, settings.width / settings.height);
 	camera.setSpotLightParameters(glm::vec3(1.0f), 12.0f, 20.0f, glm::vec3(0.4f, 0.8f, 0.4f));
 
 	// load simple box object
