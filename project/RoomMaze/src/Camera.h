@@ -14,7 +14,7 @@ enum Key {
 };
 
 // default camera values
-static const float MOVEMENT_SPEED = 1.0f;
+static const float MOVEMENT_SPEED = 2.0f;
 static const float MOUSE_SENSITIVITY = 0.1f;
 
 class Camera {
@@ -28,6 +28,8 @@ protected:
 	glm::vec3 front;
 	glm::vec3 right;
 	glm::vec3 up;
+
+	float groundLevel;
 
 	// the light of the camera is a spot light
 	struct CameraLight {

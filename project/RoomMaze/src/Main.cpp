@@ -46,8 +46,7 @@ bool firstMouse = true;
 float deltaTime;
 
 // geometry objects
-std::vector<Geometry> geometryBoxContainerTexture;
-std::vector<Geometry> geometryBoxTileTexture;
+std::vector<std::vector<Geometry>> geometries;
 
 /* ----- */
 // MAIN
@@ -191,15 +190,17 @@ void init() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera
-	camera = Camera(glm::vec3(0.0f, 0.0f, 2.0f), settings.field_of_view, settings.width / settings.height);
-	camera.setSpotLightParameters(glm::vec3(1.0f), 12.0f, 20.0f, glm::vec3(0.4f, 0.8f, 0.4f));
+	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, settings.width / settings.height);
+	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.4f));
 
-	// load simple box object
-	geometryBoxContainerTexture = OBJReader::ReadObject("assets/objects/boxContainerTexture/box.obj", shader);
-	geometryBoxContainerTexture.at(0).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+	// load objects
+	geometries.push_back(OBJReader::ReadObject("assets/objects/staircase/staircase.obj", shader));
 
-	geometryBoxTileTexture = OBJReader::ReadObject("assets/objects/grass/grass.obj", shader);
-	geometryBoxTileTexture.at(0).transform(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+	std::vector<Geometry> grassGeometry = OBJReader::ReadObject("assets/objects/grass/grass.obj", shader);
+	for (int i = 0; i < grassGeometry.size(); i++) {
+		grassGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-2.25f, 0.5f, 2.25f)));
+	}
+	geometries.push_back(grassGeometry);
 }
 
 void update(float deltaT) {
@@ -207,20 +208,18 @@ void update(float deltaT) {
 }
 
 void draw() {
-	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
-		geometryBoxContainerTexture.at(i).setUniformsAndDraw(camera);
-	}
-	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
-		geometryBoxTileTexture.at(i).setUniformsAndDraw(camera);
+	for (unsigned int i = 0; i < geometries.size(); i++) {
+		for (unsigned int j = 0; j < geometries.at(i).size(); j++) {
+			geometries.at(i).at(j).setUniformsAndDraw(camera);
+		}
 	}
 }
 
 void cleanup() {
-	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
-		geometryBoxContainerTexture.at(i).destroy();
-	}
-	for (unsigned int i = 0; i < geometryBoxContainerTexture.size(); i++) {
-		geometryBoxTileTexture.at(i).destroy();
+	for (unsigned int i = 0; i < geometries.size(); i++) {
+		for (unsigned int j = 0; j < geometries.at(i).size(); j++) {
+			geometries.at(i).at(j).destroy();
+		}
 	}
 }
 
