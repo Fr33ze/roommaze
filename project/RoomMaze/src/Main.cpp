@@ -200,7 +200,7 @@ void init() {
 	geometries.push_back(OBJReader::ReadObject("assets/objects/staircase/staircase.obj", shader));
 
 	std::vector<Geometry> shelfGeometry = OBJReader::ReadObject("assets/objects/shelf/shelf.obj", shader);
-	for (int i = 0; i < shelfGeometry.size(); i++) {
+	for (unsigned int i = 0; i < shelfGeometry.size(); i++) {
 		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.1f, 0.0f, 2.6f)));
 	}
 	geometries.push_back(shelfGeometry);
