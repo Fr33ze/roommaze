@@ -22,8 +22,6 @@ struct Material {
 	float shininess;
 	float alpha;
 
-	bool hasAmbientTextureMap;
-	sampler2D ambientTextureMapUnit;
 	bool hasDiffuseTextureMap;
 	sampler2D diffuseTextureMapUnit;
 	bool hasSpecularTextureMap;
@@ -92,9 +90,10 @@ vec3 calculateCameraLight();
 
 void main() {
 
-	// AMBIENT LIGHT (ambientColor x ambientTexture)
-	// =============================================
-	vec3 ambientLight =  material.hasAmbientTextureMap ? material.ambientColor * texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor;
+	// AMBIENT LIGHT (ambientIntensity x ambientColor x ambientTexture)
+	// ================================================================
+	vec3 ambientIntensity = vec3(0.01, 0.01, 0.01);
+	vec3 ambientLight = ambientIntensity * (material.hasDiffuseTextureMap ? material.ambientColor * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor);
 
 	// LIGHT & COLOR
 	// =============

@@ -190,17 +190,20 @@ void init() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera
-	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, settings.width / settings.height);
+	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float) settings.width / (float) settings.height);
 	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.4f));
 
-	// load objects
+	/* ------------- */
+	// LOAD OBJECTS
+	/* ------------- */
+
 	geometries.push_back(OBJReader::ReadObject("assets/objects/staircase/staircase.obj", shader));
 
-	std::vector<Geometry> grassGeometry = OBJReader::ReadObject("assets/objects/grass/grass.obj", shader);
-	for (int i = 0; i < grassGeometry.size(); i++) {
-		grassGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-2.25f, 0.5f, 2.25f)));
+	std::vector<Geometry> shelfGeometry = OBJReader::ReadObject("assets/objects/shelf/shelf.obj", shader);
+	for (int i = 0; i < shelfGeometry.size(); i++) {
+		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.1f, 0.0f, 2.6f)));
 	}
-	geometries.push_back(grassGeometry);
+	geometries.push_back(shelfGeometry);
 }
 
 void update(float deltaT) {

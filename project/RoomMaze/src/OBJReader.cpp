@@ -62,7 +62,7 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 				full_d.clear();
 			else
 				full_d += map_d;
-			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_bump);
+			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_kd, full_ks, full_d, full_bump);
 			matMap[mat_name] = m;
 			break;
 		}
@@ -139,7 +139,7 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 						full_d.clear();
 					else
 						full_d += map_d;
-					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_bump);
+					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_kd, full_ks, full_d, full_bump);
 					matMap[mat_name] = m;
 				}
 
