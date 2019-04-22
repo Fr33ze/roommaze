@@ -1,8 +1,13 @@
 #include "Material.h"
 
-Material::Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathAlphaTextureMap, std::string pathNormalTextureMap)
+Material::Material(glm::vec3 ambientColor, glm::vec3 diffuseColor, glm::vec3 specularColor, float shininess, float alpha, std::string pathAmbientTextureMap, std::string pathDiffuseTextureMap, std::string pathSpecularTextureMap, std::string pathAlphaTextureMap, std::string pathNormalTextureMap)
 	: ambientColor(ambientColor), diffuseColor(diffuseColor), specularColor(specularColor), shininess(shininess), alpha(alpha) {
 	
+	if (!pathAmbientTextureMap.empty()) {
+		hasAmbientTextureMap = true;
+		initTexture(pathAmbientTextureMap, ambientTextureMapHandle);
+	}
+
 	if (!pathDiffuseTextureMap.empty()) {
 		hasDiffuseTextureMap = true;
 		initTexture(pathDiffuseTextureMap, diffuseTextureMapHandle);
@@ -68,20 +73,30 @@ void Material::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("material.shininess", shininess);
 	shader->setUniform("material.alpha", alpha);
 
-	if (hasDiffuseTextureMap) {
+	if (hasAmbientTextureMap) {
 		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, ambientTextureMapHandle);
+		shader->setUniform("material.hasAmbientTextureMap", true);
+		shader->setUniform("material.ambientTextureMapUnit", 0);
+	}
+	else {
+		shader->setUniform("material.hasAmbientTextureMap", false);
+	}
+
+	if (hasDiffuseTextureMap) {
+		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, diffuseTextureMapHandle);
 		shader->setUniform("material.hasDiffuseTextureMap", true);
-		shader->setUniform("material.diffuseTextureMapUnit", 0);
+		shader->setUniform("material.diffuseTextureMapUnit", 1);
 	} else {
 		shader->setUniform("material.hasDiffuseTextureMap", false);
 	}
 
 	if (hasSpecularTextureMap) {
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, specularTextureMapHandle);
 		shader->setUniform("material.hasSpecularTextureMap", true);
-		shader->setUniform("material.specularTextureMapUnit", 1);
+		shader->setUniform("material.specularTextureMapUnit", 2);
 	} else {
 		shader->setUniform("material.hasSpecularTextureMap", false);
 	}
@@ -96,19 +111,19 @@ void Material::setUniforms(std::shared_ptr<Shader> shader) {
 	}
 
 	if (hasAlphaTextureMap) {
-		glActiveTexture(GL_TEXTURE2);
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, alphaTextureMapHandle);
 		shader->setUniform("material.hasAlphaTextureMap", true);
-		shader->setUniform("material.alphaTextureMapUnit", 2);
+		shader->setUniform("material.alphaTextureMapUnit", 3);
 	} else {
 		shader->setUniform("material.hasAlphaTextureMap", false);
 	}
 
 	if (hasNormalTextureMap) {
-		glActiveTexture(GL_TEXTURE3);
+		glActiveTexture(GL_TEXTURE4);
 		glBindTexture(GL_TEXTURE_2D, normalTextureMapHandle);
 		shader->setUniform("material.hasNormalTextureMap", true);
-		shader->setUniform("material.normalTextureMapUnit", 3);
+		shader->setUniform("material.normalTextureMapUnit", 4);
 	} else {
 		shader->setUniform("material.hasNormalTextureMap", false);
 	}

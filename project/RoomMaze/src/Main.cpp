@@ -189,7 +189,7 @@ void init() {
 
 	// camera
 	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float) settings.width / (float) settings.height);
-	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.4f));
+	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
 	/* ------------- */
 	// LOAD OBJECTS
@@ -199,13 +199,13 @@ void init() {
 
 	std::vector<Geometry> shelfGeometry = OBJReader::ReadObject("assets/objects/shelf/shelf.obj", shader);
 	for (unsigned int i = 0; i < shelfGeometry.size(); i++) {
-		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.1f, 0.0f, 2.6f)));
+		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.4f)));
 	}
 	geometries.push_back(shelfGeometry);
 
 	std::vector<Geometry> cubeGeometry = OBJReader::ReadObject("assets/objects/cube/cube.obj", shader);
 	for (unsigned int i = 0; i < cubeGeometry.size(); i++) {
-		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 8.0f)));
+		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.5f)));
 	}
 	geometries.push_back(cubeGeometry);
 }
