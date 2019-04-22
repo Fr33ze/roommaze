@@ -8,6 +8,7 @@ Ks 1 1 1
 map_Ks beton2_specular.jpg
 Ns 50
 illum 7
+map_Bump beton2_normal.jpg
 
 newmtl beton1
 Ka 1 1 1
@@ -17,4 +18,5 @@ Ks 1 1 1
 map_Ks beton1_specular.jpg
 Ns 50
 illum 7
+map_Bump beton1_normal.jpg
 

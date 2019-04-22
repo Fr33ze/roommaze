@@ -61,16 +61,17 @@ uniform Camera camera;
 uniform Material material;
 
 uniform DirectionalLight directionalLights[10];
-uniform uint amountOfDirectionalLights;
+uniform int amountOfDirectionalLights;
 uniform PointLight pointLights[10];
-uniform uint amountOfPointLights;
+uniform int amountOfPointLights;
 uniform SpotLight spotLights[10];
-uniform uint amountOfSpotLights;
+uniform int amountOfSpotLights;
 
 in VertexData {
 	vec3 positionWorld;
 	vec3 normal;
 	vec2 UVCoords;
+	mat3 TBN;
 } vertexData;
 
 out vec4 color;
@@ -79,10 +80,10 @@ out vec4 color;
 // PROTOTYPES
 /* ----------- */
 
-vec3 calculateDirectionalLight(int i);
-vec3 calculatePointLight(int i);
-vec3 calculateSpotLight(int i);
-vec3 calculateCameraLight();
+vec3 calculateDirectionalLight(int i, vec3 normalizedNormal);
+vec3 calculatePointLight(int i, vec3 normalizedNormal);
+vec3 calculateSpotLight(int i, vec3 normalizedNormal);
+vec3 calculateCameraLight(vec3 normalizedNormal);
 
 /* ----- */
 // MAIN
@@ -95,32 +96,45 @@ void main() {
 	vec3 ambientIntensity = vec3(0.01, 0.01, 0.01);
 	vec3 ambientLight = ambientIntensity * (material.hasDiffuseTextureMap ? material.ambientColor * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor);
 
+	// NORMAL VECTOR
+	// =============
+	vec3 normalizedNormal;
+	if (material.hasNormalTextureMap) {
+		// obtain normal from normal map in range [0,1]
+		vec3 normalMapNormal = texture(material.normalTextureMapUnit, vertexData.UVCoords).rgb;
+		// transform normal vector to range [-1,1]
+		normalizedNormal = normalize(normalMapNormal * 2.0 - 1.0);
+		// transform normal vector from tangent space to world space
+		//normalizedNormal = normalize(vertexData.TBN * normalizedNormal);
+	} else {
+		normalizedNormal = normalize(vertexData.normal);
+	}
+
 	// LIGHT & COLOR
 	// =============
 	vec3 directionalLight = vec3(0.0, 0.0, 0.0);
 	for (int i = 0; i < amountOfDirectionalLights; i++)
-		directionalLight += calculateDirectionalLight(i);
+		directionalLight += calculateDirectionalLight(i, normalizedNormal);
 
 	vec3 pointLight = vec3(0.0, 0.0, 0.0);
 	for (int i = 0; i < amountOfPointLights; i++)
-		pointLight += calculatePointLight(i);
+		pointLight += calculatePointLight(i, normalizedNormal);
 
 	vec3 spotLight = vec3(0.0, 0.0, 0.0);
 	for (int i = 0; i < amountOfSpotLights; i++)
-		spotLight += calculateSpotLight(i);
+		spotLight += calculateSpotLight(i, normalizedNormal);
 
-	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight();
+	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight(normalizedNormal);
 	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).a : material.alpha;
 	if (alphaChannel < 0.1)
 		discard;
 	color = vec4(light, alphaChannel);
 }
 
-vec3 calculateDirectionalLight(int i) {
+vec3 calculateDirectionalLight(int i, vec3 normalizedNormal) {
 
 	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
 	// =========================================================================
-	vec3 normalizedNormal = normalize(vertexData.normal);
 	vec3 normalizedLightDirection = normalize(-directionalLights[i].direction);
 
 	vec3 diffuseLight = directionalLights[i].color * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
@@ -133,9 +147,8 @@ vec3 calculateDirectionalLight(int i) {
 	// phong model
 	//vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
-
 	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
 	vec3 specularLight = directionalLights[i].color * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// TEXTURING
@@ -143,11 +156,10 @@ vec3 calculateDirectionalLight(int i) {
 	return (material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight);
 }
 
-vec3 calculatePointLight(int i) {
+vec3 calculatePointLight(int i, vec3 normalizedNormal) {
 
 	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
 	// =========================================================================
-	vec3 normalizedNormal = normalize(vertexData.normal);
 	vec3 normalizedLightDirection = normalize(pointLights[i].position - vertexData.positionWorld);
 
 	vec3 diffuseLight = pointLights[i].color * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
@@ -160,9 +172,8 @@ vec3 calculatePointLight(int i) {
 	// phong model
 	//vec3 specularLight = pointLights[i].color * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
-
 	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
 	vec3 specularLight = pointLights[i].color * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
@@ -175,11 +186,10 @@ vec3 calculatePointLight(int i) {
 	return attenuation * ((material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight));
 }
 
-vec3 calculateSpotLight(int i) {
+vec3 calculateSpotLight(int i, vec3 normalizedNormal) {
 		
 	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
 	// =========================================================================
-	vec3 normalizedNormal = normalize(vertexData.normal);
 	vec3 normalizedLightDirection = normalize(spotLights[i].position - vertexData.positionWorld);
 
 	vec3 diffuseLight = spotLights[i].intensity * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
@@ -192,9 +202,8 @@ vec3 calculateSpotLight(int i) {
 	// phong model
 	//vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
-
 	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
 	vec3 specularLight = spotLights[i].intensity * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
@@ -213,10 +222,9 @@ vec3 calculateSpotLight(int i) {
 	return coneIntensity * attenuation * ((material.hasDiffuseTextureMap ? diffuseLight * texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : diffuseLight) + (material.hasSpecularTextureMap ? specularLight * texture(material.specularTextureMapUnit, vertexData.UVCoords).r : specularLight));
 }
 
-vec3 calculateCameraLight() {
+vec3 calculateCameraLight(vec3 normalizedNormal) {
 	// DIFFUSE LIGHT (lightIntensity x diffuseColor x (normal x lightDirection))
 	// =========================================================================
-	vec3 normalizedNormal = normalize(vertexData.normal);
 	vec3 normalizedLightDirection = normalize(camera.position - vertexData.positionWorld);
 
 	vec3 diffuseLight = camera.intensity * material.diffuseColor * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
@@ -229,9 +237,8 @@ vec3 calculateCameraLight() {
 	// phong model
 	//vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
 
-	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
-
 	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
+	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
 	vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
 
 	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))

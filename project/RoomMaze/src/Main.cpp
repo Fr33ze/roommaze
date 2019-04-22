@@ -204,6 +204,12 @@ void init() {
 		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.1f, 0.0f, 2.6f)));
 	}
 	geometries.push_back(shelfGeometry);
+
+	std::vector<Geometry> cubeGeometry = OBJReader::ReadObject("assets/objects/cube/cube.obj", shader);
+	for (unsigned int i = 0; i < cubeGeometry.size(); i++) {
+		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-0.6f, 0.0f, 8.0f)));
+	}
+	geometries.push_back(cubeGeometry);
 }
 
 void update(float deltaT) {
