@@ -120,21 +120,36 @@ void Shader::unuse() {
 }
 
 void Shader::setUniform(std::string uniform, int value) {
-	glUniform1i(glGetUniformLocation(program, uniform.c_str()), value);
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	glUniform1i(uniformLocations.at(uniform), value);
 }
 
 void Shader::setUniform(std::string uniform, unsigned int value) {
-	glUniform1ui(glGetUniformLocation(program, uniform.c_str()), value);
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	glUniform1ui(uniformLocations.at(uniform), value);
 }
 
 void Shader::setUniform(std::string uniform, float value) {
-	glUniform1f(glGetUniformLocation(program, uniform.c_str()), value);
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	glUniform1f(uniformLocations.at(uniform), value);
 }
 
 void Shader::setUniform(std::string uniform, glm::vec3 value) {
-	glUniform3fv(glGetUniformLocation(program, uniform.c_str()), 1, glm::value_ptr(value));
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	glUniform3fv(uniformLocations.at(uniform), 1, glm::value_ptr(value));
 }
 
 void Shader::setUniform(std::string uniform, glm::mat4 value) {
-	glUniformMatrix4fv(glGetUniformLocation(program, uniform.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	glUniformMatrix4fv(uniformLocations.at(uniform), 1, GL_FALSE, glm::value_ptr(value));
 }

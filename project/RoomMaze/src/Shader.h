@@ -16,6 +16,9 @@ protected:
 	// the shader's program handle
 	GLuint program;
 
+	// Stores the shader's uniform loactions.
+	std::unordered_map<std::string, GLint> uniformLocations;
+
 	/**
 	 * Loads and compiles the shader.
 	 *

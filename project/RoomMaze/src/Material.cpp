@@ -86,6 +86,15 @@ void Material::setUniforms(std::shared_ptr<Shader> shader) {
 		shader->setUniform("material.hasSpecularTextureMap", false);
 	}
 
+	if (alpha > 0.0f || hasAlphaTextureMap) {
+		glDisable(GL_CULL_FACE); // FACE CULLING = render only the front side of every face (disable for correct blending)
+		glEnable(GL_BLEND); // enable rendering semi-transparent materials
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
+	} else {
+		glEnable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+	}
+
 	if (hasAlphaTextureMap) {
 		glActiveTexture(GL_TEXTURE2);
 		glBindTexture(GL_TEXTURE_2D, alphaTextureMapHandle);

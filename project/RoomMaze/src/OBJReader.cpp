@@ -287,7 +287,7 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 		//iter->first is material_name
 		//iter->second are its faces
 
-		GeometryData gd;
+		Geometry::GeometryData gd;
 
 		//to reuse already created vertices for face construction
 		std::map<std::string, unsigned int> reuseVertexMap;
@@ -307,7 +307,7 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			//create vertices only if they do not exist (to save resources)
 			//always substract 1 from face[i] because indexing starts at 0 in c++
 			if (!reuseVertexMap.count(first)) {
-				gd.vertexPositions.push_back(positions[face[0] - 1]);
+				gd.vertices.push_back(positions[face[0] - 1]);
 				gd.UVCoords.push_back(uvs[face[1] - 1]);
 				gd.normals.push_back(normals[face[2] - 1]);
 				unsigned int index = gd.indices.size() - reuseCount;
@@ -320,7 +320,7 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 
 			if (!reuseVertexMap.count(second)) {
-				gd.vertexPositions.push_back(positions[face[3] - 1]);
+				gd.vertices.push_back(positions[face[3] - 1]);
 				gd.UVCoords.push_back(uvs[face[4] - 1]);
 				gd.normals.push_back(normals[face[5] - 1]);
 				unsigned int index = gd.indices.size() - reuseCount;
@@ -333,7 +333,7 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 
 			if (!reuseVertexMap.count(third)) {
-				gd.vertexPositions.push_back(positions[face[6] - 1]);
+				gd.vertices.push_back(positions[face[6] - 1]);
 				gd.UVCoords.push_back(uvs[face[7] - 1]);
 				gd.normals.push_back(normals[face[8] - 1]);
 				unsigned int index = gd.indices.size() - reuseCount;

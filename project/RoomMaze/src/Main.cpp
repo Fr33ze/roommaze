@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 	// Create a debug OpenGL context.
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 #endif
-	glfwWindowHint(GLFW_REFRESH_RATE, 60);
+	glfwWindowHint(GLFW_REFRESH_RATE, settings.refresh_rate);
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
@@ -89,6 +89,7 @@ int main(int argc, char **argv) {
 		getchar();
 		exit(-1);
 	}
+	glViewport(0, 0, settings.width, settings.width);
 
 	glfwMakeContextCurrent(window);
 
@@ -182,9 +183,6 @@ void init() {
 	// scene stuff
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE); // render only the front side of every face (DISABLE for correct blending)
-	glEnable(GL_BLEND); // enable rendering semi-transparent materials
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
 	// shader
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
@@ -207,7 +205,7 @@ void init() {
 
 	std::vector<Geometry> cubeGeometry = OBJReader::ReadObject("assets/objects/cube/cube.obj", shader);
 	for (unsigned int i = 0; i < cubeGeometry.size(); i++) {
-		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(-0.6f, 0.0f, 8.0f)));
+		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 8.0f)));
 	}
 	geometries.push_back(cubeGeometry);
 }
@@ -232,7 +230,7 @@ void cleanup() {
 	}
 }
 
-void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	// ESC = exit
 	// F = toggle nightvision on / off
 	// SPACE = insert new battery into the camera

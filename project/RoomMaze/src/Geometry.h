@@ -9,24 +9,17 @@
 #include "Camera.h"
 #include "Material.h"
 
-// stores all data for a geometry object
-struct GeometryData {
-	std::vector<glm::vec3> vertexPositions;
-	std::vector<glm::vec3> normals;
-	std::vector<unsigned int> indices;
-	std::vector<glm::vec2> UVCoords;
-};
-
 class Geometry {
 
 protected:
 
 	GLuint vao;
 
-	GLuint vboVertexPositions;
+	GLuint vboVertices;
 	GLuint vboNormals;
 	GLuint vboIndices;
 	GLuint vboUVCoords;
+	GLuint vboTangents;
 
 	// number of elements (faces) to be rendered
 	unsigned int elements;
@@ -42,11 +35,20 @@ protected:
 
 public:
 
+	// stores all data for a geometry object
+	struct GeometryData {
+		std::vector<glm::vec3> vertices;
+		std::vector<glm::vec3> normals;
+		std::vector<unsigned int> indices;
+		std::vector<glm::vec2> UVCoords;
+		std::vector<glm::vec3> tangents;
+	};
+
 	/**
 	 * CONSTRUCTOR
 	 * Creates VAO and VBOs and binds them.
 	 *
-	 * @param geometryData: geometryData for the object
+	 * @param geometryData: stores all data for a geometry object
 	 * @param modelMatrix: model matrix of the object
 	 * @param shader: shader used for rendering
 	 * @param material: material of the object
