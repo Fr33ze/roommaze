@@ -39,14 +39,7 @@ Geometry::Geometry(GeometryData &geometryData, glm::mat4 modelMatrix, std::share
 	glBindBuffer(GL_ARRAY_BUFFER, vboTangents);
 	glBufferData(GL_ARRAY_BUFFER, geometryData.tangents.size() * sizeof(glm::vec3), geometryData.tangents.data(), GL_STATIC_DRAW);
 	glEnableVertexAttribArray(3);
-	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-
-	// VBO for bitangents
-	glGenBuffers(1, &vboBitangents);
-	glBindBuffer(GL_ARRAY_BUFFER, vboBitangents);
-	glBufferData(GL_ARRAY_BUFFER, geometryData.bitangents.size() * sizeof(glm::vec3), geometryData.bitangents.data(), GL_STATIC_DRAW);
-	glEnableVertexAttribArray(4);
-	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
 	// unbind VAO
 	glBindVertexArray(0);
@@ -66,7 +59,6 @@ void Geometry::destroy() {
 	glDeleteBuffers(1, &vboIndices);
 	glDeleteBuffers(1, &vboUVCoords);
 	glDeleteBuffers(1, &vboTangents);
-	glDeleteBuffers(1, &vboBitangents);
 	glDeleteVertexArrays(1, &vao);
 }
 

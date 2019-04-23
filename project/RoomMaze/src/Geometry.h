@@ -20,7 +20,6 @@ protected:
 	GLuint vboIndices;
 	GLuint vboUVCoords;
 	GLuint vboTangents;
-	GLuint vboBitangents;
 
 	// number of elements (faces) to be rendered
 	unsigned int elements;
@@ -43,7 +42,6 @@ public:
 		std::vector<unsigned int> indices;
 		std::vector<glm::vec2> UVCoords;
 		std::vector<glm::vec3> tangents;
-		std::vector<glm::vec3> bitangents;
 	};
 
 	/**
