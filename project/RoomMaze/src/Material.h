@@ -36,7 +36,7 @@ protected:
 	// map_d
 	bool hasAlphaTextureMap = false;
 	GLuint alphaTextureMapHandle;
-	// map_n
+	// map_N
 	bool hasNormalTextureMap = false;
 	GLuint normalTextureMapHandle;
 
