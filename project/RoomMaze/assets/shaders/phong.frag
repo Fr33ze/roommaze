@@ -107,7 +107,7 @@ void main() {
 		// transform normal vector to range [-1,1]
 		normalizedNormal = normalize(normalMapNormal * 2.0 - 1.0);
 		// transform normal vector from tangent space to world space
-		//normalizedNormal = normalize(vertexData.TBN * normalizedNormal);
+		normalizedNormal = normalize(vertexData.TBN * normalizedNormal);
 	} else {
 		normalizedNormal = normalize(vertexData.normal);
 	}

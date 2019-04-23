@@ -11,7 +11,7 @@ protected:
 	/*!
 	 * Reads from the specified .mtl file (filename) and returns all materials
 	 */
-	static std::map<std::string, std::shared_ptr<Material>> ReadMaterials(const char *path, const char *filename);
+	static std::unordered_map<std::string, std::shared_ptr<Material>> ReadMaterials(const char *path, const char *filename);
 	/*!
 	 * Returns the directory path of a full filename
 	 */

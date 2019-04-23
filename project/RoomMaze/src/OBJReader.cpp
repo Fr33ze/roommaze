@@ -1,6 +1,6 @@
 #include "OBJReader.h"
 
-std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const char *path, const char *filename) {
+std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const char *path, const char *filename) {
 	FILE *mtlfile;
 	std::string fullpath = std::string(path);
 	fullpath += filename;
@@ -12,7 +12,7 @@ std::map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const 
 		exit(-1);
 	}
 	//define temporary map
-	std::map<std::string, std::shared_ptr<Material>> matMap;
+	std::unordered_map<std::string, std::shared_ptr<Material>> matMap;
 	//define and assign default values for material
 	glm::vec3 ka = glm::vec3(0.2f, 0.2f, 0.2f);
 	glm::vec3 kd = glm::vec3(0.8f, 0.8f, 0.8f);;
@@ -184,8 +184,8 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec3> normals;
 	std::vector<glm::vec2> uvs;
-	std::map<std::string, std::shared_ptr<Material>> materialNameMap;
-	std::map<std::string, std::vector<std::vector<unsigned int>>> materialFaceMap;
+	std::unordered_map<std::string, std::shared_ptr<Material>> materialNameMap;
+	std::unordered_map<std::string, std::vector<std::vector<unsigned int>>> materialFaceMap;
 	std::string currentMaterial;
 	std::vector<std::vector<unsigned int>> currentFaces = {};
 
@@ -218,8 +218,8 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 				fscanf_s(objfile, "%f %f\n", &uv.x, &uv.y);
 
 				//Note: OpenGL texture are loaded left to right, bottom to top.
-				uv.x = 1 - uv.x;
-				uv.y = 1 - uv.y;
+				//uv.x = 1 - uv.x;
+				//uv.y = 1 - uv.y;
 				uvs.push_back(uv);
 			}
 			//normals
@@ -283,26 +283,38 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 	}
 	//Geometry split up by materials
 	std::vector<Geometry> allGeometries;
-	for (std::map<std::string, std::vector<std::vector<unsigned int>>>::iterator iter = materialFaceMap.begin(); iter != materialFaceMap.end(); iter++) {
+	for (std::unordered_map<std::string, std::vector<std::vector<unsigned int>>>::iterator iter = materialFaceMap.begin(); iter != materialFaceMap.end(); iter++) {
 		//iter->first is material_name
 		//iter->second are its faces
 
 		Geometry::GeometryData gd;
 
 		//to reuse already created vertices for face construction
-		std::map<std::string, unsigned int> reuseVertexMap;
+		std::unordered_map<std::string, unsigned int> reuseVertexMap;
 		unsigned int reuseCount = 0;
 
 		for (std::vector<unsigned int> &face : iter->second) {
-			std::string first = std::to_string(face[0]);
-			first += face[1];
-			first += face[2];
-			std::string second = std::to_string(face[3]);
-			second += face[4];
-			second += face[5];
-			std::string third = std::to_string(face[6]);
-			third += face[7];
-			third += face[8];
+			std::string first = std::to_string(face[0]) + std::to_string(face[1]) + std::to_string(face[2]);
+			std::string second = std::to_string(face[3]) + std::to_string(face[4]) + std::to_string(face[5]);
+			std::string third = std::to_string(face[6]) + std::to_string(face[7]) + std::to_string(face[8]);
+
+			//TO-DO: Calculate tangent for this face
+			glm::vec3 & v0 = positions[face[0] - 1];
+			glm::vec3 & v1 = positions[face[3] - 1];
+			glm::vec3 & v2 = positions[face[6] - 1];
+
+			glm::vec2 & uv0 = uvs[face[1] - 1];
+			glm::vec2 & uv1 = uvs[face[4] - 1];
+			glm::vec2 & uv2 = uvs[face[7] - 1];
+
+			glm::vec3 deltaPos1 = v1 - v0;
+			glm::vec3 deltaPos2 = v2 - v0;
+
+			glm::vec2 deltaUV1 = uv1 - uv0;
+			glm::vec2 deltaUV2 = uv2 - uv0;
+
+			float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+			glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
 
 			//create vertices only if they do not exist (to save resources)
 			//always substract 1 from face[i] because indexing starts at 0 in c++
@@ -310,12 +322,15 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 				gd.vertices.push_back(positions[face[0] - 1]);
 				gd.UVCoords.push_back(uvs[face[1] - 1]);
 				gd.normals.push_back(normals[face[2] - 1]);
+				gd.tangents.push_back(tangent);
 				unsigned int index = gd.indices.size() - reuseCount;
 				reuseVertexMap[first] = index;
 				gd.indices.push_back(index);
 			}
 			else {
 				gd.indices.push_back(reuseVertexMap[first]);
+				//TO-DO: Average calculated tangent and reused tangent
+				gd.tangents[reuseVertexMap[first]] += tangent;
 				reuseCount++;
 			}
 
@@ -323,12 +338,15 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 				gd.vertices.push_back(positions[face[3] - 1]);
 				gd.UVCoords.push_back(uvs[face[4] - 1]);
 				gd.normals.push_back(normals[face[5] - 1]);
+				gd.tangents.push_back(tangent);
 				unsigned int index = gd.indices.size() - reuseCount;
 				reuseVertexMap[second] = index;
 				gd.indices.push_back(index);
 			}
 			else {
 				gd.indices.push_back(reuseVertexMap[second]);
+				//TO-DO: Average calculated tangent and reused tangent
+				gd.tangents[reuseVertexMap[second]] += tangent;
 				reuseCount++;
 			}
 
@@ -336,12 +354,15 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 				gd.vertices.push_back(positions[face[6] - 1]);
 				gd.UVCoords.push_back(uvs[face[7] - 1]);
 				gd.normals.push_back(normals[face[8] - 1]);
+				gd.tangents.push_back(tangent);
 				unsigned int index = gd.indices.size() - reuseCount;
 				reuseVertexMap[third] = index;
 				gd.indices.push_back(index);
 			}
 			else {
 				gd.indices.push_back(reuseVertexMap[third]);
+				//TO-DO: Average calculated tangent and reused tangent
+				gd.tangents[reuseVertexMap[third]] += tangent;
 				reuseCount++;
 			}
 		}
