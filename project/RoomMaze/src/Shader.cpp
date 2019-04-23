@@ -126,13 +126,6 @@ void Shader::setUniform(std::string uniform, int value) {
 	glUniform1i(uniformLocations.at(uniform), value);
 }
 
-void Shader::setUniform(std::string uniform, unsigned int value) {
-	if (uniformLocations.find(uniform) == uniformLocations.end()) {
-		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
-	}
-	glUniform1ui(uniformLocations.at(uniform), value);
-}
-
 void Shader::setUniform(std::string uniform, float value) {
 	if (uniformLocations.find(uniform) == uniformLocations.end()) {
 		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });

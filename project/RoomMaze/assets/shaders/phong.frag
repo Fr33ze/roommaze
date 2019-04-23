@@ -95,7 +95,7 @@ void main() {
 
 	// AMBIENT LIGHT (ambientIntensity x (ambientColor || (ambientTextureMap || diffuseTextureMap)))
 	// =============================================================================================
-	vec3 ambientIntensity = vec3(0.01, 0.01, 0.01);
+	vec3 ambientIntensity = vec3(0.01);
 	vec3 ambientLight = ambientIntensity * (material.hasAmbientTextureMap ? texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb : (material.hasDiffuseTextureMap ? texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor));
 
 	// NORMAL VECTOR

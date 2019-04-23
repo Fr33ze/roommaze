@@ -1,4 +1,5 @@
 #include "Geometry.h"
+#include "LightCollection.h"
 
 Geometry::Geometry(GeometryData &geometryData, glm::mat4 modelMatrix, std::shared_ptr<Shader> shader, std::shared_ptr<Material> material)
 	: elements(geometryData.indices.size()), modelMatrix(modelMatrix), shader(shader), material(material) {

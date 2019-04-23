@@ -70,14 +70,6 @@ public:
 	void setUniform(std::string uniform, int value);
 
 	/**
-	 * Sets an unsigned integer uniform in the shader.
-	 *
-	 * @param uniform: the name of the uniform
-	 * @param value: the value to be set
-	 */
-	void setUniform(std::string uniform, unsigned int value);
-
-	/**
 	 * Sets a float uniform in the shader.
 	 *
 	 * @param uniform: the name of the uniform
