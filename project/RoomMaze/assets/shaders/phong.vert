@@ -12,6 +12,7 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 UVCoords;
 layout(location = 3) in vec3 tangent;
+layout(location = 4) in vec3 bitangent;
 
 out VertexData {
 	vec3 positionWorld;
@@ -45,6 +46,7 @@ void main() {
 	vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0)));
 	// re-orthogonalize T with respect to N (Gram-Schmidt process)
 	T = normalize(T - dot(T, N) * N);
-	vec3 B = normalize(cross(N, T));
+	//vec3 B = normalize(cross(N, T));
+	vec3 B = normalize(vec3(modelMatrix * vec4(bitangent, 0)));
 	vertexData.TBN = mat3(T, B, N);
 }
