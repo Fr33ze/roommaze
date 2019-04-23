@@ -8,5 +8,5 @@ Ks 1 1 1
 map_Ks metal_specular.jpg
 Ns 50
 illum 7
-map_Bump metal_normal.jpg
+map_N metal_normal.jpg
 

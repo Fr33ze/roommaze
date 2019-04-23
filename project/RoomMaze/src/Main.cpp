@@ -195,15 +195,15 @@ void init() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	geometries.push_back(OBJReader::ReadObject("assets/objects/staircase/staircase.obj", shader));
+	geometries.push_back(OBJReader::readObject("assets/objects/staircase/staircase.obj", shader));
 
-	std::vector<Geometry> shelfGeometry = OBJReader::ReadObject("assets/objects/shelf/shelf.obj", shader);
+	std::vector<Geometry> shelfGeometry = OBJReader::readObject("assets/objects/shelf/shelf.obj", shader);
 	for (unsigned int i = 0; i < shelfGeometry.size(); i++) {
 		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.4f)));
 	}
 	geometries.push_back(shelfGeometry);
 
-	std::vector<Geometry> cubeGeometry = OBJReader::ReadObject("assets/objects/cube/cube.obj", shader);
+	std::vector<Geometry> cubeGeometry = OBJReader::readObject("assets/objects/cube/cube.obj", shader);
 	for (unsigned int i = 0; i < cubeGeometry.size(); i++) {
 		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.5f)));
 	}

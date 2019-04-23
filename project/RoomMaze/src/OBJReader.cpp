@@ -1,6 +1,6 @@
 #include "OBJReader.h"
 
-std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMaterials(const char *path, const char *filename) {
+std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::readMaterials(const char *path, const char *filename) {
 	FILE *mtlfile;
 	std::string fullpath = std::string(path);
 	fullpath += filename;
@@ -22,13 +22,13 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMateri
 	char map_ka[256];
 	char map_kd[256];
 	char map_ks[256];
-	char map_bump[256];
+	char map_n[256];
 	char map_d[256];
 	char mat_name[256];
 	map_ka[0] = 0;
 	map_kd[0] = 0;
 	map_ks[0] = 0;
-	map_bump[0] = 0;
+	map_n[0] = 0;
 	mat_name[0] = 0;
 
 	//start reading .mtl file line by line
@@ -52,17 +52,17 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMateri
 				full_ks.clear();
 			else
 				full_ks += map_ks;
-			std::string full_bump = std::string(path);
-			if (map_bump[0] == 0)
-				full_bump.clear();
+			std::string full_n = std::string(path);
+			if (map_n[0] == 0)
+				full_n.clear();
 			else
-				full_bump += map_bump;
+				full_n += map_n;
 			std::string full_d = std::string(path);
 			if (map_d[0] == 0)
 				full_d.clear();
 			else
 				full_d += map_d;
-			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_bump);
+			std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_n);
 			matMap[mat_name] = m;
 			break;
 		}
@@ -105,8 +105,8 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMateri
 			else if (strcmp(lineheader, "map_Ks") == 0) {
 				fscanf_s(mtlfile, "%s\n", &map_ks, 256);
 			}
-			else if (strcmp(lineheader, "map_Bump") == 0) {
-				fscanf_s(mtlfile, "%s\n", &map_bump, 256);
+			else if (strcmp(lineheader, "map_N") == 0) {
+				fscanf_s(mtlfile, "%s\n", &map_n, 256);
 			}
 			else if (strcmp(lineheader, "map_d") == 0) {
 				fscanf_s(mtlfile, "%s\n", &map_d, 256);
@@ -129,17 +129,17 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMateri
 						full_ks.clear();
 					else
 						full_ks += map_ks;
-					std::string full_bump = std::string(path);
-					if (map_bump[0] == 0)
-						full_bump.clear();
+					std::string full_n = std::string(path);
+					if (map_n[0] == 0)
+						full_n.clear();
 					else
-						full_bump += map_bump;
+						full_n += map_n;
 					std::string full_d = std::string(path);
 					if (map_d[0] == 0)
 						full_d.clear();
 					else
 						full_d += map_d;
-					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_bump);
+					std::shared_ptr<Material> m = std::make_shared<Material>(ka, kd, ks, shininess, alpha, full_ka, full_kd, full_ks, full_d, full_n);
 					matMap[mat_name] = m;
 				}
 
@@ -152,7 +152,7 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMateri
 				memset(map_ka, 0, sizeof(map_ka));
 				memset(map_kd, 0, sizeof(map_kd));
 				memset(map_ks, 0, sizeof(map_ks));
-				memset(map_bump, 0, sizeof(map_bump));
+				memset(map_n, 0, sizeof(map_n));
 				memset(map_d, 0, sizeof(map_d));
 				memset(mat_name, 0, sizeof(mat_name));
 
@@ -163,13 +163,13 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::ReadMateri
 	return matMap;
 }
 
-std::string OBJReader::SplitFilename(const std::string filename)
+std::string OBJReader::splitFilename(const std::string filename)
 {
 	size_t found = filename.find_last_of("/\\");
 	return filename.substr(0, found + 1);
 }
 
-std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_ptr<Shader> shader)
+std::vector<Geometry> OBJReader::readObject(const char * filename, std::shared_ptr<Shader> shader)
 {
 	FILE *objfile;
 	errno_t err = fopen_s(&objfile, filename, "r");
@@ -277,7 +277,7 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			else if (strcmp(lineheader, "mtllib") == 0) {
 				char mtllib[256];
 				fscanf_s(objfile, "%s\n", &mtllib, 256);
-				materialNameMap = ReadMaterials(SplitFilename(filename).c_str(), mtllib);
+				materialNameMap = readMaterials(splitFilename(filename).c_str(), mtllib);
 			}
 		}
 	}
@@ -298,7 +298,7 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			std::string second = std::to_string(face[3]) + std::to_string(face[4]) + std::to_string(face[5]);
 			std::string third = std::to_string(face[6]) + std::to_string(face[7]) + std::to_string(face[8]);
 
-			//TO-DO: Calculate tangent for this face
+			//Calculate tangents for this face
 			glm::vec3 & v0 = positions[face[0] - 1];
 			glm::vec3 & v1 = positions[face[3] - 1];
 			glm::vec3 & v2 = positions[face[6] - 1];
@@ -329,7 +329,6 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 			else {
 				gd.indices.push_back(reuseVertexMap[first]);
-				//TO-DO: Average calculated tangent and reused tangent
 				gd.tangents[reuseVertexMap[first]] += tangent;
 				reuseCount++;
 			}
@@ -345,7 +344,6 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 			else {
 				gd.indices.push_back(reuseVertexMap[second]);
-				//TO-DO: Average calculated tangent and reused tangent
 				gd.tangents[reuseVertexMap[second]] += tangent;
 				reuseCount++;
 			}
@@ -361,7 +359,6 @@ std::vector<Geometry> OBJReader::ReadObject(const char * filename, std::shared_p
 			}
 			else {
 				gd.indices.push_back(reuseVertexMap[third]);
-				//TO-DO: Average calculated tangent and reused tangent
 				gd.tangents[reuseVertexMap[third]] += tangent;
 				reuseCount++;
 			}
