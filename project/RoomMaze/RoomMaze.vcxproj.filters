@@ -69,4 +69,11 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="assets\redist\PhysX_32.dll" />
+    <None Include="assets\redist\PhysXCommon_32.dll" />
+    <None Include="assets\redist\PhysXCooking_32.dll" />
+    <None Include="assets\redist\PhysXFoundation_32.dll" />
+    <None Include="assets\redist\PhysXGpu_32.dll" />
+  </ItemGroup>
 </Project>
