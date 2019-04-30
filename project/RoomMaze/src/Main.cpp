@@ -1,6 +1,8 @@
 #include <iostream>
 #include <sstream>
 
+#include <physx\PxPhysicsAPI.h>
+
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,7 +10,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Material.h"
-#include "Geometry.h"
+#include "Object3D.h"
 #include "OBJReader.h"
 #include "INIReader.h"
 
@@ -45,8 +47,17 @@ bool firstMouse = true;
 // time between current frame and last frame
 float deltaTime;
 
-// geometry objects
-std::vector<std::vector<Geometry>> geometries;
+// 3d objects to render
+std::vector<Object3D*> renderObjects;
+
+// physX
+static physx::PxDefaultErrorCallback gErrorCallback;
+static physx::PxDefaultAllocator gAllocatorCallback;
+physx::PxFoundation *mFoundation;
+physx::PxPhysics *mPhysics;
+physx::PxPvd *mPvd;
+physx::PxCooking *mCooking;
+
 
 /* ----- */
 // MAIN
@@ -55,6 +66,7 @@ std::vector<std::vector<Geometry>> geometries;
 int main(int argc, char **argv) {
 	// read settings.ini file
 	settings = INIReader::ReadSettings();
+
 
 	/* ------------------------- */
 	// SETTING UP OPENGL WINDOW
@@ -101,6 +113,7 @@ int main(int argc, char **argv) {
 		getchar();
 		exit(-1);
 	}
+
 
 	/* ---------------------------- */
 	// REGISTER CALLBACK FUNCTIONS
@@ -191,23 +204,63 @@ void init() {
 	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float) settings.width / (float) settings.height);
 	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
+
+	/* --------------- */
+	// PHYSX INIT
+	/* --------------- */
+
+	gErrorCallback = physx::PxDefaultErrorCallback();
+	gAllocatorCallback = physx::PxDefaultAllocator();
+
+	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocatorCallback, gErrorCallback);
+	if (!mFoundation) {
+		std::cout << "PxCreateFoundation failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	/* PHYSX VISUAL DEBUGGER (physx extension needed) */
+	/*bool recordMemoryAllocations = true;
+	mPvd = PxCreatePvd(*mFoundation);
+	physx::PxPvdTransport *transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);*/
+
+	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale());
+	if (!mPhysics) {
+		std::cout << "PxCreatePhysics failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	mCooking = PxCreateCooking(PX_PHYSICS_VERSION, *mFoundation, physx::PxCookingParams(mPhysics->getTolerancesScale()));
+	if (!mCooking) {
+		std::cout << "PxCreateCooking failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	/* PHYSX INITIALIZE EXTENSIONS (only needed for PVD???)*/
+	/*if (!PxInitExtensions(*mPhysics, mPvd)) {
+		std::cout << "PxInitExtensions failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}*/
+
+
 	/* ------------- */
 	// LOAD OBJECTS
 	/* ------------- */
 
-	geometries.push_back(OBJReader::readObject("assets/objects/staircase/staircase.obj", shader));
+	renderObjects.push_back(new Object3D("assets/objects/staircase/staircase.obj", shader));
 
-	std::vector<Geometry> shelfGeometry = OBJReader::readObject("assets/objects/shelf/shelf.obj", shader);
-	for (unsigned int i = 0; i < shelfGeometry.size(); i++) {
-		shelfGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.4f)));
-	}
-	geometries.push_back(shelfGeometry);
+	renderObjects.push_back(new Object3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.4f))));
 
-	std::vector<Geometry> cubeGeometry = OBJReader::readObject("assets/objects/cube/cube.obj", shader);
-	for (unsigned int i = 0; i < cubeGeometry.size(); i++) {
-		cubeGeometry.at(i).transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.5f)));
-	}
-	geometries.push_back(cubeGeometry);
+	renderObjects.push_back(new Object3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.5f))));
+	
 }
 
 void update(float deltaT) {
@@ -215,18 +268,14 @@ void update(float deltaT) {
 }
 
 void draw() {
-	for (unsigned int i = 0; i < geometries.size(); i++) {
-		for (unsigned int j = 0; j < geometries.at(i).size(); j++) {
-			geometries.at(i).at(j).setUniformsAndDraw(camera);
-		}
+	for (unsigned int i = 0; i < renderObjects.size(); i++) {
+		renderObjects.at(i)->draw(camera);
 	}
 }
 
 void cleanup() {
-	for (unsigned int i = 0; i < geometries.size(); i++) {
-		for (unsigned int j = 0; j < geometries.at(i).size(); j++) {
-			geometries.at(i).at(j).destroy();
-		}
+	for (unsigned int i = 0; i < renderObjects.size(); i++) {
+		renderObjects.at(i)->destroy();
 	}
 }
 

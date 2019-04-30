@@ -2,14 +2,14 @@
 
 #include <iostream>
 
-/*!
+/**
  * Initialization File (.ini) Reader
  */
 class INIReader
 {
 public:
-	/*!
-	 * Struct containing settings for the program
+	/**
+	 * contains settings for the application
 	 */
 	struct Settings {
 		unsigned int width;
@@ -18,13 +18,15 @@ public:
 		float field_of_view;
 		bool fullscreen;
 	};
-	/*!
+	/**
 	 * Reads from the settings.ini file and returns a Settings struct
 	 */
 	static Settings ReadSettings();
 protected:
-	/*!
+	/**
 	 * Vallidates the Settings struct if all important information has been set
+	 *
+	 * @param s: settings struct to be validated
 	 */
 	static bool ValidateSettings(Settings s);
 };

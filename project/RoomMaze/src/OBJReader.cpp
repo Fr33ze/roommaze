@@ -169,7 +169,7 @@ std::string OBJReader::splitFilename(const std::string filename)
 	return filename.substr(0, found + 1);
 }
 
-std::vector<Geometry> OBJReader::readObject(const char * filename, std::shared_ptr<Shader> shader)
+std::vector<Component3D> OBJReader::readObject(const char * filename)
 {
 	FILE *objfile;
 	errno_t err = fopen_s(&objfile, filename, "r");
@@ -282,12 +282,12 @@ std::vector<Geometry> OBJReader::readObject(const char * filename, std::shared_p
 		}
 	}
 	//Geometry split up by materials
-	std::vector<Geometry> allGeometries;
+	std::vector<Component3D> allGeometries;
 	for (std::unordered_map<std::string, std::vector<std::vector<unsigned int>>>::iterator iter = materialFaceMap.begin(); iter != materialFaceMap.end(); iter++) {
 		//iter->first is material_name
 		//iter->second are its faces
 
-		Geometry::GeometryData gd;
+		Component3D::GeometryData gd;
 
 		//to reuse already created vertices for face construction
 		std::unordered_map<std::string, unsigned int> reuseVertexMap;
@@ -363,7 +363,7 @@ std::vector<Geometry> OBJReader::readObject(const char * filename, std::shared_p
 				reuseCount++;
 			}
 		}
-		allGeometries.push_back(Geometry(gd, glm::mat4(1.0f), shader, materialNameMap[iter->first]));
+		allGeometries.push_back(Component3D(gd, materialNameMap[iter->first]));
 
 		//reset GeometryData gd and reuseVertexMap for next material
 		gd = {};

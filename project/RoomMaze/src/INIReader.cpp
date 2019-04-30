@@ -33,7 +33,9 @@ INIReader::Settings INIReader::ReadSettings()
 				fscanf_s(inifile, "=%f\n", &s.field_of_view);
 			}
 			else if (strcmp(lineheader, "fullscreen") == 0) {
-				fscanf_s(inifile, "=%d\n", &s.fullscreen);
+				unsigned int fullscreenvalue;
+				fscanf_s(inifile, "=%d\n", &fullscreenvalue);
+				fullscreenvalue ? s.fullscreen = true : s.fullscreen = false;
 			}
 		}
 	}
