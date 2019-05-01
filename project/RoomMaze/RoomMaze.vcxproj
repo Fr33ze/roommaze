@@ -86,7 +86,7 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT;MSVCRT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>echo D|xcopy /y $(SolutionDir)external\redist  $(OutDir)</Command>
+      <Command>(robocopy /s $(SolutionDir)external\redist $(OutDir)) ^&amp; IF %ERRORLEVEL% LEQ 3 exit 0</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
