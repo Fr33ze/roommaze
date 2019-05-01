@@ -86,7 +86,7 @@
       <IgnoreSpecificDefaultLibraries>LIBCMT;MSVCRT</IgnoreSpecificDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>echo D|xcopy /y $(ProjectDir)assets\redist  $(OutDir)</Command>
+      <Command>echo D|start xcopy /y /r $(ProjectDir)assets\redist  $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
