@@ -11,6 +11,8 @@
 #include "Camera.h"
 #include "Material.h"
 #include "Object3D.h"
+#include "Static3D.h"
+#include "Dynamic3D.h"
 #include "OBJReader.h"
 #include "INIReader.h"
 
@@ -51,12 +53,14 @@ float deltaTime;
 std::vector<Object3D*> renderObjects;
 
 // physX
-static physx::PxDefaultErrorCallback gErrorCallback;
-static physx::PxDefaultAllocator gAllocatorCallback;
+physx::PxDefaultErrorCallback gErrorCallback;
+physx::PxDefaultAllocator gAllocator;
+physx::PxDefaultCpuDispatcher *gDispatcher;
 physx::PxFoundation *mFoundation;
 physx::PxPhysics *mPhysics;
 physx::PxPvd *mPvd;
 physx::PxCooking *mCooking;
+physx::PxScene *pxScene;
 
 
 /* ----- */
@@ -176,6 +180,10 @@ int main(int argc, char **argv) {
 		draw();
 		glfwSwapBuffers(window);
 
+		// physx make simulation step
+		pxScene->simulate(1.0f / 60.0f);
+		pxScene->fetchResults(true);
+
 		// check for errors
 		if (glGetError() != GL_NO_ERROR)
 			std::cout << "GL ERROR DETECTED!!!" << std::endl;
@@ -210,9 +218,9 @@ void init() {
 	/* --------------- */
 
 	gErrorCallback = physx::PxDefaultErrorCallback();
-	gAllocatorCallback = physx::PxDefaultAllocator();
+	gAllocator = physx::PxDefaultAllocator();
 
-	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocatorCallback, gErrorCallback);
+	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
 	if (!mFoundation) {
 		std::cout << "PxCreateFoundation failed!" << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
@@ -226,7 +234,7 @@ void init() {
 	physx::PxPvdTransport *transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
 	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);*/
 
-	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale());
+	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true);
 	if (!mPhysics) {
 		std::cout << "PxCreatePhysics failed!" << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
@@ -250,17 +258,30 @@ void init() {
 		exit(-1);
 	}*/
 
+	physx::PxSceneDesc sceneDesc = physx::PxSceneDesc(mPhysics->getTolerancesScale());
+	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	gDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	sceneDesc.cpuDispatcher = gDispatcher;
+	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	pxScene = mPhysics->createScene(sceneDesc);
 
 	/* ------------- */
 	// LOAD OBJECTS
 	/* ------------- */
 
-	renderObjects.push_back(new Object3D("assets/objects/staircase/staircase.obj", shader));
+	//Construct a static (non moveable) cube with the given initial transformation
+	Static3D *ob = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 4.5f)));
+	renderObjects.push_back(ob);
 
-	renderObjects.push_back(new Object3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, 2.4f))));
+	//Copy the static cube in a dynamic object (it moves according to gravity) and give it a new initial transformation
+	Dynamic3D *ob2 = new Dynamic3D(*ob, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 4.5f)));
+	//Translate the dynamic cube
+	ob2->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f)));
+	renderObjects.push_back(ob2);
 
-	renderObjects.push_back(new Object3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 4.5f))));
-	
+	//Copy the static cube (new modelmatrix is the identity matrix)
+	Static3D *ob3 = new Static3D(*ob, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 3.5f)));
+	renderObjects.push_back(ob3);
 }
 
 void update(float deltaT) {

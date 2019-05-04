@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <glm\gtc\type_ptr.hpp>
+#include <physx\PxPhysicsAPI.h>
 
 class Shader {
 
@@ -92,5 +93,13 @@ public:
 	 * @param value: the value to be set
 	 */
 	void setUniform(std::string uniform, glm::mat4 value);
+
+	/**
+	 * Sets a 4x4 matrix uniform in the shader.
+	 *
+	 * @param uniform: the name of the uniform
+	 * @param value: the value to be set
+	 */
+	void setUniform(std::string uniform, physx::PxTransform value);
 
 };

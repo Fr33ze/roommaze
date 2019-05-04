@@ -71,7 +71,7 @@ Component3D::Component3D(GeometryData &geometryData, std::shared_ptr<Material> m
 	physx::PxTriangleMeshGeometry trigeom = physx::PxTriangleMeshGeometry(mPhysics->createTriangleMesh(readBuffer));
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5), physx::PxReal(0.5), physx::PxReal(0.7));
-	pxShape = mPhysics->createShape(trigeom, *mat, false);
+	pxShape = mPhysics->createShape(trigeom, *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
 }
 
 Component3D::~Component3D() {
@@ -93,4 +93,8 @@ void Component3D::draw(std::shared_ptr<Shader> shader) {
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, elements, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
+}
+
+void Component3D::attachTo(physx::PxRigidActor *actor) {
+	actor->attachShape(*pxShape);
 }

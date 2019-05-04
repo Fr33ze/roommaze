@@ -59,4 +59,11 @@ public:
 	 * @param shader: Shader used to render the component
 	 */
 	void draw(std::shared_ptr<Shader> shader);
+
+	/**
+	 * Attaches the shape of this component to the actor
+	 *
+	 * @param actor: PxActor to attach the shape onto
+	 */
+	void attachTo(physx::PxRigidActor *actor);
 };

@@ -6,15 +6,15 @@
 
 class Object3D
 {
+private:
+	// default constructor is private so it cant be used
+	Object3D();
 protected:
-	// static actor that never moves
-	physx::PxRigidStatic *pxActor;
+	// actor of the object
+	physx::PxRigidActor *pxActor;
 
 	// object consists of multiple components (one for each material)
 	std::vector<Component3D> components;
-
-	// model matrix of the object
-	glm::mat4 modelMatrix;
 
 	// shader used for rendering
 	std::shared_ptr<Shader> shader;
@@ -28,22 +28,22 @@ public:
 	 * @param modelMatrix: model matrix of the object
 	 */
 	Object3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
+
 	/**
-	 * CONSTRUCTOR
+	 * COPY CONSTRUCTOR
 	 * Duplicates the object. Reassigns its PxActor with a new instance of PxActor.
 	 *
 	 * @param o: object to copy
+	 * @param modelMatrix: modelMatrix of the new copy
 	 */
-	Object3D(const Object3D &o);
+	Object3D(const Object3D &o, glm::mat4 modelMatrix);
 	~Object3D();
 	/**
-	 * Transforms the object (updates the model matrix).
+	 * Draws the object and sets the needed Uniforms on the shader
 	 *
-	 * @param transformation: the transformation matrix to be applied to the object
+	 * @param camera: the camera used for rendering
 	 */
-	void transform(glm::mat4 transformation);
-	// Resets the model matrix to the identity matrix.
-	void resetModelMatrix();
 	void draw(Camera &camera);
 	void destroy();
+	void addShapesToActor();
 };

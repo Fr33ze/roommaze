@@ -146,3 +146,11 @@ void Shader::setUniform(std::string uniform, glm::mat4 value) {
 	}
 	glUniformMatrix4fv(uniformLocations.at(uniform), 1, GL_FALSE, glm::value_ptr(value));
 }
+
+void Shader::setUniform(std::string uniform, physx::PxTransform value) {
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	//&arr[0][0] is equivalent to glm::value_ptr()
+	glUniformMatrix4fv(uniformLocations.at(uniform), 1, GL_FALSE, &physx::PxMat44(value)[0][0]);
+}
