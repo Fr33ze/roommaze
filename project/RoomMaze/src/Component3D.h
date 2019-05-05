@@ -26,9 +26,6 @@ protected:
 
 	// material of the component
 	std::shared_ptr<Material> material;
-
-	// physX shape
-	physx::PxShape *pxShape;
 public:
 	// stores geometry data to construct a component
 	struct GeometryData {
@@ -59,11 +56,4 @@ public:
 	 * @param shader: Shader used to render the component
 	 */
 	void draw(std::shared_ptr<Shader> shader);
-
-	/**
-	 * Attaches the shape of this component to the actor
-	 *
-	 * @param actor: PxActor to attach the shape onto
-	 */
-	void attachTo(physx::PxRigidActor *actor);
 };

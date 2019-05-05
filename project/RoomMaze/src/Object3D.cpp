@@ -21,6 +21,8 @@ Object3D::~Object3D() {
 
 void Object3D::draw(Camera &camera)
 {
+	//std::cout << "x: " << pxActor->getGlobalPose().p.x << " y: " << pxActor->getGlobalPose().p.y << " z: " << pxActor->getGlobalPose().p.z << std::endl;
+	//getchar();
 	shader->use();
 	shader->setUniform("modelMatrix", pxActor->getGlobalPose());
 	camera.setUniforms(shader);
@@ -33,11 +35,5 @@ void Object3D::draw(Camera &camera)
 void Object3D::destroy() {
 	for (unsigned int i = 0; i < components.size(); i++) {
 		components.at(i).destroy();
-	}
-}
-
-void Object3D::addShapesToActor() {
-	for (unsigned int i = 0; i < components.size(); i++) {
-		components.at(i).attachTo(pxActor);
 	}
 }

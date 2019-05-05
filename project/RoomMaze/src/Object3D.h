@@ -18,6 +18,16 @@ protected:
 
 	// shader used for rendering
 	std::shared_ptr<Shader> shader;
+
+	// physx shape
+	physx::PxShape *pxShape;
+
+	/**
+	 * Creates corresponding shape (dynamic/static)
+	 *
+	 * @param path: the filename of the COL/OBJ file used as collision
+	 */
+	virtual void createShape(const char *path) = 0;
 public:
 	/**
 	 * CONSTRUCTOR
@@ -45,5 +55,4 @@ public:
 	 */
 	void draw(Camera &camera);
 	void destroy();
-	void addShapesToActor();
 };

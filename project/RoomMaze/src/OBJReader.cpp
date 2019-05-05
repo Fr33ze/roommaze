@@ -163,10 +163,13 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::readMateri
 	return matMap;
 }
 
-std::string OBJReader::splitFilename(const std::string filename)
+std::vector<std::string> OBJReader::splitFilename(const std::string filename)
 {
+	std::vector<std::string> split;
 	size_t found = filename.find_last_of("/\\");
-	return filename.substr(0, found + 1);
+	split.push_back(filename.substr(0, found + 1));
+	split.push_back(filename.substr(found + 1));
+	return split;
 }
 
 std::vector<Component3D> OBJReader::readObject(const char * filename)
@@ -277,7 +280,7 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 			else if (strcmp(lineheader, "mtllib") == 0) {
 				char mtllib[256];
 				fscanf_s(objfile, "%s\n", &mtllib, 256);
-				materialNameMap = readMaterials(splitFilename(filename).c_str(), mtllib);
+				materialNameMap = readMaterials(splitFilename(filename).at(0).c_str(), mtllib);
 			}
 		}
 	}
@@ -372,4 +375,83 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 	}
 
 	return allGeometries;
+}
+
+std::vector<glm::vec3> OBJReader::readCollisionConvex(const char *filename) {
+	FILE *objfile;
+	errno_t err = fopen_s(&objfile, filename, "r");
+	if (err != 0) {
+		std::cout << "Unable to open file " << filename << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	std::vector<glm::vec3> positions;
+
+	//start reading .col file line by line
+	while (1) {
+		char lineheader[256];
+		int res = fscanf_s(objfile, "%s ", lineheader, sizeof(lineheader));
+		if (res == EOF) {
+			break;
+		}
+		else {
+			//positions
+			if (strcmp(lineheader, "v") == 0) {
+				glm::vec3 position;
+				fscanf_s(objfile, "%f %f %f\n", &position.x, &position.y, &position.z);
+				positions.push_back(position);
+			}
+		}
+	}
+	return positions;
+}
+
+Component3D::GeometryData OBJReader::readCollisionTrimesh(const char *filename) {
+	FILE *objfile;
+	errno_t err = fopen_s(&objfile, filename, "r");
+	if (err != 0) {
+		std::cout << "Unable to open file " << filename << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	std::vector<glm::vec3> positions;
+	std::vector<unsigned int> indices;
+
+	//start reading .obj file line by line
+	while (1) {
+		char lineheader[256];
+		int res = fscanf_s(objfile, "%s ", lineheader, sizeof(lineheader));
+		if (res == EOF) {
+			break;
+		}
+		else {
+			//positions
+			if (strcmp(lineheader, "v") == 0) {
+				glm::vec3 position;
+				fscanf_s(objfile, "%f %f %f\n", &position.x, &position.y, &position.z);
+				positions.push_back(position);
+			}
+			//faces
+			else if (strcmp(lineheader, "f") == 0) {
+				unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
+				int matches = fscanf_s(objfile, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
+				if (matches != 9) {
+					std::cout << "Unable to read file! Try exporting .obj with other settings." << std::endl;
+				}
+				indices.push_back(vertexIndex[0]);
+				indices.push_back(vertexIndex[1]);
+				indices.push_back(vertexIndex[2]);
+			}
+		}
+	}
+
+	Component3D::GeometryData gd;
+	gd.vertices = positions;
+	gd.indices = indices;
+
+	return gd;
 }

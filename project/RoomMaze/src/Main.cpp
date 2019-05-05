@@ -270,18 +270,18 @@ void init() {
 	/* ------------- */
 
 	//Construct a static (non moveable) cube with the given initial transformation
-	Static3D *ob = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 4.5f)));
+	Static3D *ob = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 3.5f)));
 	renderObjects.push_back(ob);
 
-	//Copy the static cube in a dynamic object (it moves according to gravity) and give it a new modelmatrix
-	Dynamic3D *ob2 = new Dynamic3D(*ob, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 4.5f)));
+	//Construct a dynamic (moveable and affected by gravity) cube with the given initial transformation
+	Dynamic3D *ob2 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 3.5f)));
 	//Translate the dynamic cube
-	ob2->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 5.0f, 0.0f)));
+	//ob2->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f)));
 	renderObjects.push_back(ob2);
 
 	//Copy the static cube (with the new modelmatrix)
-	Static3D *ob3 = new Static3D(*ob, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 3.5f)));
-	renderObjects.push_back(ob3);
+	//Static3D *ob3 = new Static3D(*ob, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 3.5f)));
+	//renderObjects.push_back(ob3);
 }
 
 void update(float deltaT) {

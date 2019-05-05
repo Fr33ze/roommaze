@@ -25,7 +25,7 @@ public:
 	 * @param o: object to copy
 	 * @param modelMatrix: modelMatrix of the new copy
 	 */
-	Dynamic3D(const Object3D &o, glm::mat4 modelMatrix);
+	Dynamic3D(const Dynamic3D &o, glm::mat4 modelMatrix);
 	~Dynamic3D();
 
 	/**
@@ -37,4 +37,14 @@ public:
 
 	// Resets the model matrix to the identity matrix.
 	void resetModelMatrix();
+
+protected:
+	void createShape(const char *path) override;
+
+	/**
+	 * Creates the actor for the dynamic object (with mass)
+	 *
+	 * @param transform: the initial pose of the actor
+	 */
+	void createActor(physx::PxTransform transform);
 };

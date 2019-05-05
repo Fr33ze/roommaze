@@ -24,6 +24,9 @@ public:
 	 * @param o: object to copy
 	 * @param modelMatrix: modelMatrix of the new copy
 	 */
-	Static3D(const Object3D &o, glm::mat4 modelMatrix);
+	Static3D(const Static3D &o, glm::mat4 modelMatrix);
 	~Static3D();
+
+protected:
+	void createShape(const char *path) override;
 };

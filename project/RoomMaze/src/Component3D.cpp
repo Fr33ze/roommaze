@@ -47,35 +47,10 @@ Component3D::Component3D(GeometryData &geometryData, std::shared_ptr<Material> m
 	// unbind VBOs
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	// physX global variables
-	extern physx::PxFoundation *mFoundation;
-	extern physx::PxPhysics *mPhysics;
-	extern physx::PxPvd *mPvd;
-	extern physx::PxCooking *mCooking;
-
-	// create physX shape
-	physx::PxTriangleMeshDesc meshDesc;
-	meshDesc.points.count = geometryData.vertices.size();
-	meshDesc.points.stride = sizeof(glm::vec3);
-	meshDesc.points.data = geometryData.vertices.data();
-	meshDesc.triangles.count = geometryData.indices.size() / 3;
-	meshDesc.triangles.stride = 3 * sizeof(unsigned int);
-	meshDesc.triangles.data = geometryData.indices.data();
-	physx::PxDefaultMemoryOutputStream writeBuffer;
-	physx::PxTriangleMeshCookingResult::Enum result;
-	bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
-	if (!status)
-		return;
-	physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
-	physx::PxTriangleMeshGeometry trigeom = physx::PxTriangleMeshGeometry(mPhysics->createTriangleMesh(readBuffer));
-
-	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5), physx::PxReal(0.5), physx::PxReal(0.7));
-	pxShape = mPhysics->createShape(trigeom, *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
 }
 
 Component3D::~Component3D() {
-	
+
 }
 
 void Component3D::destroy() {
@@ -93,8 +68,4 @@ void Component3D::draw(std::shared_ptr<Shader> shader) {
 	glBindVertexArray(vao);
 	glDrawElements(GL_TRIANGLES, elements, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
-}
-
-void Component3D::attachTo(physx::PxRigidActor *actor) {
-	actor->attachShape(*pxShape);
 }
