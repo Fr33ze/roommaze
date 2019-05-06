@@ -334,6 +334,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		break;
 	case GLFW_KEY_SPACE:
 		std::cout << "INSERT NEW BATTERY" << std::endl;
+		gui.deleteBattery();
 		break;
 	}
 }
