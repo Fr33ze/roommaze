@@ -442,9 +442,9 @@ Component3D::GeometryData OBJReader::readCollisionTrimesh(const char *filename) 
 				if (matches != 9) {
 					std::cout << "Unable to read file! Try exporting .obj with other settings." << std::endl;
 				}
-				indices.push_back(vertexIndex[0]);
-				indices.push_back(vertexIndex[1]);
-				indices.push_back(vertexIndex[2]);
+				indices.push_back(vertexIndex[0] - 1);
+				indices.push_back(vertexIndex[1] - 1);
+				indices.push_back(vertexIndex[2] - 1);
 			}
 		}
 	}

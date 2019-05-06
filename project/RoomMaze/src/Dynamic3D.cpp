@@ -17,7 +17,7 @@ Dynamic3D::Dynamic3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4
 	std::vector<std::string> splitfile = OBJReader::splitFilename(path);
 	size_t found = splitfile[1].find_last_of(".");
 	std::string colfile = splitfile[0] + splitfile[1].substr(0, found + 1) + "col";
-	createShape(path);
+	createShape(colfile.c_str());
 	pxActor->attachShape(*pxShape);
 
 	extern physx::PxScene *pxScene;
@@ -37,7 +37,6 @@ Dynamic3D::Dynamic3D(const Dynamic3D &o, glm::mat4 modelMatrix)
 	}
 
 	createActor(physx::PxTransform(pose));
-
 	pxActor->attachShape(*pxShape);
 
 	extern physx::PxScene *pxScene;
@@ -46,31 +45,6 @@ Dynamic3D::Dynamic3D(const Dynamic3D &o, glm::mat4 modelMatrix)
 
 Dynamic3D::~Dynamic3D()
 {
-}
-
-//TODO Does not work yet (maybe should be deleted)
-void Dynamic3D::transform(glm::mat4 transformation)
-{
-	physx::PxMat44 trans = physx::PxMat44();
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			trans[x][y] = transformation[x][y];
-		}
-	}
-
-	extern physx::PxScene *pxScene;
-	pxScene->removeActor(*pxActor);
-
-	physx::PxTransform pose = pxActor->getGlobalPose();
-	pose.transform(physx::PxTransform(trans));
-	pxActor->setGlobalPose(pose);
-
-	pxScene->addActor(*pxActor);
-}
-
-//TODO Does not work yet (maybe should be deleted)
-void Dynamic3D::resetModelMatrix() {
-	pxActor->setGlobalPose(physx::PxTransform(physx::PxIdentity));
 }
 
 void Dynamic3D::createShape(const char *path) {
@@ -83,7 +57,7 @@ void Dynamic3D::createShape(const char *path) {
 	std::vector<glm::vec3> convexVerts = OBJReader::readCollisionConvex(path);
 
 	physx::PxConvexMeshDesc convexDesc;
-	convexDesc.points.count = 5;
+	convexDesc.points.count = convexVerts.size();
 	convexDesc.points.stride = sizeof(glm::vec3);
 	convexDesc.points.data = convexVerts.data();
 	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
@@ -99,7 +73,7 @@ void Dynamic3D::createShape(const char *path) {
 	physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
 	physx::PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
 
-	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5), physx::PxReal(0.5), physx::PxReal(0.7));
+	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.7f));
 	pxShape = mPhysics->createShape(physx::PxConvexMeshGeometry(convexMesh), *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
 }
 

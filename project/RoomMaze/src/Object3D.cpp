@@ -21,8 +21,6 @@ Object3D::~Object3D() {
 
 void Object3D::draw(Camera &camera)
 {
-	//std::cout << "x: " << pxActor->getGlobalPose().p.x << " y: " << pxActor->getGlobalPose().p.y << " z: " << pxActor->getGlobalPose().p.z << std::endl;
-	//getchar();
 	shader->use();
 	shader->setUniform("modelMatrix", pxActor->getGlobalPose());
 	camera.setUniforms(shader);

@@ -28,16 +28,6 @@ public:
 	Dynamic3D(const Dynamic3D &o, glm::mat4 modelMatrix);
 	~Dynamic3D();
 
-	/**
-	 * Transforms the object (updates the model matrix).
-	 *
-	 * @param transformation: the transformation matrix to be applied to the object
-	 */
-	void transform(glm::mat4 transformation);
-
-	// Resets the model matrix to the identity matrix.
-	void resetModelMatrix();
-
 protected:
 	void createShape(const char *path) override;
 

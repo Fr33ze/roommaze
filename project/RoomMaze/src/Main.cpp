@@ -58,10 +58,13 @@ physx::PxDefaultAllocator gAllocator;
 physx::PxDefaultCpuDispatcher *gDispatcher;
 physx::PxFoundation *mFoundation;
 physx::PxPhysics *mPhysics;
-physx::PxPvd *mPvd;
 physx::PxCooking *mCooking;
 physx::PxScene *pxScene;
 
+#if _DEBUG
+physx::PxPvd *mPvd;
+physx::PxPvdTransport *mTransport;
+#endif
 
 /* ----- */
 // MAIN
@@ -228,13 +231,16 @@ void init() {
 		exit(-1);
 	}
 
-	/* PHYSX VISUAL DEBUGGER (physx extension needed) */
-	/*bool recordMemoryAllocations = true;
+#if _DEBUG
+	/* PHYSX VISUAL DEBUGGER */
 	mPvd = PxCreatePvd(*mFoundation);
-	physx::PxPvdTransport *transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
-	mPvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);*/
+	mTransport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
+	mPvd->connect(*mTransport, physx::PxPvdInstrumentationFlag::eALL);
 
+	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, mPvd);
+#else
 	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true);
+#endif
 	if (!mPhysics) {
 		std::cout << "PxCreatePhysics failed!" << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
@@ -250,17 +256,19 @@ void init() {
 		exit(-1);
 	}
 
+#if _DEBUG
 	/* PHYSX INITIALIZE EXTENSIONS (only needed for PVD???)*/
-	/*if (!PxInitExtensions(*mPhysics, mPvd)) {
+	if (!PxInitExtensions(*mPhysics, mPvd)) {
 		std::cout << "PxInitExtensions failed!" << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
 		getchar();
 		exit(-1);
-	}*/
+	}
+#endif
 
 	physx::PxSceneDesc sceneDesc = physx::PxSceneDesc(mPhysics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
-	gDispatcher = physx::PxDefaultCpuDispatcherCreate(2);
+	gDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	pxScene = mPhysics->createScene(sceneDesc);
@@ -270,18 +278,12 @@ void init() {
 	/* ------------- */
 
 	//Construct a static (non moveable) cube with the given initial transformation
-	Static3D *ob = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 3.5f)));
+	Static3D *ob = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 4.5f)));
 	renderObjects.push_back(ob);
 
 	//Construct a dynamic (moveable and affected by gravity) cube with the given initial transformation
-	Dynamic3D *ob2 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 3.5f)));
-	//Translate the dynamic cube
-	//ob2->transform(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f)));
+	Dynamic3D *ob2 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 4.5f)));
 	renderObjects.push_back(ob2);
-
-	//Copy the static cube (with the new modelmatrix)
-	//Static3D *ob3 = new Static3D(*ob, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.0f, 3.5f)));
-	//renderObjects.push_back(ob3);
 }
 
 void update(float deltaT) {
@@ -298,6 +300,13 @@ void cleanup() {
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
 		renderObjects.at(i)->destroy();
 	}
+
+	mPhysics->release();
+
+#if _DEBUG
+	mPvd->release();
+	mTransport->release();
+#endif
 }
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
