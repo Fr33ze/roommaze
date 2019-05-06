@@ -142,6 +142,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Dynamic3D.cpp" />
+    <ClCompile Include="src\GUI.cpp" />
+    <ClCompile Include="src\GUIComponent.cpp" />
+    <ClCompile Include="src\GUIText.cpp" />
     <ClCompile Include="src\Object3D.cpp" />
     <ClCompile Include="src\INIReader.cpp" />
     <ClCompile Include="src\OBJReader.cpp" />
@@ -156,6 +159,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Dynamic3D.h" />
+    <ClInclude Include="src\GUI.h" />
+    <ClInclude Include="src\GUIComponent.h" />
+    <ClInclude Include="src\GUIText.h" />
     <ClInclude Include="src\Object3D.h" />
     <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\OBJReader.h" />

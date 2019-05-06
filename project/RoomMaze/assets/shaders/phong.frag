@@ -54,9 +54,18 @@ struct SpotLight {
 	vec3 attenuation;
 };
 
-/* ------------------------------ */
-// UNIFORMS, IN- & OUT-VARIABLES
-/* ------------------------------ */
+/* ----------------------------- */
+// IN-/OUT-VARIABLES & UNIFORMS
+/* ----------------------------- */
+
+in VertexData {
+	vec3 positionWorld;
+	vec3 normal;
+	vec2 UVCoords;
+	mat3 TBN;
+} vertexData;
+
+out vec4 color;
 
 uniform Camera camera;
 
@@ -68,15 +77,6 @@ uniform PointLight pointLights[10];
 uniform int amountOfPointLights;
 uniform SpotLight spotLights[10];
 uniform int amountOfSpotLights;
-
-in VertexData {
-	vec3 positionWorld;
-	vec3 normal;
-	vec2 UVCoords;
-	mat3 TBN;
-} vertexData;
-
-out vec4 color;
 
 /* ----------- */
 // PROTOTYPES

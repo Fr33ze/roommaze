@@ -9,6 +9,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "GUI.h"
 #include "Material.h"
 #include "Object3D.h"
 #include "Static3D.h"
@@ -45,6 +46,9 @@ Camera camera;
 float lastXPosition;
 float lastYPosition;
 bool firstMouse = true;
+
+// GUI
+GUI gui;
 
 // time between current frame and last frame
 float deltaTime;
@@ -215,6 +219,8 @@ void init() {
 	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float) settings.width / (float) settings.height);
 	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
+	// GUI
+	gui = GUI(settings.width, settings.height, 5);
 
 	/* --------------- */
 	// PHYSX INIT
@@ -287,13 +293,15 @@ void init() {
 }
 
 void update(float deltaT) {
-
+	gui.updateTime(deltaT);
 }
 
 void draw() {
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
 		renderObjects.at(i)->draw(camera);
 	}
+
+	gui.draw();
 }
 
 void cleanup() {

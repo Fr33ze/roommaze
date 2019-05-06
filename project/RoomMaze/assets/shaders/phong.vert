@@ -1,12 +1,8 @@
 #version 430 core
 
-/* ------------------------------ */
-// UNIFORMS, IN- & OUT-VARIABLES
-/* ------------------------------ */
-
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
+/* ----------------------------- */
+// IN-/OUT-VARIABLES & UNIFORMS
+/* ----------------------------- */
 
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 normal;
@@ -19,6 +15,10 @@ out VertexData {
 	vec2 UVCoords;
 	mat3 TBN;
 } vertexData;
+
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
 
 /* ----- */
 // MAIN
