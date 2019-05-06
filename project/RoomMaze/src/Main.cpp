@@ -78,7 +78,6 @@ int main(int argc, char **argv) {
 	// read settings.ini file
 	settings = INIReader::ReadSettings();
 
-
 	/* ------------------------- */
 	// SETTING UP OPENGL WINDOW
 	/* ------------------------- */
@@ -124,7 +123,6 @@ int main(int argc, char **argv) {
 		getchar();
 		exit(-1);
 	}
-
 
 	/* ---------------------------- */
 	// REGISTER CALLBACK FUNCTIONS

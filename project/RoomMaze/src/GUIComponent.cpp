@@ -72,14 +72,16 @@ void GUIComponent::draw(std::shared_ptr<Shader> shader) {
 	glBindTexture(GL_TEXTURE_2D, textureHandle);
 	shader->setUniform("textureUnit", 0);
 
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND); // enable rendering semi-transparent materials
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
-
+	
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 
+	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
 	shader->unuse();

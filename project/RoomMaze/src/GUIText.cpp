@@ -43,7 +43,7 @@ void GUIText::initFont(std::string fontPath) {
 		exit(-1);
 	}
 
-	if (FT_New_Face(library, "assets/gui/Letter Gothic Regular.ttf", 0, &face)) {
+	if (FT_New_Face(library, fontPath.c_str(), 0, &face)) {
 		std::cout << "Failed to load the font of the gui." << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
 		getchar();
@@ -91,6 +91,7 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 	glActiveTexture(GL_TEXTURE0);
 	shader->setUniform("textureUnit", 0);
 
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND); // enable rendering semi-transparent materials
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
@@ -112,6 +113,7 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 
+	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
 	shader->unuse();
