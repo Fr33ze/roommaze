@@ -6,9 +6,9 @@ Kd 0.80000001192093 0.79199999570847 0.79199999570847
 map_Kd beton1.jpg
 Ks 1 1 1
 map_Ks beton1_specular.jpg
-map_N beton1_normal.jpg
 Ns 50
 illum 7
+map_N beton1_normal.jpg
 
 newmtl beton2
 Ka 1 1 1
@@ -16,7 +16,7 @@ Kd 0.80000001192093 0.80000001192093 0.80000001192093
 map_Kd beton2.jpg
 Ks 1 1 1
 map_Ks beton2_specular.jpg
-map_N beton2_normal.jpg
 Ns 50
 illum 7
+map_N beton2_normal.jpg
 

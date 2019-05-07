@@ -92,9 +92,6 @@ void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
 		controller->move(disp, 0.01f, deltaTime, filters);
 		break;
 	}
-
-	// user stays at ground level (no flying camery system)
-	//position.y = groundLevel;
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset, bool constrainPitch) {

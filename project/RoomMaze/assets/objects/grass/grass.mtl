@@ -1,9 +1,0 @@
-newmtl grass
-Ka 0.1000 0.1000 0.1000
-Kd 1.0000 1.0000 1.0000
-Ks 0.0000 0.0000 0.0000
-Ns 1.0000
-d 1.0000
-map_Ka grass.png
-map_Kd grass.png
-map_d grass_alpha.png

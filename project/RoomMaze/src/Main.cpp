@@ -155,6 +155,63 @@ int main(int argc, char **argv) {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	/* ----------- */
+	// PHYSX INIT
+	/* ----------- */
+
+	gErrorCallback = physx::PxDefaultErrorCallback();
+	gAllocator = physx::PxDefaultAllocator();
+
+	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
+	if (!mFoundation) {
+		std::cout << "PxCreateFoundation failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+#if _DEBUG
+	/* PHYSX VISUAL DEBUGGER */
+	mPvd = PxCreatePvd(*mFoundation);
+	mTransport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
+	mPvd->connect(*mTransport, physx::PxPvdInstrumentationFlag::eALL);
+
+	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, mPvd);
+#else
+	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true);
+#endif
+	if (!mPhysics) {
+		std::cout << "PxCreatePhysics failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	mCooking = PxCreateCooking(PX_PHYSICS_VERSION, *mFoundation, physx::PxCookingParams(mPhysics->getTolerancesScale()));
+	if (!mCooking) {
+		std::cout << "PxCreateCooking failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+#if _DEBUG
+	/* PHYSX INITIALIZE EXTENSIONS (only needed for PVD???)*/
+	if (!PxInitExtensions(*mPhysics, mPvd)) {
+		std::cout << "PxInitExtensions failed!" << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+#endif
+
+	physx::PxSceneDesc sceneDesc = physx::PxSceneDesc(mPhysics->getTolerancesScale());
+	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	gDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
+	sceneDesc.cpuDispatcher = gDispatcher;
+	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
+	pxScene = mPhysics->createScene(sceneDesc);
+
 	/* --------------- */
     // MAIN GAME LOOP
 	/* --------------- */
@@ -213,81 +270,36 @@ void init() {
 	// shader
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
+	// camera (includes character controller)
+	camera = Camera(glm::vec3(0.0f, 1.20f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
+
 	// GUI
 	gui = GUI(settings.width, settings.height, 5);
-
-	/* --------------- */
-	// PHYSX INIT
-	/* --------------- */
-
-	gErrorCallback = physx::PxDefaultErrorCallback();
-	gAllocator = physx::PxDefaultAllocator();
-
-	mFoundation = PxCreateFoundation(PX_PHYSICS_VERSION, gAllocator, gErrorCallback);
-	if (!mFoundation) {
-		std::cout << "PxCreateFoundation failed!" << std::endl;
-		std::cout << "Press ENTER to close this window." << std::endl;
-		getchar();
-		exit(-1);
-	}
-
-#if _DEBUG
-	/* PHYSX VISUAL DEBUGGER */
-	mPvd = PxCreatePvd(*mFoundation);
-	mTransport = physx::PxDefaultPvdSocketTransportCreate("localhost", 5425, 10);
-	mPvd->connect(*mTransport, physx::PxPvdInstrumentationFlag::eALL);
-
-	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true, mPvd);
-#else
-	mPhysics = PxCreatePhysics(PX_PHYSICS_VERSION, *mFoundation, physx::PxTolerancesScale(), true);
-#endif
-	if (!mPhysics) {
-		std::cout << "PxCreatePhysics failed!" << std::endl;
-		std::cout << "Press ENTER to close this window." << std::endl;
-		getchar();
-		exit(-1);
-	}
-
-	mCooking = PxCreateCooking(PX_PHYSICS_VERSION, *mFoundation, physx::PxCookingParams(mPhysics->getTolerancesScale()));
-	if (!mCooking) {
-		std::cout << "PxCreateCooking failed!" << std::endl;
-		std::cout << "Press ENTER to close this window." << std::endl;
-		getchar();
-		exit(-1);
-	}
-
-#if _DEBUG
-	/* PHYSX INITIALIZE EXTENSIONS (only needed for PVD???)*/
-	if (!PxInitExtensions(*mPhysics, mPvd)) {
-		std::cout << "PxInitExtensions failed!" << std::endl;
-		std::cout << "Press ENTER to close this window." << std::endl;
-		getchar();
-		exit(-1);
-	}
-#endif
-
-	physx::PxSceneDesc sceneDesc = physx::PxSceneDesc(mPhysics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
-	gDispatcher = physx::PxDefaultCpuDispatcherCreate(4);
-	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
-	pxScene = mPhysics->createScene(sceneDesc);
-
-	// camera (includes character controller)
-	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
 	/* ------------- */
 	// LOAD OBJECTS
 	/* ------------- */
 
 	//Construct a static (non moveable) cube with the given initial transformation
-	Static3D *ob = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -0.5f, 4.5f)));
-	renderObjects.push_back(ob);
+	Static3D *staticCube = new Static3D("assets/objects/container/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
+	renderObjects.push_back(staticCube);
 
 	//Construct a dynamic (moveable and affected by gravity) cube with the given initial transformation
-	Dynamic3D *ob2 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 1.5f, 4.5f)));
-	renderObjects.push_back(ob2);
+	Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
+	renderObjects.push_back(dynamicCube);
+
+	Static3D *staircase = new Static3D("assets/objects/rooms/staircase/staircase.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)));
+	renderObjects.push_back(staircase);
+
+	Static3D *wallSwitch = new Static3D("assets/objects/wallSwitch/wallSwitch.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-2.75f, 0.75f, -9.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(wallSwitch);
+
+	Static3D *shelf = new Static3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -7.7f)));
+	renderObjects.push_back(shelf);
+
+	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.025f, -7.7f)), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(battery);
 }
 
 void update(float deltaT) {
