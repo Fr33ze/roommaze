@@ -3,9 +3,9 @@
 newmtl bricks
 Ka 1 1 1
 Kd 0.80000001192093 0.80000001192093 0.80000001192093
-map_Kd container.png
+map_Kd container.jpg
 Ks 1 1 1
-map_Ks container_specular.png
+map_Ks container_specular.jpg
 Ns 50
 illum 7
 
