@@ -8,11 +8,11 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	extern physx::PxPhysics* mPhysics;
 	cManager = PxCreateControllerManager(*pxScene);
 	physx::PxCapsuleControllerDesc desc;
-	desc.height = physx::PxF32(1.0f);
+	desc.height = physx::PxF32(2.0f);
 	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
 	desc.contactOffset = physx::PxF32(0.05f);
 	desc.stepOffset = physx::PxF32(0.1f);
-	desc.radius = physx::PxF32(0.1f);
+	desc.radius = physx::PxF32(0.5f);
 	desc.position = physx::PxExtendedVec3(position.x, position.y, position.z);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	desc.reportCallback = this;
