@@ -21,7 +21,9 @@
 // PROTOTYPES
 /* ----------- */
 
-void init();
+GLFWwindow* initOpenGL();
+void initPhysX();
+void initContent();
 void update(float deltaT);
 void draw();
 void cleanup();
@@ -75,13 +77,116 @@ physx::PxPvdTransport *mTransport;
 /* ----- */
 
 int main(int argc, char **argv) {
-	// read settings.ini file
-	settings = INIReader::ReadSettings();
+	/* ------------------------- */
+	// READ SETTINGS.INI FILE
+	/* ------------------------- */
+	settings = INIReader::readSettings();
 
 	/* ------------------------- */
 	// SETTING UP OPENGL WINDOW
 	/* ------------------------- */
+	GLFWwindow* window = initOpenGL();
 
+	/* ----------- */
+	// PHYSX INIT
+	/* ----------- */
+	initPhysX();
+
+	/* --------------- */
+	// GAME CONTENT INIT
+	/* --------------- */
+	initContent();
+
+	/* --------------- */
+	// MAIN GAME LOOP
+	/* --------------- */
+
+	float timeCurrentFrame = (float)glfwGetTime();
+	float timeLastFrame = timeCurrentFrame;
+
+	while (!glfwWindowShouldClose(window)) {
+		// clear the frame and depth buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// compute the frame time delta
+		timeCurrentFrame = (float) glfwGetTime();
+		deltaTime = timeCurrentFrame - timeLastFrame;
+		timeLastFrame = timeCurrentFrame;
+
+		// react to user input
+		glfwPollEvents();
+		processInput(window);
+
+		// update all game components
+		update(deltaTime);
+
+		// draw all game components
+		draw();
+		glfwSwapBuffers(window);
+
+		// physx make simulation step
+		pxScene->simulate(1.0f / 60.0f);
+		pxScene->fetchResults(true);
+
+		// check for errors
+		if (glGetError() != GL_NO_ERROR)
+			std::cout << "GL ERROR DETECTED!!!" << std::endl;
+	}
+
+	/* --------------- */
+	// CLEAN UP
+	/* --------------- */
+	cleanup();
+	glfwTerminate();
+
+	return EXIT_SUCCESS;
+}
+
+void initContent() {
+	// mouse stuff
+	lastXPosition = settings.width / 2.0f;
+	lastYPosition = settings.height / 2.0f;
+
+	// scene stuff
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+
+	// shader
+	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
+
+	// camera (includes character controller)
+	camera = Camera(glm::vec3(0.0f, 1.20f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
+
+	// GUI
+	gui = GUI(settings.width, settings.height, 5);
+
+	/* ------------- */
+	// LOAD OBJECTS
+	/* ------------- */
+
+	//Construct a static (non moveable) cube with the given initial transformation
+	Static3D *staticCube = new Static3D("assets/objects/container/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
+	renderObjects.push_back(staticCube);
+
+	//Construct a dynamic (moveable and affected by gravity) cube that spawns on top of the static cube
+	Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
+	renderObjects.push_back(dynamicCube);
+
+	Static3D *staircase = new Static3D("assets/objects/rooms/staircase/staircase.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)));
+	renderObjects.push_back(staircase);
+
+	Static3D *wallSwitch = new Static3D("assets/objects/wallSwitch/wallSwitch.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-2.75f, 0.75f, -9.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(wallSwitch);
+
+	Static3D *shelf = new Static3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -7.7f)));
+	renderObjects.push_back(shelf);
+
+	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.025f, -7.7f)), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(battery);
+}
+
+GLFWwindow* initOpenGL() {
 	// init glfw
 	if (!glfwInit()) {
 		std::cout << "Failed to init glfw." << std::endl;
@@ -155,10 +260,10 @@ int main(int argc, char **argv) {
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	/* ----------- */
-	// PHYSX INIT
-	/* ----------- */
+	return window;
+}
 
+void initPhysX() {
 	gErrorCallback = physx::PxDefaultErrorCallback();
 	gAllocator = physx::PxDefaultAllocator();
 
@@ -211,95 +316,6 @@ int main(int argc, char **argv) {
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	pxScene = mPhysics->createScene(sceneDesc);
-
-	/* --------------- */
-    // MAIN GAME LOOP
-	/* --------------- */
-
-	float timeCurrentFrame = (float) glfwGetTime();
-	float timeLastFrame = timeCurrentFrame;
-
-	// init game content
-	init();
-
-	while (!glfwWindowShouldClose(window)) {
-		// clear the frame and depth buffer
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// compute the frame time delta
-		timeCurrentFrame = (float) glfwGetTime();
-		deltaTime = timeCurrentFrame - timeLastFrame;
-		timeLastFrame = timeCurrentFrame;
-
-		// react to user input
-		glfwPollEvents();
-		processInput(window);
-
-		// update all game components
-		update(deltaTime);
-
-		// draw all game components
-		draw();
-		glfwSwapBuffers(window);
-
-		// physx make simulation step
-		pxScene->simulate(1.0f / 60.0f);
-		pxScene->fetchResults(true);
-
-		// check for errors
-		if (glGetError() != GL_NO_ERROR)
-			std::cout << "GL ERROR DETECTED!!!" << std::endl;
-	}
-
-	// clean up
-	cleanup();
-	glfwTerminate();
-
-	return EXIT_SUCCESS;
-}
-
-void init() {
-	// mouse stuff
-	lastXPosition = settings.width / 2.0f;
-	lastYPosition = settings.height / 2.0f;
-
-	// scene stuff
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-
-	// shader
-	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
-
-	// camera (includes character controller)
-	camera = Camera(glm::vec3(0.0f, 1.20f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
-
-	// GUI
-	gui = GUI(settings.width, settings.height, 5);
-
-	/* ------------- */
-	// LOAD OBJECTS
-	/* ------------- */
-
-	//Construct a static (non moveable) cube with the given initial transformation
-	Static3D *staticCube = new Static3D("assets/objects/container/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
-	renderObjects.push_back(staticCube);
-
-	//Construct a dynamic (moveable and affected by gravity) cube with the given initial transformation
-	Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
-	renderObjects.push_back(dynamicCube);
-
-	Static3D *staircase = new Static3D("assets/objects/rooms/staircase/staircase.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)));
-	renderObjects.push_back(staircase);
-
-	Static3D *wallSwitch = new Static3D("assets/objects/wallSwitch/wallSwitch.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-2.75f, 0.75f, -9.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(wallSwitch);
-
-	Static3D *shelf = new Static3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -7.7f)));
-	renderObjects.push_back(shelf);
-
-	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.025f, -7.7f)), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(battery);
 }
 
 void update(float deltaT) {

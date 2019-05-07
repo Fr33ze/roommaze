@@ -21,13 +21,13 @@ public:
 	/**
 	 * Reads from the settings.ini file and returns a Settings struct
 	 */
-	static Settings ReadSettings();
+	static Settings readSettings();
 protected:
 	/**
 	 * Vallidates the Settings struct if all important information has been set
 	 *
 	 * @param s: settings struct to be validated
 	 */
-	static bool ValidateSettings(Settings s);
+	static bool validateSettings(Settings s);
 };
 

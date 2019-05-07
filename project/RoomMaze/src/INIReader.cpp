@@ -1,6 +1,6 @@
 #include "INIReader.h"
 
-INIReader::Settings INIReader::ReadSettings()
+INIReader::Settings INIReader::readSettings()
 {
 	Settings s = {};
 	FILE *inifile;
@@ -40,7 +40,7 @@ INIReader::Settings INIReader::ReadSettings()
 		}
 	}
 	//Stop if important setting is missing
-	if (!ValidateSettings(s)) {
+	if (!validateSettings(s)) {
 		std::cout << "Settings file assets/settings.ini is corrupted!" << std::endl;
 		std::cout << "Press ENTER to close this window." << std::endl;
 		getchar();
@@ -49,7 +49,7 @@ INIReader::Settings INIReader::ReadSettings()
 	return s;
 }
 
-bool INIReader::ValidateSettings(Settings s)
+bool INIReader::validateSettings(Settings s)
 {
 	return !(s.width == 0 || s.height == 0 || s.refresh_rate == 0 || s.field_of_view == 0.0f);
 }
