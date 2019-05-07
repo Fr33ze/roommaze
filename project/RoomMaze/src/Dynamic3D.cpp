@@ -80,5 +80,5 @@ void Dynamic3D::createShape(const char *path) {
 void Dynamic3D::createActor(physx::PxTransform transform) {
 	extern physx::PxPhysics *mPhysics;
 	pxActor = mPhysics->createRigidDynamic(transform);
-	((physx::PxRigidDynamic*)pxActor)->setMass(0.5f);
+	((physx::PxRigidDynamic*)pxActor)->setMass(10.0f);
 }

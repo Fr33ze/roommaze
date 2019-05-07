@@ -213,10 +213,6 @@ void init() {
 	// shader
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
-	// camera
-	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float) settings.width / (float) settings.height);
-	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
-
 	// GUI
 	gui = GUI(settings.width, settings.height, 5);
 
@@ -276,6 +272,10 @@ void init() {
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 	pxScene = mPhysics->createScene(sceneDesc);
+
+	// camera (includes character controller)
+	camera = Camera(glm::vec3(0.0f, 1.20f, 7.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
 	/* ------------- */
 	// LOAD OBJECTS

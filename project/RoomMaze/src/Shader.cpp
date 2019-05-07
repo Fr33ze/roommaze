@@ -140,6 +140,13 @@ void Shader::setUniform(std::string uniform, glm::vec3 value) {
 	glUniform3fv(uniformLocations.at(uniform), 1, glm::value_ptr(value));
 }
 
+void Shader::setUniform(std::string uniform, physx::PxVec3 value) {
+	if (uniformLocations.find(uniform) == uniformLocations.end()) {
+		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });
+	}
+	glUniform3fv(uniformLocations.at(uniform), 1, &value[0]);
+}
+
 void Shader::setUniform(std::string uniform, glm::mat4 value) {
 	if (uniformLocations.find(uniform) == uniformLocations.end()) {
 		uniformLocations.insert({ uniform, glGetUniformLocation(program, uniform.c_str()) });

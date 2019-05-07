@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\CameraCCT.cpp" />
     <ClCompile Include="src\Dynamic3D.cpp" />
     <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\GUIComponent.cpp" />

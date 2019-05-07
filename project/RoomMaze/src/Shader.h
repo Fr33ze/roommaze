@@ -87,6 +87,14 @@ public:
 	void setUniform(std::string uniform, glm::vec3 value);
 
 	/**
+	 * Sets a 3D vector uniform in the shader.
+	 *
+	 * @param uniform: the name of the uniform
+	 * @param value: the value to be set
+	 */
+	void setUniform(std::string uniform, physx::PxVec3 value);
+
+	/**
 	 * Sets a 4x4 matrix uniform in the shader.
 	 *
 	 * @param uniform: the name of the uniform
