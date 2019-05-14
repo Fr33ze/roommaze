@@ -166,24 +166,17 @@ void initContent() {
 	/* ------------- */
 
 	//Construct a static (non moveable) cube with the given initial transformation
-	Static3D *staticCube = new Static3D("assets/objects/container/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
+	Static3D *staticCube = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
 	renderObjects.push_back(staticCube);
 
 	//Construct a dynamic (moveable and affected by gravity) cube that spawns on top of the static cube
 	Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
 	renderObjects.push_back(dynamicCube);
 
-	Static3D *staircase = new Static3D("assets/objects/rooms/staircase/staircase.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)));
-	renderObjects.push_back(staircase);
-
-	Static3D *wallSwitch = new Static3D("assets/objects/wallSwitch/wallSwitch.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-2.75f, 0.75f, -9.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(wallSwitch);
-
-	Static3D *shelf = new Static3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 0.0f, -7.7f)));
-	renderObjects.push_back(shelf);
-
-	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(2.0f, 1.025f, -7.7f)), glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(battery);
+	Static3D *room1 = new Static3D("assets/objects/rooms/north_east_south_west_up_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)));
+	renderObjects.push_back(room1);
+	Static3D *room2 = new Static3D("assets/objects/rooms/north_east_south_west_none_2.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -20.0f)));
+	renderObjects.push_back(room2);
 }
 
 GLFWwindow* initOpenGL() {
