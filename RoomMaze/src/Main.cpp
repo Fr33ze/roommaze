@@ -159,7 +159,7 @@ void initContent() {
 	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
 	// GUI
-	gui = GUI(settings.width, settings.height, 5);
+	gui = GUI(settings.width, settings.height, 5, &camera);
 
 	/* ------------- */
 	// LOAD OBJECTS
@@ -359,7 +359,6 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		std::cout << "TOGGLE NIGHTVISION" << std::endl;
 		break;
 	case GLFW_KEY_SPACE:
-		std::cout << "INSERT NEW BATTERY" << std::endl;
 		gui.deleteBattery();
 		break;
 	}

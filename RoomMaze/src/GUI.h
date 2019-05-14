@@ -8,6 +8,7 @@
 #include <map>
 
 #include "Shader.h"
+#include "Camera.h"
 #include "GUIComponent.h"
 #include "GUIText.h"
 
@@ -20,11 +21,14 @@ protected:
 	// shader used for rendering text
 	std::shared_ptr<Shader> textShader;
 
-	float time;
+	float batteryTime, collapseTime;
 
 	int batteryCounter;
 	GUIComponent battery;
-	GUIText batteryStatus, batteryCountdown, mazeCountdown;
+	GUIText batteryStatus, batteryCountdown, collapseCountdown;
+
+	// camera
+	Camera *camera;
 
 public:
 	
@@ -35,8 +39,9 @@ public:
 	 * @param windowWidth: the width of the window
 	 * @param windowHeight: the height of the window
 	 * @param staringBatteries: amount of batteries to start with
+	 * @param camera: camera of the game
 	 */
-	GUI(int windowWidth, int windowHeight, int startingBatteries);
+	GUI(int windowWidth, int windowHeight, int startingBatteries, Camera *camera);
 	
 	GUI();
 
