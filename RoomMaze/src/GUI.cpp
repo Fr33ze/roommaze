@@ -1,16 +1,18 @@
 #include "GUI.h"
 
 GUI::GUI(int windowWidth, int windowHeight, int startingBatteries)
-	: windowWidth(windowWidth), windowHeigth(windowHeight), time(0.0f), batteryCounter(startingBatteries) {
+	: time(0.0f), batteryCounter(startingBatteries) {
 
-	componentShader = std::make_shared<Shader>("assets/shaders/guiComponent.vert", "assets/shaders/guiComponent.frag");
-	textShader = std::make_shared<Shader>("assets/shaders/guiText.vert", "assets/shaders/guiText.frag");
+	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
+	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
 	
-	battery = GUIComponent("assets/gui/battery.png", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.95f, 0.88f, 0.0f)), glm::vec3(1.0f / windowWidth * 100, 1.0f / windowHeight * 100, 1.0f)));
+	battery = GUIComponent("assets/gui/battery.png", glm::vec2(windowWidth * 0.002f, windowHeight * 0.98f), 0.05f, windowWidth, windowHeight);
 
-	batteryStatus = GUIText("assets/gui/ArialCE.ttf", std::to_string(startingBatteries) + "/10", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.88f, 0.87f, 0.0f)), glm::vec3(1.0f / windowWidth * 20, 1.0f / windowHeigth * 20, 1.0f)));
-	batteryCountdown = GUIText("assets/gui/ArialCE.ttf", "60 sec", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(-0.95f, 0.7f, 0.0f)), glm::vec3(1.0f / windowWidth * 20, 1.0f / windowHeigth * 20, 1.0f)));
-	mazeCountdown = GUIText("assets/gui/ArialCE.ttf", "120 sec", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.82f, 0.95f, 0.0f)), glm::vec3(1.0f / windowWidth * 20, 1.0f / windowHeigth * 20, 1.0f)));
+	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
+
+	batteryStatus = GUIText(fontPath, std::to_string(startingBatteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.94f), windowWidth / 1920.0f * 0.5f, windowWidth, windowHeight);
+	batteryCountdown = GUIText(fontPath, "60 sec", glm::vec2(windowWidth * 0.055f, windowHeight * 0.9f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
+	mazeCountdown = GUIText(fontPath, "Time until maze collapses: 120 sec", glm::vec2(windowWidth * 0.74f, windowHeight * 0.95f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
 }
 
 GUI::GUI() {
@@ -28,7 +30,7 @@ void GUI::destroy() {
 void GUI::updateTime(float deltaT) {
 	time += deltaT;
 	batteryCountdown.updateText(std::to_string(60 - (int)time) + " sec");
-	mazeCountdown.updateText(std::to_string(120 - (int)time) + " sec");
+	mazeCountdown.updateText("Time until maze collapses: " + std::to_string(120 - (int)time) + " sec");
 }
 
 void GUI::draw() {

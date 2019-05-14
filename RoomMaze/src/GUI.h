@@ -20,8 +20,6 @@ protected:
 	// shader used for rendering text
 	std::shared_ptr<Shader> textShader;
 
-	int windowWidth, windowHeigth;
-
 	float time;
 
 	int batteryCounter;

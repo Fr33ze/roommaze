@@ -1,7 +1,7 @@
 #include "GUIComponent.h"
 
-GUIComponent::GUIComponent(std::string texturePath, glm::mat4 modelMatrix)
-	: modelMatrix(modelMatrix) {
+GUIComponent::GUIComponent(std::string texturePath, glm::vec2 position, float size, int windowWidth, int windowHeight)
+	: projectionMatrix(glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight)) {
 
 	initTexture(texturePath);
 
@@ -12,10 +12,19 @@ GUIComponent::GUIComponent(std::string texturePath, glm::mat4 modelMatrix)
 	// VBO for vertices
 	glGenBuffers(1, &vboVertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-	float vertices[] = { -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0, -1.0 };
+	size = windowWidth * size;
+	float vertices[] = { position.x, position.y, position.x, position.y - size, position.x + size, position.y, position.x + size, position.y - size };
 	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+
+	// VBO for UV coords
+	glGenBuffers(1, &vboUVCoords);
+	glBindBuffer(GL_ARRAY_BUFFER, vboUVCoords);
+	float UVCoords[] = { 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f };
+	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), UVCoords, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
 	// unbind VAO
 	glBindVertexArray(0);
@@ -66,7 +75,7 @@ void GUIComponent::initTexture(std::string texturePath) {
 void GUIComponent::draw(std::shared_ptr<Shader> shader) {
 	shader->use();
 
-	shader->setUniform("modelMatrix", modelMatrix);
+	shader->setUniform("projectionMatrix", projectionMatrix);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureHandle);

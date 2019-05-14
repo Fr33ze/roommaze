@@ -14,9 +14,11 @@ class GUIComponent {
 protected:
 
 	GLuint textureHandle;
-	glm::mat4 modelMatrix;
+
+	glm::mat4 projectionMatrix;
 	GLuint vao;
 	GLuint vboVertices;
+	GLuint vboUVCoords;
 
 	void initTexture(std::string texturePath);
 
@@ -27,9 +29,12 @@ public:
 	 * Creates a gui component with the given parameters.
 	 *
 	 * @param texturePath: path to the texture of the gui component
-	 * @param modelMatrix: the model matrix of the gui component
+	 * @param position: defines where to place the upper left corner of the component
+	 * @param size: defines the size of the component as a percentage of the screen width (!) it occupies (must be between 0.0f & 1.0f)
+	 * @param windowWidth: the width of the window
+	 * @param windowHeight: the height of the window
 	 */
-	GUIComponent(std::string texturePath, glm::mat4 modelMatrix);
+	GUIComponent(std::string texturePath, glm::vec2 position, float size, int windowWidth, int windowHeight);
 	
 	GUIComponent();
 
