@@ -14,7 +14,7 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
 	desc.contactOffset = physx::PxF32(0.05f);
 	desc.stepOffset = physx::PxF32(0.15f);
-	desc.radius = physx::PxF32(0.1f);
+	desc.radius = physx::PxF32(0.15f);
 	desc.position = physx::PxExtendedVec3(position.x, position.y, position.z);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	cctCallbacks = new CharacterCallback();
@@ -40,9 +40,10 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("projectionMatrix", projectionMatrix);
 	
 	physx::PxExtendedVec3 pos = controller->getPosition();
-	glm::vec3 position = glm::vec3(pos.x, pos.y, pos.z);
+	glm::vec3 position = glm::vec3(pos.x, pos.y + 1, pos.z);
 	shader->setUniform("camera.position", position);
-	shader->setUniform("camera.direction", glm::vec3(getViewMatrix()[0][2], getViewMatrix()[1][2], getViewMatrix()[2][2]));
+	glm::mat4 viewmat = getViewMatrix();
+	shader->setUniform("camera.direction", glm::vec3(viewmat[0][2], viewmat[1][2], viewmat[2][2]));
 	shader->setUniform("camera.intensity", cameraLight.intensity);
 	shader->setUniform("camera.innerCutOff", glm::cos(glm::radians(cameraLight.innerAngle))); // cos()-calculation outside shader (saves valuable time)
 	shader->setUniform("camera.outerCutOff", glm::cos(glm::radians(cameraLight.outerAngle)));
@@ -70,7 +71,7 @@ void Camera::updateCameraVectors() {
 
 glm::mat4 Camera::getViewMatrix() {
 	physx::PxExtendedVec3 pos = controller->getPosition();
-	glm::vec3 position = glm::vec3(pos.x, pos.y, pos.z);
+	glm::vec3 position = glm::vec3(pos.x, pos.y + 1, pos.z);
 	return glm::lookAt(position, position + front, up);
 }
 
@@ -78,16 +79,16 @@ void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 	switch (key) {
 	case(W):
-		displacement += physx::PxVec3(front.x, 0, front.z) * velocity;
+		displacement += physx::PxVec3(front.x, 0, front.z).getNormalized() * velocity;
 		break;
 	case(S):
-		displacement += physx::PxVec3(front.x, 0, front.z) * -velocity;
+		displacement += physx::PxVec3(front.x, 0, front.z).getNormalized() * -velocity;
 		break;
 	case(A):
-		displacement += physx::PxVec3(right.x, 0, right.z) * -velocity;
+		displacement += physx::PxVec3(right.x, 0, right.z).getNormalized() * -velocity;
 		break;
 	case(D):
-		displacement += physx::PxVec3(right.x, 0, right.z) * velocity;
+		displacement += physx::PxVec3(right.x, 0, right.z).getNormalized() * velocity;
 		break;
 	}
 }
@@ -119,6 +120,5 @@ void Camera::move(float deltaTime)
 
 	// reset vector
 	displacement.x = 0.0f;
-	displacement.y = 0.0f;
 	displacement.z = 0.0f;
 }
