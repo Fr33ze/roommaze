@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'north_east_south_west_none_3.blend'
 # www.blender.org
-mtllib north_east_south_west_none_3.mtl
+mtllib material.mtl
 o Room
 v 4.500000 2.450000 -4.500000
 v -4.500000 2.450000 4.500000
