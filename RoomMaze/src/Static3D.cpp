@@ -64,6 +64,7 @@ void Static3D::createShape(const char *path) {
 	meshDesc.triangles.count = gd.indices.size() / 3;
 	meshDesc.triangles.stride = 3 * sizeof(unsigned int);
 	meshDesc.triangles.data = gd.indices.data();
+	//meshDesc.flags = physx::PxMeshFlag::eFLIPNORMALS;
 	physx::PxDefaultMemoryOutputStream writeBuffer;
 	physx::PxTriangleMeshCookingResult::Enum result;
 	bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
@@ -72,5 +73,5 @@ void Static3D::createShape(const char *path) {
 	physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
 	physx::PxTriangleMeshGeometry trigeom = physx::PxTriangleMeshGeometry(mPhysics->createTriangleMesh(readBuffer));
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
-	pxShape = mPhysics->createShape(trigeom, *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
+	pxShape = mPhysics->createShape(trigeom, *mat, false);
 }

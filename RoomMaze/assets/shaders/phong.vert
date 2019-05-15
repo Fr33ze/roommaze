@@ -41,7 +41,7 @@ void main() {
 
 	// TBN matrix (used to transform normals from tangent space (normals from a normal map) to a different space)
 	// ==========================================================================================================
-	vec3 N = normalize(vec3(modelMatrix * vec4(vertexData.normal, 0))); // working in world space --> multiplication with model matrix
+	vec3 N = normalize(vec3(modelMatrix * vec4(normal, 0))); // working in world space --> multiplication with model matrix
 	vec3 T = normalize(vec3(modelMatrix * vec4(tangent, 0)));
 	// re-orthogonalize T with respect to N (Gram-Schmidt process)
 	T = normalize(T - dot(T, N) * N);

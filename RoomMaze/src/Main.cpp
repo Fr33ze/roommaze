@@ -155,7 +155,7 @@ void initContent() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera (includes character controller)
-	camera = Camera(glm::vec3(0.0f, 1.20f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera = Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
 	camera.setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 
 	// GUI
@@ -166,14 +166,23 @@ void initContent() {
 	/* ------------- */
 
 	//Construct a static (non moveable) cube with the given initial transformation
-	Static3D *staticCube = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
-	renderObjects.push_back(staticCube);
+	//Static3D *staticCube = new Static3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.125f, -3.0f)));
+	//renderObjects.push_back(staticCube);
 
 	//Construct a dynamic (moveable and affected by gravity) cube that spawns on top of the static cube
 	Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
 	renderObjects.push_back(dynamicCube);
+	Dynamic3D *dynamicCube2 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.3f, -3.0f)));
+	renderObjects.push_back(dynamicCube2);
+	Dynamic3D *dynamicCube3 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.6f, -3.0f)));
+	renderObjects.push_back(dynamicCube3);
+	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
+	renderObjects.push_back(dynamicCube4);
 
-	Static3D *room1 = new Static3D("assets/objects/rooms/north_east_south_west_up_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)));
+	Static3D *floor = new Static3D("assets/objects/floor/floor.obj", shader, glm::mat4(1.0f));
+	renderObjects.push_back(floor);
+
+	Static3D *room1 = new Static3D("assets/objects/rooms/north_east_south_west_up_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
 	renderObjects.push_back(room1);
 	Static3D *room2 = new Static3D("assets/objects/rooms/north_east_south_west_none_2.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -20.0f)));
 	renderObjects.push_back(room2);
@@ -312,6 +321,7 @@ void initPhysX() {
 }
 
 void update(float deltaT) {
+	camera.move(deltaT);
 	gui.updateTime(deltaT);
 }
 

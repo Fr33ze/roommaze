@@ -3,20 +3,23 @@
 Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	: projectionMatrix(glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f)), front(glm::vec3(0.0f, 0.0f, -1.0f)), groundLevel(position.y), yaw(-90.0f), pitch(0.0f) {
 	
+	displacement = physx::PxVec3(0.0f, 0.0f, 0.0f);
+
 	//create physx controller
 	extern physx::PxScene* pxScene;
 	extern physx::PxPhysics* mPhysics;
 	cManager = PxCreateControllerManager(*pxScene);
 	physx::PxCapsuleControllerDesc desc;
-	desc.height = physx::PxF32(2.0f);
+	desc.height = physx::PxF32(1.0f);
 	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
 	desc.contactOffset = physx::PxF32(0.05f);
-	desc.stepOffset = physx::PxF32(0.1f);
-	desc.radius = physx::PxF32(0.5f);
+	desc.stepOffset = physx::PxF32(0.15f);
+	desc.radius = physx::PxF32(0.1f);
 	desc.position = physx::PxExtendedVec3(position.x, position.y, position.z);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
-	desc.reportCallback = this;
-	desc.behaviorCallback = this;
+	cctCallbacks = new CharacterCallback();
+	desc.reportCallback = cctCallbacks;
+	desc.behaviorCallback = cctCallbacks;
 	desc.material = mPhysics->createMaterial(1.0f, 1.0f, 0.05);
 	controller = cManager->createController(desc);
 
@@ -73,23 +76,18 @@ glm::mat4 Camera::getViewMatrix() {
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
-	physx::PxVec3 disp;
 	switch (key) {
 	case(W):
-		disp = physx::PxVec3(front.x, front.y, front.z) * velocity;
-		controller->move(disp, 0.01f, deltaTime, filters);
+		displacement += physx::PxVec3(front.x, 0, front.z) * velocity;
 		break;
 	case(S):
-		disp = physx::PxVec3(front.x, front.y, front.z) * -velocity;
-		controller->move(disp, 0.01f, deltaTime, filters);
+		displacement += physx::PxVec3(front.x, 0, front.z) * -velocity;
 		break;
 	case(A):
-		disp = physx::PxVec3(right.x, right.y, right.z) * -velocity;
-		controller->move(disp, 0.01f, deltaTime, filters);
+		displacement += physx::PxVec3(right.x, 0, right.z) * -velocity;
 		break;
 	case(D):
-		disp = physx::PxVec3(right.x, right.y, right.z) * velocity;
-		controller->move(disp, 0.01f, deltaTime, filters);
+		displacement += physx::PxVec3(right.x, 0, right.z) * velocity;
 		break;
 	}
 }
@@ -109,4 +107,18 @@ void Camera::processMouseMovement(float xOffset, float yOffset, bool constrainPi
 
 	// update camera vectors using the updated euler angles
 	updateCameraVectors();
+}
+
+void Camera::move(float deltaTime)
+{
+	// gravity
+	displacement.y = -5.0f * deltaTime;
+
+	// movement
+	controller->move(displacement, 0.01f, deltaTime, filters);
+
+	// reset vector
+	displacement.x = 0.0f;
+	displacement.y = 0.0f;
+	displacement.z = 0.0f;
 }

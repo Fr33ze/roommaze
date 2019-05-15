@@ -60,7 +60,7 @@
     <ClCompile Include="src\GUIText.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="src\CameraCCT.cpp">
+    <ClCompile Include="src\CharacterCallback.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,6 +105,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="src\GUIText.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CharacterCallback.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

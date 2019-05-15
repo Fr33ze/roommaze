@@ -51,7 +51,7 @@ public:
 	/**
 	 * Draws the object and sets the needed Uniforms on the shader
 	 *
-	 * @param camera: the camera used for rendering
+	 * @param camera: camera used for drawing
 	 */
 	void draw(Camera &camera);
 	void destroy();

@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Shader.h"
+#include "CharacterCallback.h"
 
 // stores all directions
 enum Key {
@@ -17,12 +18,16 @@ enum Key {
 static const float MOVEMENT_SPEED = 2.0f;
 static const float MOUSE_SENSITIVITY = 0.1f;
 
-class Camera : public physx::PxUserControllerHitReport, public physx::PxControllerBehaviorCallback, public physx::PxQueryFilterCallback {
+class Camera {
 
 protected:
+	// displacement (movement) vector
+	physx::PxVec3 displacement;
+
 	// physx controller stuff
 	physx::PxControllerManager* cManager;
 	physx::PxController* controller;
+	CharacterCallback* cctCallbacks;
 	physx::PxControllerFilters filters;
 
 	// camera attributes
@@ -102,17 +107,10 @@ public:
 	 */
 	void processMouseMovement(float xOffset, float yOffset, bool constrainPitch = true);
 
-	// Implements PxUserControllerHitReport
-	virtual void onShapeHit(const physx::PxControllerShapeHit& hit);
-	virtual void onControllerHit(const physx::PxControllersHit& hit) {}
-	virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) {}
-
-	// Implements PxControllerBehaviorCallback
-	virtual physx::PxControllerBehaviorFlags getBehaviorFlags(const physx::PxShape& shape, const physx::PxActor& actor);
-	virtual physx::PxControllerBehaviorFlags getBehaviorFlags(const physx::PxController& controller);
-	virtual physx::PxControllerBehaviorFlags getBehaviorFlags(const physx::PxObstacle& obstacle);
-
-	// Implements PxQueryFilterCallback
-	virtual physx::PxQueryHitType::Enum preFilter(const physx::PxFilterData& filterData, const physx::PxShape* shape, const physx::PxRigidActor* actor, physx::PxHitFlags& queryFlags);
-	virtual	physx::PxQueryHitType::Enum postFilter(const physx::PxFilterData& filterData, const physx::PxQueryHit& hit);
+	/**
+	 * Moves the character (and camera) according to gravity and input
+	 *
+	 * @param deltaTime: time between current frame and last frame
+	 */
+	void move(float deltaTime);
 };

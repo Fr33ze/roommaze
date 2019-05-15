@@ -141,7 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\CameraCCT.cpp" />
+    <ClCompile Include="src\CharacterCallback.cpp" />
     <ClCompile Include="src\Dynamic3D.cpp" />
     <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\GUIComponent.cpp" />
@@ -159,6 +159,7 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CharacterCallback.h" />
     <ClInclude Include="src\Dynamic3D.h" />
     <ClInclude Include="src\GUI.h" />
     <ClInclude Include="src\GUIComponent.h" />
