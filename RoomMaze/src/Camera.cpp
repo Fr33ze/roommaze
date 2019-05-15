@@ -11,9 +11,9 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	cManager = PxCreateControllerManager(*pxScene);
 	physx::PxCapsuleControllerDesc desc;
 	desc.height = physx::PxF32(1.0f);
-	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
+	desc.climbingMode = physx::PxCapsuleClimbingMode::eEASY;
 	desc.contactOffset = physx::PxF32(0.05f);
-	desc.stepOffset = physx::PxF32(0.15f);
+	//desc.stepOffset = physx::PxF32(0.15f);
 	desc.radius = physx::PxF32(0.15f);
 	desc.position = physx::PxExtendedVec3(position.x, position.y, position.z);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
@@ -39,8 +39,8 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("viewMatrix", getViewMatrix());
 	shader->setUniform("projectionMatrix", projectionMatrix);
 	
-	physx::PxExtendedVec3 pos = controller->getPosition();
-	glm::vec3 position = glm::vec3(pos.x, pos.y + 1, pos.z);
+	physx::PxExtendedVec3 pos = controller->getFootPosition();
+	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
 	shader->setUniform("camera.position", position);
 	glm::mat4 viewmat = getViewMatrix();
 	shader->setUniform("camera.direction", glm::vec3(viewmat[0][2], viewmat[1][2], viewmat[2][2]));
@@ -70,8 +70,8 @@ void Camera::updateCameraVectors() {
 }
 
 glm::mat4 Camera::getViewMatrix() {
-	physx::PxExtendedVec3 pos = controller->getPosition();
-	glm::vec3 position = glm::vec3(pos.x, pos.y + 1, pos.z);
+	physx::PxExtendedVec3 pos = controller->getFootPosition();
+	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
 	return glm::lookAt(position, position + front, up);
 }
 
