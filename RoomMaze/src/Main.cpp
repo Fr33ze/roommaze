@@ -7,6 +7,10 @@
 #include <GLFW\glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
+#ifndef _DEBUG
+#include <Windows.h>
+#endif
+
 #include "Shader.h"
 #include "Camera.h"
 #include "GUI.h"
@@ -77,6 +81,11 @@ physx::PxPvdTransport *mTransport;
 /* ----- */
 
 int main(int argc, char **argv) {
+
+#ifndef _DEBUG
+	::ShowWindow(::GetConsoleWindow(), SW_HIDE);
+#endif
+
 	/* ------------------------- */
 	// READ SETTINGS.INI FILE
 	/* ------------------------- */
