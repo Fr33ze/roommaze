@@ -188,13 +188,23 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);
 
-	Static3D *floor = new Static3D("assets/objects/floor/floor.obj", shader, glm::mat4(1.0f));
+	Static3D *floor = new Static3D("assets/objects/floor/floor.obj", shader);
 	renderObjects.push_back(floor);
 
-	Static3D *room1 = new Static3D("assets/objects/rooms/north_east_south_west_up_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f)));
+	Static3D *room1 = new Static3D("assets/objects/rooms/north_east_south_west_none_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, 10.0f)));
 	renderObjects.push_back(room1);
-	Static3D *room2 = new Static3D("assets/objects/rooms/north_east_south_west_none_2.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -20.0f)));
+	Static3D *room2 = new Static3D("assets/objects/rooms/north_east_south_west_none_2.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f,	10.0f)));
 	renderObjects.push_back(room2);
+	Static3D *room3 = new Static3D("assets/objects/rooms/north_east_south_west_none_3.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 10.0f)));
+	renderObjects.push_back(room3);
+	Static3D *room4 = new Static3D("assets/objects/rooms/north_east_south_none_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, 0.0f)));
+	renderObjects.push_back(room4);
+	Static3D *room5 = new Static3D("assets/objects/rooms/north_east_south_west_up_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
+	renderObjects.push_back(room5);
+	Static3D *room6 = new Static3D("assets/objects/rooms/north_south_none_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, -10.0f)));
+	renderObjects.push_back(room6);
+	Static3D *room7 = new Static3D("assets/objects/rooms/north_none_1.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(room7);
 }
 
 GLFWwindow* initOpenGL() {
