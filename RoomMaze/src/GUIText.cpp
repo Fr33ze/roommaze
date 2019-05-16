@@ -96,53 +96,55 @@ void GUIText::initFont(std::string fontPath) {
 }
 
 void GUIText::draw(std::shared_ptr<Shader> shader) {
-	shader->use();
+	if (!text.empty()) {
+		shader->use();
 
-	shader->setUniform("projectionMatrix", projectionMatrix);
+		shader->setUniform("projectionMatrix", projectionMatrix);
 
-	glActiveTexture(GL_TEXTURE0);
-	shader->setUniform("textureUnit", 0);
+		glActiveTexture(GL_TEXTURE0);
+		shader->setUniform("textureUnit", 0);
 
-	glDisable(GL_DEPTH_TEST);
-	glEnable(GL_BLEND); // enable rendering semi-transparent materials
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND); // enable rendering semi-transparent materials
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
-	glBindVertexArray(vao);
+		glBindVertexArray(vao);
 
-	float pointer = position.x;
+		float pointer = position.x;
 
-	// iterate through all characters
-	std::string::const_iterator interator;
-	for (interator = text.begin(); interator != text.end(); interator++) {
-		Character character = characters[*interator];
+		// iterate through all characters
+		std::string::const_iterator interator;
+		for (interator = text.begin(); interator != text.end(); interator++) {
+			Character character = characters[*interator];
 
-		float xPos = pointer + character.bearing.x * scale;
-		float yPos = position.y - (character.size.y - character.bearing.y) * scale;
+			float xPos = pointer + character.bearing.x * scale;
+			float yPos = position.y - (character.size.y - character.bearing.y) * scale;
 
-		float width = character.size.x * scale;
-		float height = character.size.y * scale;
-		
-		// set vertices
-		float vertices[] = { xPos, yPos + height, xPos, yPos, xPos + width, yPos + height, xPos + width, yPos };
-		glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // glBufferSubData instead of glBufferData
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+			float width = character.size.x * scale;
+			float height = character.size.y * scale;
 
-		glBindTexture(GL_TEXTURE_2D, character.textureHandle);
+			// set vertices
+			float vertices[] = { xPos, yPos + height, xPos, yPos, xPos + width, yPos + height, xPos + width, yPos };
+			glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // glBufferSubData instead of glBufferData
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+			glBindTexture(GL_TEXTURE_2D, character.textureHandle);
 
-		// advance cursors for next glyph (advance is number of 1/64 pixels)
-		pointer += (character.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+			// advance cursors for next glyph (advance is number of 1/64 pixels)
+			pointer += (character.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+		}
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+		glBindVertexArray(0);
+
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+
+		shader->unuse();
 	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
-
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
-
-	shader->unuse();
 }
 
 void GUIText::updateText(std::string text) {

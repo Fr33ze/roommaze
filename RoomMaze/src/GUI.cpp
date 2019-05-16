@@ -1,7 +1,7 @@
 #include "GUI.h"
 
 GUI::GUI(int windowWidth, int windowHeight, int startingBatteries, Camera *camera)
-	: batteryTime(60.0f), collapseTime(120.0f), batteryCounter(startingBatteries), camera(camera) {
+	: batteryTime(60.0f), collapseTime(600.0f), batteryCounter(startingBatteries), camera(camera) {
 
 	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
@@ -11,8 +11,9 @@ GUI::GUI(int windowWidth, int windowHeight, int startingBatteries, Camera *camer
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
 	batteryStatus = GUIText(fontPath, std::to_string(startingBatteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, windowWidth, windowHeight);
-	batteryCountdown = GUIText(fontPath, std::to_string((int)batteryTime) + " sec", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
+	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
 	collapseCountdown = GUIText(fontPath, "Time until maze collapses: " + ((int)((int)collapseTime / 60) < 10 ? "0" + std::to_string((int) ((int)collapseTime / 60)) : std::to_string((int)((int)collapseTime / 60))) + ":" + ((int)((int)collapseTime % 60) < 10 ? "0" + std::to_string((int) ((int)collapseTime % 60)) : std::to_string((int)((int)collapseTime % 60))), glm::vec2(windowWidth * 0.755f, windowHeight * 0.95f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
+	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, windowWidth, windowHeight);
 }
 
 GUI::GUI() {
@@ -30,7 +31,7 @@ void GUI::destroy() {
 void GUI::updateTime(float deltaT) {
 	if (batteryTime - deltaT > 0.0f) {
 		batteryTime -= deltaT;
-		batteryCountdown.updateText(std::to_string((int)batteryTime) + " sec");
+		batteryCountdown.updateText(std::to_string((int)(batteryTime / 0.6f)) + " %");
 
 		if (batteryTime <= 2.0f) {
 			if ((int)(batteryTime * 100) % 2 == 0) {
@@ -62,6 +63,8 @@ void GUI::draw() {
 	if (!(collapseTime <= 10.0f && (int)(collapseTime * 2) % 2 == 0) || collapseTime <= 0.5f) {
 		collapseCountdown.draw(textShader);
 	}
+
+	infoText.draw(textShader);
 }
 
 void GUI::addBattery() {
@@ -76,4 +79,8 @@ void GUI::deleteBattery() {
 		batteryTime = 60.0f;
 		camera->setSpotLightParameters(glm::vec3(1.0f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
 	}
+}
+
+void GUI::setInfoText(std::string text) {
+	infoText.updateText(text);
 }

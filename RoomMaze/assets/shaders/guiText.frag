@@ -18,5 +18,5 @@ void main() {
 	float alphaChannel = texture(textureUnit, UVCoords).r;
 	if (alphaChannel < 0.1)
 		discard;
-	color = vec4(vec3(1.0), alphaChannel);
+	color = vec4(vec3(1.0), alphaChannel * 0.5);
 }

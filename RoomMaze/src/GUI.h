@@ -25,7 +25,7 @@ protected:
 
 	int batteryCounter;
 	GUIComponent battery;
-	GUIText batteryStatus, batteryCountdown, collapseCountdown;
+	GUIText batteryStatus, batteryCountdown, collapseCountdown, infoText;
 
 	// camera
 	Camera *camera;
@@ -56,5 +56,7 @@ public:
 	void addBattery();
 
 	void deleteBattery();
+
+	void setInfoText(std::string text);
 
 };
