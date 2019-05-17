@@ -110,6 +110,9 @@
     <ClInclude Include="src\CharacterCallback.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="src\Switch3D.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\redist\PhysX_32.dll" />

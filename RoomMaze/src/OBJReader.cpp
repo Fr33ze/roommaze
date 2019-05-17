@@ -297,9 +297,9 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 		unsigned int reuseCount = 0;
 
 		for (std::vector<unsigned int> &face : iter->second) {
-			std::string first = std::to_string(face[0]) + std::to_string(face[1]) + std::to_string(face[2]);
-			std::string second = std::to_string(face[3]) + std::to_string(face[4]) + std::to_string(face[5]);
-			std::string third = std::to_string(face[6]) + std::to_string(face[7]) + std::to_string(face[8]);
+			std::string first = std::to_string(face[0]) + "/" + std::to_string(face[1]) + "/" + std::to_string(face[2]);
+			std::string second = std::to_string(face[3]) + "/" + std::to_string(face[4]) + "/" + std::to_string(face[5]);
+			std::string third = std::to_string(face[6]) + "/" + std::to_string(face[7]) + "/" + std::to_string(face[8]);
 
 			//Calculate tangents for this face
 			glm::vec3 & v0 = positions[face[0] - 1];
