@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
-	: projectionMatrix(glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f)), front(glm::vec3(0.0f, 0.0f, -1.0f)), groundLevel(position.y), yaw(-90.0f), pitch(0.0f) {
+	: projectionMatrix(glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f)), front(glm::vec3(0.0f, 0.0f, -1.0f)), yaw(-90.0f), pitch(0.0f) {
 	
 	displacement = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
@@ -72,10 +72,12 @@ void Camera::updateCameraVectors() {
 glm::mat4 Camera::getViewMatrix() {
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
 	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
-	return glm::lookAt(position, position + front, up);
+	float cam_offset = sin(bobbingTime) / 10; //change divisor to make the bobbing effect weaker
+	return glm::lookAt(position + right * cam_offset, (position + front) + right * cam_offset, up);
 }
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
+	bobbingTime = fmod((bobbingTime + deltaTime * 7 /*Change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 	switch (key) {
 	case(W):

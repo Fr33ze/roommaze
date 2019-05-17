@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Dynamic3D.h"
+#include "Object3D.h"
 
-class Switch3D : public Dynamic3D
+class Switch3D : public Object3D
 {
 public:
 	/**
@@ -25,6 +25,13 @@ public:
 	 */
 	Switch3D(const Switch3D &o, glm::mat4 modelMatrix);
 	~Switch3D();
+
+	/**
+	 * Draws the object (both cover and lever) and sets the needed Uniforms on the shader
+	 *
+	 * @param camera: camera used for drawing
+	 */
+	virtual void draw(Camera &camera);
 protected:
 	// actor that controls the lever of the switch
 	physx::PxRigidDynamic *leverActor;

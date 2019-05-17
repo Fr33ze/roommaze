@@ -1,7 +1,10 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
 #include <glm\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <math.h>
 
 #include "Shader.h"
 #include "CharacterCallback.h"
@@ -37,7 +40,8 @@ protected:
 	glm::vec3 right;
 	glm::vec3 up;
 
-	float groundLevel;
+	// time to calculate bobbing effect (ranges from 0-2PI)
+	float bobbingTime;
 
 	// the light of the camera is a spot light
 	struct CameraLight {

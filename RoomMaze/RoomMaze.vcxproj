@@ -157,6 +157,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Static3D.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="src\Switch3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CharacterCallback.h" />

@@ -53,6 +53,6 @@ public:
 	 *
 	 * @param camera: camera used for drawing
 	 */
-	void draw(Camera &camera);
+	virtual void draw(Camera &camera);
 	void destroy();
 };
