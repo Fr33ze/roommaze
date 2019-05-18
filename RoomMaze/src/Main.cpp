@@ -212,7 +212,7 @@ void initContent() {
 
 	Static3D *wallSwitchCover = new Static3D("assets/objects/wallSwitch/wallSwitchCover.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
 	renderObjects.push_back(wallSwitchCover);
-	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/wallSwitchLever.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -3.0f)));
+	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/wallSwitchLever.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
 	renderObjects.push_back(wallSwitchLever);
 }
 
