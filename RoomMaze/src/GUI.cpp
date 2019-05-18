@@ -10,10 +10,10 @@ GUI::GUI(int windowWidth, int windowHeight, int startingBatteries, Camera *camer
 
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
-	batteryStatus = GUIText(fontPath, std::to_string(startingBatteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, windowWidth, windowHeight);
-	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
-	collapseCountdown = GUIText(fontPath, "Maze collapses in: " + ((int)((int)collapseTime / 60) < 10 ? "0" + std::to_string((int) ((int)collapseTime / 60)) : std::to_string((int)((int)collapseTime / 60))) + ":" + ((int)((int)collapseTime % 60) < 10 ? "0" + std::to_string((int) ((int)collapseTime % 60)) : std::to_string((int)((int)collapseTime % 60))), glm::vec2(windowWidth * 0.81f, windowHeight * 0.95f), windowWidth / 1920.0f * 0.3f, windowWidth, windowHeight);
-	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, windowWidth, windowHeight);
+	batteryStatus = GUIText(fontPath, std::to_string(startingBatteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
+	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
+	collapseCountdown = GUIText(fontPath, "Maze collapses in: " + ((int)((int)collapseTime / 60) < 10 ? "0" + std::to_string((int) ((int)collapseTime / 60)) : std::to_string((int)((int)collapseTime / 60))) + ":" + ((int)((int)collapseTime % 60) < 10 ? "0" + std::to_string((int) ((int)collapseTime % 60)) : std::to_string((int)((int)collapseTime % 60))), glm::vec2(windowWidth * 0.81f, windowHeight * 0.95f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
+	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, 1.0f, windowWidth, windowHeight);
 }
 
 GUI::GUI() {

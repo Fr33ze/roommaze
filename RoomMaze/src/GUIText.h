@@ -30,6 +30,7 @@ protected:
 	float scale;
 
 	glm::mat4 projectionMatrix;
+	float alpha;
 	GLuint vao;
 	GLuint vboVertices;
 	GLuint vboUVCoords;
@@ -46,10 +47,11 @@ public:
 	 * @param text: text to be rendered
 	 * @param position: defines where to place the lower left corner of the text
 	 * @param scale: scale factor of the text
+	 * @param alpha: defines the opacity of the text
 	 * @param windowWidth: the width of the window
 	 * @param windowHeight: the height of the window
 	 */
-	GUIText(std::string fontPath, std::string text, glm::vec2 position, float scale, int windowWidth, int windowHeight);
+	GUIText(std::string fontPath, std::string text, glm::vec2 position, float scale, float alpha, int windowWidth, int windowHeight);
 	
 	GUIText();
 

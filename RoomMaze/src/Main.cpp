@@ -210,10 +210,13 @@ void initContent() {
 	Static3D *room9 = new Static3D("assets/objects/rooms/north_none_1.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, -10.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	renderObjects.push_back(room9);
 
-	Static3D *wallSwitchCover = new Static3D("assets/objects/wallSwitch/wallSwitchCover.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
+	Static3D *wallSwitchCover = new Static3D("assets/objects/wallSwitch/cover.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
 	renderObjects.push_back(wallSwitchCover);
-	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/wallSwitchLever.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
+	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/lever.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
 	renderObjects.push_back(wallSwitchLever);
+
+	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.75f, -2.0f)));
+	renderObjects.push_back(battery);
 }
 
 GLFWwindow* initOpenGL() {

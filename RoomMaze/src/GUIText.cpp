@@ -1,7 +1,7 @@
 #include "GUIText.h"
 
-GUIText::GUIText(std::string fontPath, std::string text, glm::vec2 position, float scale, int windowWidth, int windowHeight)
-	: text(text), position(position), scale(scale), projectionMatrix(glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight)) {
+GUIText::GUIText(std::string fontPath, std::string text, glm::vec2 position, float scale, float alpha, int windowWidth, int windowHeight)
+	: text(text), position(position), scale(scale), alpha(alpha), projectionMatrix(glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight)) {
 	
 	initFont(fontPath);
 
@@ -100,6 +100,7 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 		shader->use();
 
 		shader->setUniform("projectionMatrix", projectionMatrix);
+		shader->setUniform("alpha", alpha);
 
 		glActiveTexture(GL_TEXTURE0);
 		shader->setUniform("textureUnit", 0);
