@@ -165,7 +165,7 @@ void initContent() {
 
 	// camera (includes character controller)
 	camera = Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera.setSpotLightParameters(glm::vec3(0.7f), 0.0f, 25.0f, glm::vec3(0.2f, 0.4f, 0.2f));
+	camera.setSpotLightParameters(glm::vec3(0.8f), 0.0f, 25.0f, glm::vec3(0.4f));
 
 	// GUI
 	gui = GUI(settings.width, settings.height, 5, &camera);
@@ -188,38 +188,16 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);
 
-	Static3D *floor = new Static3D("assets/objects/floor/floor.obj", shader);
-	renderObjects.push_back(floor);
+	Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
+	renderObjects.push_back(maze);
 
-	Static3D *room1 = new Static3D("assets/objects/rooms/north_east_south_west_none_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, 10.0f)));
-	renderObjects.push_back(room1);
-	Static3D *room2 = new Static3D("assets/objects/rooms/north_east_south_west_none_2.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f,	10.0f)));
-	renderObjects.push_back(room2);
-	Static3D *room3 = new Static3D("assets/objects/rooms/north_east_south_west_none_3.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 10.0f)));
-	renderObjects.push_back(room3);
-	Static3D *room4 = new Static3D("assets/objects/rooms/north_east_south_none_2.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, 0.0f)));
-	renderObjects.push_back(room4);
-	Static3D *room5 = new Static3D("assets/objects/rooms/north_east_south_west_up_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)));
-	renderObjects.push_back(room5);
-	Static3D *room6 = new Static3D("assets/objects/rooms/north_east_none_1.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, 0.0f)), glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(room6);
-	Static3D *room7 = new Static3D("assets/objects/rooms/north_south_none_1.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-10.0f, 0.0f, -10.0f)));
-	renderObjects.push_back(room7);
-	Static3D *room8 = new Static3D("assets/objects/rooms/north_east_none_2.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -10.0f)), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(room8);
-	Static3D *room9 = new Static3D("assets/objects/rooms/north_none_1.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(10.0f, 0.0f, -10.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	renderObjects.push_back(room9);
-
-	Static3D *wallSwitchCover = new Static3D("assets/objects/wallSwitch/cover.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
+	Static3D *wallSwitchCover = new Static3D("assets/objects/wallSwitch/cover.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 1.1f, -1.5f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	renderObjects.push_back(wallSwitchCover);
-	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/lever.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-2.0f, 1.1f, -4.0f)));
+	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/lever.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 1.1f, -1.5f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	renderObjects.push_back(wallSwitchLever);
 
-	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.5f, 1.1f, -3.8f)));
+	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, -1.0f)));
 	renderObjects.push_back(battery);
-
-	Static3D *shelf = new Static3D("assets/objects/shelf/shelf.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-3.0f, 0.0f, -3.5f)));
-	renderObjects.push_back(shelf);
 }
 
 GLFWwindow* initOpenGL() {

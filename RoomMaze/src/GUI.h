@@ -21,11 +21,10 @@ protected:
 	// shader used for rendering text
 	std::shared_ptr<Shader> textShader;
 
-	float batteryTime, collapseTime;
-
 	int batteryCounter;
+	float batteryTime;
 	GUIComponent battery;
-	GUIText batteryStatus, batteryCountdown, collapseCountdown, infoText;
+	GUIText batteryStatus, batteryCountdown, infoText;
 
 	// camera
 	Camera *camera;

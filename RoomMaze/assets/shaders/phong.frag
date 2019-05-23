@@ -130,7 +130,7 @@ void main() {
 	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).a : material.alpha;
 	if (alphaChannel < 0.1)
 		discard;
-	color = vec4(light, alphaChannel);
+	color = vec4(light, alphaChannel) * 4.0;
 }
 
 vec3 calculateDirectionalLight(int i, vec3 normalizedNormal) {
