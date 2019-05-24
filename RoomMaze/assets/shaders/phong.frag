@@ -95,7 +95,7 @@ void main() {
 
 	// AMBIENT LIGHT (ambientIntensity x (ambientColor || (ambientTextureMap || diffuseTextureMap)))
 	// =============================================================================================
-	vec3 ambientIntensity = vec3(0.01);
+	vec3 ambientIntensity = vec3(0.005);
 	vec3 ambientLight = ambientIntensity * (material.hasAmbientTextureMap ? texture(material.ambientTextureMapUnit, vertexData.UVCoords).rgb : (material.hasDiffuseTextureMap ? texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.ambientColor));
 
 	// NORMAL VECTOR
@@ -130,7 +130,7 @@ void main() {
 	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).a : material.alpha;
 	if (alphaChannel < 0.1)
 		discard;
-	color = vec4(light, alphaChannel) * 4.0;
+	color = vec4(light, alphaChannel) * 2.0;
 }
 
 vec3 calculateDirectionalLight(int i, vec3 normalizedNormal) {

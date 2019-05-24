@@ -34,15 +34,15 @@ void GUI::updateTime(float deltaT) {
 
 		if (batteryTime <= 2.0f) {
 			if ((int)(batteryTime * 100) % 2 == 0) { // TODO: random flickering
-				camera->setSpotLightParameters(glm::vec3(0.0f), 0.0f, 25.0f, glm::vec3(0.4f));
+				camera->turnSpotlightOff();
 			}
 			else {
-				camera->setSpotLightParameters(glm::vec3(0.8f), 0.0f, 25.0f, glm::vec3(0.4f));
+				camera->turnSpotlightOn();
 			}
 		}
 	}
 	else {
-		camera->setSpotLightParameters(glm::vec3(0.0f), 0.0f, 25.0f, glm::vec3(0.4f));
+		camera->turnSpotlightOff();
 	}
 }
 
@@ -67,7 +67,7 @@ void GUI::deleteBattery() {
 		batteryCounter--;
 		batteryStatus.updateText(std::to_string(batteryCounter) + "/10");
 		batteryTime = 120.0f;
-		camera->setSpotLightParameters(glm::vec3(0.8f), 0.0f, 25.0f, glm::vec3(0.4f));
+		camera->turnSpotlightOn();
 	}
 }
 

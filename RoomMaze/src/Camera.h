@@ -45,6 +45,7 @@ protected:
 
 	// the light of the camera is a spot light
 	struct CameraLight {
+		bool isTurnedOn;
 		glm::vec3 intensity;
 		float innerAngle;
 		float outerAngle;
@@ -117,4 +118,9 @@ public:
 	 * @param deltaTime: time between current frame and last frame
 	 */
 	void move(float deltaTime);
+
+	void turnSpotlightOn();
+
+	void turnSpotlightOff();
+
 };

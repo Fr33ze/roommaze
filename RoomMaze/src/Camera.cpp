@@ -26,6 +26,8 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	filters = physx::PxControllerFilters();
 
 	updateCameraVectors();
+
+	cameraLight.isTurnedOn = true;
 }
 
 void Camera::setSpotLightParameters(glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation) {
@@ -44,7 +46,7 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("camera.position", position);
 	glm::mat4 viewmat = getViewMatrix();
 	shader->setUniform("camera.direction", glm::vec3(viewmat[0][2], viewmat[1][2], viewmat[2][2]));
-	shader->setUniform("camera.intensity", cameraLight.intensity);
+	shader->setUniform("camera.intensity", cameraLight.isTurnedOn ? cameraLight.intensity : glm::vec3(0.0f));
 	shader->setUniform("camera.innerCutOff", glm::cos(glm::radians(cameraLight.innerAngle))); // cos()-calculation outside shader (saves valuable time)
 	shader->setUniform("camera.outerCutOff", glm::cos(glm::radians(cameraLight.outerAngle)));
 	shader->setUniform("camera.attenuation", cameraLight.attenuation);
@@ -123,4 +125,12 @@ void Camera::move(float deltaTime)
 	// reset vector
 	displacement.x = 0.0f;
 	displacement.z = 0.0f;
+}
+
+void Camera::turnSpotlightOn() {
+	cameraLight.isTurnedOn = true;
+}
+
+void Camera::turnSpotlightOff() {
+	cameraLight.isTurnedOn = false;
 }
