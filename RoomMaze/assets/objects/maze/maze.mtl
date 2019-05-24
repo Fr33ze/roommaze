@@ -1,5 +1,5 @@
 # Blender MTL File: 'Maze.blend'
-# Material Count: 6
+# Material Count: 8
 
 newmtl Bricks1
 map_Kd bricks1.jpg
@@ -16,6 +16,18 @@ illum 2
 newmtl Bricks2
 map_Kd bricks2.jpg
 map_Ks bricks2_specular.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Concrete1
+map_Kd concrete1.jpg
+map_Ks concrete1_specular.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -51,12 +63,17 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl None
-Ns 0
-Ka 0.000000 0.000000 0.000000
-Kd 0.8 0.8 0.8
-Ks 0.8 0.8 0.8
-d 1
+newmtl Paving1
+map_Kd paving1.jpg
+map_Ks paving1_specular.jpg
+map_N paving1_normal.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
 illum 2
 
 newmtl Water
@@ -66,6 +83,13 @@ Kd 0.141 0.118 0.000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
-d 0.250000
+d 0.400000
 illum 2
 
+newmtl None
+Ns 0
+Ka 0.000000 0.000000 0.000000
+Kd 0.8 0.8 0.8
+Ks 0.8 0.8 0.8
+d 1
+illum 2
