@@ -30,7 +30,8 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	cameraLight.isTurnedOn = true;
 }
 
-void Camera::setSpotLightParameters(glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation) {
+void Camera::setSpotLightParameters(float brightness, glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation) {
+	cameraLight.brightness = brightness;
 	cameraLight.intensity = intensity;
 	cameraLight.innerAngle = innerAngle;
 	cameraLight.outerAngle = outerAngle;
@@ -46,6 +47,7 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("camera.position", position);
 	glm::mat4 viewmat = getViewMatrix();
 	shader->setUniform("camera.direction", glm::vec3(viewmat[0][2], viewmat[1][2], viewmat[2][2]));
+	shader->setUniform("camera.brightness", cameraLight.brightness);
 	shader->setUniform("camera.intensity", cameraLight.isTurnedOn ? cameraLight.intensity : glm::vec3(0.0f));
 	shader->setUniform("camera.innerCutOff", glm::cos(glm::radians(cameraLight.innerAngle))); // cos()-calculation outside shader (saves valuable time)
 	shader->setUniform("camera.outerCutOff", glm::cos(glm::radians(cameraLight.outerAngle)));

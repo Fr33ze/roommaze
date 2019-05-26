@@ -165,7 +165,7 @@ void initContent() {
 
 	// camera (includes character controller)
 	camera = Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera.setSpotLightParameters(glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(0.4f));
+	camera.setSpotLightParameters(2.0f, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.22f, 0.2f));
 
 	// GUI
 	gui = GUI(settings.width, settings.height, 5, &camera);

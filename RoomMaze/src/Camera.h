@@ -45,6 +45,7 @@ protected:
 
 	// the light of the camera is a spot light
 	struct CameraLight {
+		float brightness;
 		bool isTurnedOn;
 		glm::vec3 intensity;
 		float innerAngle;
@@ -80,12 +81,13 @@ public:
 	/**
 	 * Sets the parameters of the camera's spot light.
 	 *
+	 * @param brightness: brightness of the whole scene
 	 * @param intensity: intensity (= color) of the light
 	 * @param innerAngle: inner angle of the light cone
 	 * @param outerAngle: outer angle of the light cone
 	 * @param attenuation: vec3 of floats that stores the attenuation of the light (constant, linear, quadratic)
 	 */
-	void setSpotLightParameters(glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation);
+	void setSpotLightParameters(float brightness, glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation);
 
 	/**
 	 * Sets camera's parameters as uniforms in the given shader.
