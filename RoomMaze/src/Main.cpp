@@ -195,10 +195,10 @@ void initContent() {
 
 	Static3D *wallSwitchCover = new Static3D("assets/objects/wallSwitch/cover.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 1.1f, -1.5f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	renderObjects.push_back(wallSwitchCover);
-	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/lever.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 1.1f, -1.5f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	Static3D *wallSwitchLever = new Static3D("assets/objects/wallSwitch/lever.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.35f, 0.75f, 3.2f)), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 	renderObjects.push_back(wallSwitchLever);
 
-	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 1.0f, -1.0f)));
+	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 	renderObjects.push_back(battery);
 }
 
