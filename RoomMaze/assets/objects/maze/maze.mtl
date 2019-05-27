@@ -1,5 +1,5 @@
 # Blender MTL File: 'Maze.blend'
-# Material Count: 12
+# Material Count: 15
 
 newmtl Bricks1
 map_Kd bricks1.jpg
@@ -41,6 +41,18 @@ newmtl Concrete2
 map_Kd concrete2.jpg
 map_Ks concrete2_specular.jpg
 map_N concrete2_normal.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Doors
+map_Kd doors.jpg
+map_Ks doors_specular.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -93,6 +105,32 @@ newmtl Metal4
 map_Kd metal4.jpg
 map_Ks metal4_specular.jpg
 map_N metal4_normal.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Metal5
+map_Kd metal5.jpg
+map_Ks metal5_specular.jpg
+map_N metal5_normal.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Metal6
+map_Kd metal6.jpg
+map_Ks metal6_specular.jpg
+map_N metal6_normal.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
