@@ -21,6 +21,45 @@
 #include "OBJReader.h"
 #include "INIReader.h"
 
+/* TODO
+
+Modell:
+
+-> Texturierung Übergang Concrete-Bricks
+-> Rohre verlegen
+-> Sicherungskasten + Diode
+-> Knopf (Aufzug)
+-> Schlüssel
+-> Lüftungsschächte modellieren und verteilen
+
+Code:
+
+-> Brightness in settings.ini (1.0f als Default-Wert)
+-> UV-Koordinaten umkehren (auf y-Achse)
+-> Überlegung bei Start nur erste paar Räume laden (eigenes Objekt-File) und dann wenn das Spiel läuft das restliche Modell.
+-> Schattenwurf
+-> Glow
+-> GUI (Startscreen / Endscreen)
+-> Sound:
+	- Ambient
+	- Gehen auf Stein
+	- Gehen auf Wasser
+	- Aufzugtüren bewegen sich
+	- Schlüssel sperrt auf (Sicherungskasten)
+	- Knopf wird gedrückt (Aufzug)
+-> Animation:
+	- Schlüssel in Schloss stecken und umdrehen
+	- Sicherungskasten öffnet sich
+	- Drücken von Aufzug-Knopf
+	- Aufzugtüren öffnen sich beim Drücken von Aufzug-Knopf
+-> Interaktion mit Objekten:
+	- Batterie
+	- Diode
+	- Schlüssel
+	- Knopf
+
+*/
+
 /* ----------- */
 // PROTOTYPES
 /* ----------- */
