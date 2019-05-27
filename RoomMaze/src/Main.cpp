@@ -190,8 +190,12 @@ void initContent() {
 
 	Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
 	renderObjects.push_back(maze);
-	Static3D *mazeWater = new Static3D("assets/objects/maze/mazeWater.obj", shader);
-	renderObjects.push_back(mazeWater);
+	Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_doors/elevator_right_door.obj", shader);
+	renderObjects.push_back(elevatorRightDoor);
+	Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_doors/elevator_left_door.obj", shader);
+	renderObjects.push_back(elevatorLeftDoor);
+	Static3D *water = new Static3D("assets/objects/water/water.obj", shader);
+	renderObjects.push_back(water);
 
 	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 	renderObjects.push_back(battery);
