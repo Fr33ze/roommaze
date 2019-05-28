@@ -1,0 +1,12 @@
+[Battery]
+
+[Key]
+
+[Resistance]
+# Resistance which is already inside the electric box.
+-4.125 1.59 1.415
+# Resistance placed by the character.
+-4.125 1.69 1.415
+# Possible places where the resistance could be hide.
+
+[Button]

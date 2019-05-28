@@ -27,7 +27,6 @@ Modell:
 
 -> Texturierung Übergang Concrete-Bricks
 -> Rohre verlegen
--> Sicherungskasten + Diode
 -> Knopf (Aufzug)
 -> Schlüssel
 -> Lüftungsschächte modellieren und verteilen
@@ -237,7 +236,8 @@ void initContent() {
 	renderObjects.push_back(elevatorLeftDoor);
 	Static3D *water = new Static3D("assets/objects/water/water.obj", shader);
 	renderObjects.push_back(water);
-
+	Static3D *resistance = new Static3D("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));
+	renderObjects.push_back(resistance);
 	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 	renderObjects.push_back(battery);
 }
