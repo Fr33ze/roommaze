@@ -1,5 +1,5 @@
 # Blender MTL File: 'Maze.blend'
-# Material Count: 13
+# Material Count: 14
 
 newmtl Bricks1
 map_Kd bricks1.jpg
@@ -19,6 +19,16 @@ map_Ks bricks2_specular.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Cable
+Ns 200.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.3125000 0.000000 0.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
@@ -128,23 +138,10 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Paving1
-map_Kd paving1.jpg
-map_Ks paving1_specular.jpg
-map_N paving1_normal.jpg
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-
-newmtl Stone1
-map_Kd stone1.jpg
-map_Ks stone1_specular.jpg
-map_N stone1_normal.jpg
+newmtl Metal7
+map_Kd metal7.jpg
+map_Ks metal7_specular.jpg
+map_N metal7_normal.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -160,4 +157,17 @@ Ka 0.000000 0.000000 0.000000
 Kd 0.8 0.8 0.8
 Ks 0.8 0.8 0.8
 d 1
+illum 2
+
+newmtl Paving1
+map_Kd paving1.jpg
+map_Ks paving1_specular.jpg
+map_N paving1_normal.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
 illum 2

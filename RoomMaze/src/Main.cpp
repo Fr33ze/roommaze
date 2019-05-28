@@ -34,6 +34,7 @@ Modell:
 
 Code:
 
+-> Geh-Effekt (Camera)
 -> Framerate-Independent?
 -> Brightness in settings.ini (1.0f als Default-Wert)
 -> UV-Koordinaten umkehren (auf y-Achse)
