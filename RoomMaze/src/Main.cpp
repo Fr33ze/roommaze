@@ -34,6 +34,7 @@ Modell:
 Code:
 
 -> Geh-Effekt (Camera)
+-> Character kleiner machen, sodass er unter den Rohren durchlaufne kann bzw. durch die Türbögen in Raum 2 kommt.
 -> Framerate-Independent?
 -> Brightness in settings.ini (1.0f als Default-Wert)
 -> UV-Koordinaten umkehren (auf y-Achse)
@@ -219,14 +220,14 @@ void initContent() {
 	//renderObjects.push_back(staticCube);
 
 	//Construct a dynamic (moveable and affected by gravity) cube that spawns on top of the static cube
-	Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
+	/*Dynamic3D *dynamicCube = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.0f, -3.0f)));
 	renderObjects.push_back(dynamicCube);
 	Dynamic3D *dynamicCube2 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.3f, -3.0f)));
 	renderObjects.push_back(dynamicCube2);
 	Dynamic3D *dynamicCube3 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.6f, -3.0f)));
 	renderObjects.push_back(dynamicCube3);
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
-	renderObjects.push_back(dynamicCube4);
+	renderObjects.push_back(dynamicCube4);*/
 
 	Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
 	renderObjects.push_back(maze);
@@ -234,6 +235,10 @@ void initContent() {
 	renderObjects.push_back(elevatorRightDoor);
 	Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_doors/elevator_left_door.obj", shader);
 	renderObjects.push_back(elevatorLeftDoor);
+	Static3D *door1 = new Static3D("assets/objects/maze/door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)));
+	renderObjects.push_back(door1);
+	Static3D *door2 = new Static3D("assets/objects/maze/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(door2);
 	Static3D *water = new Static3D("assets/objects/water/water.obj", shader);
 	renderObjects.push_back(water);
 	Static3D *resistance = new Static3D("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));

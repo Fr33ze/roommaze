@@ -1,12 +1,16 @@
+# x y z degrees x y z
+[Door]
+3.1 0 -8.5 0 0 0 0
+0.5 0 -12.1 90 0 1 0
 [Battery]
 
 [Key]
 
 [Resistance]
 # Resistance which is already inside the electric box.
--4.125 1.59 1.415
+-4.125 1.59 1.415 0 0 0 0
 # Resistance placed by the character.
--4.125 1.69 1.415
+-4.125 1.69 1.415 0 0 0 0
 # Possible places where the resistance could be hide.
 
 [Button]
