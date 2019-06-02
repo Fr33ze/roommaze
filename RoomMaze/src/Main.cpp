@@ -25,7 +25,6 @@
 
 Modell:
 
--> Schlüssel
 -> Knopf
 -> Boxen verteilen
 -> Rohre verlegen
