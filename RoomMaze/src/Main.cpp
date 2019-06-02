@@ -25,16 +25,16 @@
 
 Modell:
 
--> Texturierung Übergang Concrete-Bricks
--> Rohre verlegen
--> Knopf (Aufzug)
 -> Schlüssel
+-> Knopf
+-> Boxen verteilen
+-> Rohre verlegen
 -> Lüftungsschächte modellieren und verteilen
 
 Code:
 
 -> Geh-Effekt (Camera)
--> Character kleiner machen, sodass er unter den Rohren durchlaufne kann bzw. durch die Türbögen in Raum 2 kommt.
+-> Character kleiner machen, sodass er unter den Rohren durchlaufne kann bzw. durch die Türbögen in Raum 2 kommt (1,70 m ... Cam sollte aber eher auf Höhe 1,60 m sein!).
 -> Framerate-Independent?
 -> Brightness in settings.ini (1.0f als Default-Wert)
 -> UV-Koordinaten umkehren (auf y-Achse)
@@ -47,17 +47,18 @@ Code:
 	- Gehen auf Stein
 	- Gehen auf Wasser
 	- Aufzugtüren bewegen sich
-	- Schlüssel sperrt auf (Sicherungskasten)
-	- Knopf wird gedrückt (Aufzug)
+	- Schlüssel sperrt auf (die zwei Türe in Raum 2)
+	- Türen in Raum 2 öffnen sich
+	- Knopf wird gedrückt (im Aufzug)
 -> Animation:
-	- Schlüssel in Schloss stecken und umdrehen
-	- Sicherungskasten öffnet sich
+	- Schlüssel in Schloss von einer der Türen in Raum 2 stecken und drehen.
+	- Türe in Raum zwei öffnet sich
 	- Drücken von Aufzug-Knopf
-	- Aufzugtüren öffnen sich beim Drücken von Aufzug-Knopf
+	- Aufzugtüren öffnen sich beim Einfügen des Widerstands im Elektro-Kasten
 -> Interaktion mit Objekten:
 	- Batterie
-	- Diode
 	- Schlüssel
+	- Widerstand
 	- Knopf
 
 */
@@ -237,10 +238,14 @@ void initContent() {
 	renderObjects.push_back(elevatorLeftDoor);
 	Static3D *door1 = new Static3D("assets/objects/maze/door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)));
 	renderObjects.push_back(door1);
-	Static3D *door2 = new Static3D("assets/objects/maze/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	Static3D *door2 = new Static3D("assets/objects/maze/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	renderObjects.push_back(door2);
 	Static3D *water = new Static3D("assets/objects/water/water.obj", shader);
 	renderObjects.push_back(water);
+	Static3D *key1 = new Static3D("assets/objects/key/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.9f, 1.015f, -9.4f)));
+	renderObjects.push_back(key1);
+	Static3D *key2 = new Static3D("assets/objects/key/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-0.4f, 1.015f, -11.9f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	renderObjects.push_back(key2);
 	Static3D *resistance = new Static3D("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));
 	renderObjects.push_back(resistance);
 	Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
