@@ -62,4 +62,5 @@ void Battery::createShape(const char *path) {
 
 void Battery::use() {
 	//TODO use code here
+	std::cout << "hello" << std::endl;
 }

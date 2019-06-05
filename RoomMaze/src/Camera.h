@@ -17,6 +17,13 @@ enum Key {
 	D // right
 };
 
+// scene query groups for shapes
+enum ActiveGroup
+{
+	COLLISION = (1 << 0),
+	INTERACTABLE = (1 << 1)
+};
+
 // default camera values
 static const float MOVEMENT_SPEED = 3.0f;
 static const float MOUSE_SENSITIVITY = 0.1f;
@@ -29,12 +36,6 @@ static const float CHARACTER_EYE_HEIGHT = 1.6f;
 class Camera {
 
 protected:
-	// scene query groups for shapes
-	enum ActiveGroup
-	{
-		COLLISION = (1 << 0),
-		INTERACTABLE = (1 << 1)
-	};
 
 	// displacement (movement) vector
 	physx::PxVec3 displacement;

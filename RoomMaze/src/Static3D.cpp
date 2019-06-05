@@ -37,7 +37,6 @@ Static3D::Static3D(const Static3D &o, glm::mat4 modelMatrix)
 	extern physx::PxPhysics *mPhysics;
 	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
 
-	//TODO richtig so?
 	pxActor->attachShape(*pxShape);
 	
 	extern physx::PxScene *pxScene;

@@ -443,15 +443,26 @@ void processInput(GLFWwindow *window) {
 	// S = move character backward
 	// A = move character left
 	// D = move character right
-	
-	//TODO: EDIT THIS FUCKER!
 
+	bool processInteractables = false;
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera->processKeyEvent(W, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera->processKeyEvent(S, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera->processKeyEvent(A, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera->processKeyEvent(D, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_W | GLFW_KEY_S | GLFW_KEY_A | GLFW_KEY_D)) {
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera->processKeyEvent(W, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+		processInteractables = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera->processKeyEvent(S, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+		processInteractables = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera->processKeyEvent(A, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+		processInteractables = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera->processKeyEvent(D, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+		processInteractables = true;
+	}
+	if (processInteractables) {
 		processFocusedInteractable();
 		processInteractableText();
 	}
@@ -495,10 +506,17 @@ void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 	lastYPosition = (float) yPos;
 
 	camera->processMouseMovement(xOffset, yOffset);
+
+	processFocusedInteractable();
+	processInteractableText();
 }
 
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
-
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		if (focused) {
+			focused->use();
+		}
+	}
 }
 
 void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam) {

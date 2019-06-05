@@ -11,12 +11,6 @@ private:
 	// default constructor is private so it cant be used
 	Object3D();
 protected:
-	// scene query groups for shapes
-	enum ActiveGroup
-	{
-		COLLISION = (1 << 0),
-		INTERACTABLE = (1 << 1)
-	};
 
 	// actor of the object
 	physx::PxRigidActor *pxActor;
