@@ -229,7 +229,7 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);*/
 
-	bool testing = true;
+	bool testing = false;
 
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/maze/test.obj", shader);

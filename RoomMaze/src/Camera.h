@@ -21,6 +21,11 @@ enum Key {
 static const float MOVEMENT_SPEED = 2.0f;
 static const float MOUSE_SENSITIVITY = 0.1f;
 
+// character constants
+static const float CHARACTER_HEIGHT = 1.7f;
+static const float CHARACTER_RADIUS = 0.2f;
+static const float CHARACTER_EYE_HEIGHT = 1.6f;
+
 class Camera {
 
 protected:

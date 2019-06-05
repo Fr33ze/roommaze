@@ -10,11 +10,11 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	extern physx::PxPhysics* mPhysics;
 	cManager = PxCreateControllerManager(*pxScene);
 	physx::PxCapsuleControllerDesc desc;
-	desc.height = physx::PxF32(1.0f);
-	desc.climbingMode = physx::PxCapsuleClimbingMode::eEASY;
-	desc.contactOffset = physx::PxF32(0.05f);
-	//desc.stepOffset = physx::PxF32(0.15f);
-	desc.radius = physx::PxF32(0.15f);
+	desc.climbingMode = physx::PxCapsuleClimbingMode::eCONSTRAINED;
+	desc.radius = physx::PxF32(CHARACTER_RADIUS);
+	desc.contactOffset = physx::PxF32(0.005f);
+	desc.height = physx::PxF32(CHARACTER_HEIGHT - CHARACTER_RADIUS * 2 - desc.contactOffset * 2);
+	desc.stepOffset = physx::PxF32(0.25f);
 	desc.position = physx::PxExtendedVec3(position.x, position.y, position.z);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	cctCallbacks = new CharacterCallback();
@@ -75,13 +75,13 @@ void Camera::updateCameraVectors() {
 
 glm::mat4 Camera::getViewMatrix() {
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
-	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
-	float cam_offset = sin(bobbingTime) / 10; //change divisor to make the bobbing effect weaker
+	glm::vec3 position = glm::vec3(pos.x, pos.y + CHARACTER_EYE_HEIGHT, pos.z);
+	float cam_offset = sin(bobbingTime) / 15; //change divisor to make the bobbing effect weaker
 	return glm::lookAt(position + right * cam_offset, (position + front) + right * cam_offset, up);
 }
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
-	bobbingTime = fmod((bobbingTime + deltaTime * 7 /*Change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
+	bobbingTime = fmod((bobbingTime + deltaTime * 7 /*change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 	switch (key) {
 	case(W):

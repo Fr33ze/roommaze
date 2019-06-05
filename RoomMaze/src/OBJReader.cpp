@@ -220,9 +220,10 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 				glm::vec2 uv;
 				fscanf_s(objfile, "%f %f\n", &uv.x, &uv.y);
 
-				//Note: OpenGL texture are loaded left to right, bottom to top.
+				//Note: OpenGL texture are loaded left to right, bottom to top. (INACTIVE)
+				//Note: Blender exports UVs mirrored on the y axis (ACTIVE)
 				//uv.x = 1 - uv.x;
-				//uv.y = 1 - uv.y;
+				uv.y = 1 - uv.y;
 				uvs.push_back(uv);
 			}
 			//normals

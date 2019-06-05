@@ -63,9 +63,6 @@
     <ClCompile Include="src\CharacterCallback.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="src\Switch3D.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -111,9 +108,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="src\CharacterCallback.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Switch3D.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
