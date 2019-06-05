@@ -74,4 +74,5 @@ void Static3D::createShape(const char *path) {
 	physx::PxTriangleMeshGeometry trigeom = physx::PxTriangleMeshGeometry(mPhysics->createTriangleMesh(readBuffer));
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
 	pxShape = mPhysics->createShape(trigeom, *mat, false);
+	pxShape->setQueryFilterData(physx::PxFilterData(COLLISION, 0, 0, 0));
 }

@@ -26,9 +26,6 @@ protected:
 	GUIComponent battery;
 	GUIText batteryStatus, batteryCountdown, infoText;
 
-	// camera
-	Camera *camera;
-
 public:
 	
 	/**
@@ -40,7 +37,7 @@ public:
 	 * @param staringBatteries: amount of batteries to start with
 	 * @param camera: camera of the game
 	 */
-	GUI(int windowWidth, int windowHeight, int startingBatteries, Camera *camera);
+	GUI(int windowWidth, int windowHeight, int startingBatteries);
 	
 	GUI();
 

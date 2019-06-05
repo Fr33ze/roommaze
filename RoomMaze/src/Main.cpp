@@ -18,7 +18,7 @@
 #include "Object3D.h"
 #include "Static3D.h"
 #include "Dynamic3D.h"
-#include "OBJReader.h"
+#include "Battery.h"
 #include "INIReader.h"
 
 /* TODO
@@ -32,11 +32,7 @@ Modell:
 
 Code:
 
--> Geh-Effekt (Camera)
--> Character kleiner machen, sodass er unter den Rohren durchlaufne kann bzw. durch die Türbögen in Raum 2 kommt (1,70 m ... Cam sollte aber eher auf Höhe 1,60 m sein!).
--> Framerate-Independent?
 -> Brightness in settings.ini (1.0f als Default-Wert)
--> UV-Koordinaten umkehren (auf y-Achse)
 -> Überlegung bei Start nur erste paar Räume laden (eigenes Objekt-File) und dann wenn das Spiel läuft das restliche Modell.
 -> Schattenwurf
 -> Glow
@@ -77,6 +73,8 @@ void processInput(GLFWwindow *window);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos);
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
+void processFocusedInteractable();
+void processInteractableText();
 
 void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam);
 std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg);
@@ -89,13 +87,14 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 INIReader::Settings settings;
 
 // camera
-Camera camera;
+Camera *camera;
 float lastXPosition;
 float lastYPosition;
 bool firstMouse = true;
+Interactable3D *focused;
 
 // GUI
-GUI gui;
+GUI *gui;
 
 // time between current frame and last frame
 float deltaTime;
@@ -175,7 +174,7 @@ int main(int argc, char **argv) {
 		glfwSwapBuffers(window);
 
 		// physx make simulation step
-		pxScene->simulate(1.0f / 60.0f);
+		pxScene->simulate(1.0f / settings.refresh_rate);
 		pxScene->fetchResults(true);
 
 		// check for errors
@@ -205,11 +204,11 @@ void initContent() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera (includes character controller)
-	camera = Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera.setSpotLightParameters(1.0f, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
+	camera = new Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera->setSpotLightParameters(1.0f, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
 
 	// GUI
-	gui = GUI(settings.width, settings.height, 5, &camera);
+	gui = new GUI(settings.width, settings.height, 5);
 
 	/* ------------- */
 	// LOAD OBJECTS
@@ -229,12 +228,12 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);*/
 
-	bool testing = false;
+	bool testing = true;
 
 	if (testing) {
-		Static3D *maze = new Static3D("assets/objects/maze/test.obj", shader);
+		Static3D *maze = new Static3D("assets/objects/test/test.obj", shader);
 		renderObjects.push_back(maze);
-		Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
+		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
@@ -393,16 +392,16 @@ void initPhysX() {
 }
 
 void update(float deltaT) {
-	camera.move(deltaT);
-	gui.updateTime(deltaT);
+	camera->move(deltaT);
+	gui->updateTime(deltaT);
 }
 
 void draw() {
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
-		renderObjects.at(i)->draw(camera);
+		renderObjects.at(i)->draw();
 	}
 
-	gui.draw();
+	gui->draw();
 }
 
 void cleanup() {
@@ -434,7 +433,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		std::cout << "TOGGLE NIGHTVISION" << std::endl;
 		break;
 	case GLFW_KEY_SPACE:
-		gui.deleteBattery();
+		gui->deleteBattery();
 		break;
 	}
 }
@@ -445,10 +444,41 @@ void processInput(GLFWwindow *window) {
 	// A = move character left
 	// D = move character right
 	
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera.processKeyEvent(W, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera.processKeyEvent(S, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera.processKeyEvent(A, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera.processKeyEvent(D, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	//TODO: EDIT THIS FUCKER!
+
+
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) camera->processKeyEvent(W, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) camera->processKeyEvent(S, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) camera->processKeyEvent(A, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) camera->processKeyEvent(D, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_W | GLFW_KEY_S | GLFW_KEY_A | GLFW_KEY_D)) {
+		processFocusedInteractable();
+		processInteractableText();
+	}
+}
+
+void processFocusedInteractable() {
+	physx::PxRaycastBuffer hit;
+	if (camera->raycast(hit)) {
+		if (hit.hasBlock) {
+			focused = (Interactable3D*)hit.block.actor->userData;
+		}
+		else {
+			focused = nullptr;
+		}
+	}
+	else {
+		focused = nullptr;
+	}
+}
+
+void processInteractableText() {
+	if (focused) {
+		gui->setInfoText("Use");
+	}
+	else {
+		gui->setInfoText("");
+	}
 }
 
 void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
@@ -464,7 +494,7 @@ void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 	lastXPosition = (float) xPos;
 	lastYPosition = (float) yPos;
 
-	camera.processMouseMovement(xOffset, yOffset);
+	camera->processMouseMovement(xOffset, yOffset);
 }
 
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {

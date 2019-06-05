@@ -18,7 +18,7 @@ enum Key {
 };
 
 // default camera values
-static const float MOVEMENT_SPEED = 2.0f;
+static const float MOVEMENT_SPEED = 3.0f;
 static const float MOUSE_SENSITIVITY = 0.1f;
 
 // character constants
@@ -29,6 +29,13 @@ static const float CHARACTER_EYE_HEIGHT = 1.6f;
 class Camera {
 
 protected:
+	// scene query groups for shapes
+	enum ActiveGroup
+	{
+		COLLISION = (1 << 0),
+		INTERACTABLE = (1 << 1)
+	};
+
 	// displacement (movement) vector
 	physx::PxVec3 displacement;
 
@@ -125,6 +132,8 @@ public:
 	 * @param deltaTime: time between current frame and last frame
 	 */
 	void move(float deltaTime);
+
+	bool raycast(physx::PxRaycastBuffer &hit);
 
 	void turnSpotlightOn();
 

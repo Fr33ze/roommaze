@@ -1,6 +1,6 @@
-# Blender v2.79 (sub 0) OBJ File: 'Maze.blend'
+# Blender v2.79 (sub 0) OBJ File: 'Test.blend'
 # www.blender.org
-mtllib maze.mtl
+mtllib test.mtl
 o Shelf.009
 v 0.576487 0.000000 3.130000
 v 0.570000 0.000000 3.123513

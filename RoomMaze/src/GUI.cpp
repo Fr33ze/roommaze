@@ -1,7 +1,7 @@
 #include "GUI.h"
 
-GUI::GUI(int windowWidth, int windowHeight, int startingBatteries, Camera *camera)
-	: batteryCounter(startingBatteries), batteryTime(120.0f), camera(camera) {
+GUI::GUI(int windowWidth, int windowHeight, int startingBatteries)
+	: batteryCounter(startingBatteries), batteryTime(120.0f) {
 
 	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
@@ -28,6 +28,7 @@ void GUI::destroy() {
 }
 
 void GUI::updateTime(float deltaT) {
+	extern Camera *camera;
 	if (batteryTime - deltaT > 0.0f) {
 		batteryTime -= deltaT;
 		batteryCountdown.updateText(std::to_string((int)(batteryTime / 1.2f)) + " %");
@@ -64,6 +65,7 @@ void GUI::addBattery() {
 
 void GUI::deleteBattery() {
 	if (batteryCounter > 0) {
+		extern Camera *camera;
 		batteryCounter--;
 		batteryStatus.updateText(std::to_string(batteryCounter) + "/10");
 		batteryTime = 120.0f;

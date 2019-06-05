@@ -20,10 +20,11 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	cctCallbacks = new CharacterCallback();
 	desc.reportCallback = cctCallbacks;
 	desc.behaviorCallback = cctCallbacks;
-	desc.material = mPhysics->createMaterial(1.0f, 1.0f, 0.05);
+	desc.material = mPhysics->createMaterial(physx::PxReal(1.0f), physx::PxReal(1.0f), physx::PxReal(0.05));
 	controller = cManager->createController(desc);
 
 	filters = physx::PxControllerFilters();
+	filters.mFilterData = new physx::PxFilterData(COLLISION, 0, 0, 0);
 
 	updateCameraVectors();
 
@@ -127,6 +128,18 @@ void Camera::move(float deltaTime)
 	// reset vector
 	displacement.x = 0.0f;
 	displacement.z = 0.0f;
+}
+
+bool Camera::raycast(physx::PxRaycastBuffer &hit) {
+	extern physx::PxScene *pxScene;
+	physx::PxExtendedVec3 pos = controller->getFootPosition();
+	physx::PxVec3 origin = physx::PxVec3(pos.x, pos.y + CHARACTER_EYE_HEIGHT, pos.z);
+	physx::PxVec3 destination = physx::PxVec3(front.x, front.y, front.z);
+	physx::PxReal range = physx::PxReal(0.5f);
+	const physx::PxHitFlags outputFlags = physx::PxHitFlag::ePOSITION;
+	physx::PxQueryFilterData filterData = physx::PxQueryFilterData();
+	filterData.data.word0 = INTERACTABLE;
+	return pxScene->raycast(origin, destination, range, hit, outputFlags, filterData);
 }
 
 void Camera::turnSpotlightOn() {

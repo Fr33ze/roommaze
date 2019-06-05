@@ -19,11 +19,12 @@ Object3D::~Object3D() {
 	pxActor->release();
 }
 
-void Object3D::draw(Camera &camera)
+void Object3D::draw()
 {
+	extern Camera *camera;
 	shader->use();
 	shader->setUniform("modelMatrix", pxActor->getGlobalPose());
-	camera.setUniforms(shader);
+	camera->setUniforms(shader);
 	for (unsigned int i = 0; i < components.size(); i++) {
 		components.at(i).draw(shader);
 	}

@@ -3,6 +3,7 @@
 #include <physx\PxPhysicsAPI.h>
 
 #include "Component3D.h"
+#include "Camera.h"
 
 class Object3D
 {
@@ -10,6 +11,13 @@ private:
 	// default constructor is private so it cant be used
 	Object3D();
 protected:
+	// scene query groups for shapes
+	enum ActiveGroup
+	{
+		COLLISION = (1 << 0),
+		INTERACTABLE = (1 << 1)
+	};
+
 	// actor of the object
 	physx::PxRigidActor *pxActor;
 
@@ -50,9 +58,7 @@ public:
 	~Object3D();
 	/**
 	 * Draws the object and sets the needed Uniforms on the shader
-	 *
-	 * @param camera: camera used for drawing
 	 */
-	virtual void draw(Camera &camera);
+	void draw();
 	void destroy();
 };
