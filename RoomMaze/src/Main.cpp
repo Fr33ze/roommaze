@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
 		glfwSwapBuffers(window);
 
 		// physx make simulation step
-		pxScene->simulate(1.0f / settings.refresh_rate);
+		pxScene->simulate(deltaTime);
 		pxScene->fetchResults(true);
 
 		// check for errors
@@ -228,7 +228,7 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);*/
 
-	bool testing = true;
+	bool testing = false;
 
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test/test.obj", shader);
@@ -254,7 +254,7 @@ void initContent() {
 		renderObjects.push_back(key2);
 		Static3D *resistance = new Static3D("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));
 		renderObjects.push_back(resistance);
-		Static3D *battery = new Static3D("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
+		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
 	}
 }
@@ -485,7 +485,7 @@ void processFocusedInteractable() {
 
 void processInteractableText() {
 	if (focused) {
-		gui->setInfoText("Use");
+		gui->setInfoText(focused->guitext());
 	}
 	else {
 		gui->setInfoText("");

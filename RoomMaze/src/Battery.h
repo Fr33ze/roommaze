@@ -26,6 +26,7 @@ public:
 	~Battery();
 
 	void use() override;
+	std::string guitext() override;
 protected:
 	// in this case only creates a sphere query shape (for raycasts)
 	void createShape(const char *path) override;

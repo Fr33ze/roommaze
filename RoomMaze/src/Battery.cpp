@@ -61,6 +61,11 @@ void Battery::createShape(const char *path) {
 }
 
 void Battery::use() {
-	//TODO use code here
-	std::cout << "hello" << std::endl;
+	pxActor->detachShape(*pxShape);
+	pxShape->release();
+	render = false;
+}
+
+std::string Battery::guitext() {
+	return "Batterie aufheben";
 }

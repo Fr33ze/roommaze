@@ -15,6 +15,13 @@ public:
 	/**
 	 * Is called when this Object is being used by the player
 	 * Needs to be overwritten by the item respectively
+	 *
+	 * @return type of the Interactable
 	 */
 	virtual void use() = 0;
+
+	/**
+	 * @return text shown on the gui when focusing this object
+	 */
+	virtual std::string guitext() = 0;
 };

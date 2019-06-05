@@ -11,6 +11,8 @@ private:
 	// default constructor is private so it cant be used
 	Object3D();
 protected:
+	// render this?
+	bool render;
 
 	// actor of the object
 	physx::PxRigidActor *pxActor;
