@@ -1,6 +1,6 @@
 # Blender v2.79 (sub 0) OBJ File: 'Door.blend'
 # www.blender.org
-mtllib maze.mtl
+mtllib door.mtl
 o Door
 v 0.075000 1.787294 -0.987295
 v 0.062294 1.800000 -1.000001
