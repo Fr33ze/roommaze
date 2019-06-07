@@ -15,29 +15,34 @@
 class GUI {
 
 protected:
-
 	// shader used for rendering gui components
 	std::shared_ptr<Shader> componentShader;
 	// shader used for rendering text
 	std::shared_ptr<Shader> textShader;
 
-	int batteryCounter;
+	unsigned int lastBatteryCount;
 	float batteryTime;
 	GUIComponent battery;
 	GUIText batteryStatus, batteryCountdown, infoText;
 
 public:
-	
+	// inventory of player
+	struct Inventory {
+		unsigned int batteries = 5;
+		unsigned int keys = 0;
+		bool button = false;
+		bool resistance = false;
+	} *inv;
+
 	/**
 	 * CONSTRUCTOR
 	 * Creates the GUI of the game.
 	 *
 	 * @param windowWidth: the width of the window
 	 * @param windowHeight: the height of the window
-	 * @param staringBatteries: amount of batteries to start with
-	 * @param camera: camera of the game
+	 * @param inv: inventory of the player
 	 */
-	GUI(int windowWidth, int windowHeight, int startingBatteries);
+	GUI(int windowWidth, int windowHeight, Inventory *inv);
 	
 	GUI();
 
@@ -48,10 +53,6 @@ public:
 	void updateTime(float deltaT);
 
 	void draw();
-
-	void addBattery();
-
-	void deleteBattery();
 
 	void setInfoText(std::string text);
 

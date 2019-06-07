@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Object3D.h"
+#include "GUI.h"
 
 class Interactable3D : public Object3D
 {
@@ -16,9 +17,10 @@ public:
 	 * Is called when this Object is being used by the player
 	 * Needs to be overwritten by the item respectively
 	 *
+	 * @param inv: inventory of the player
 	 * @return type of the Interactable
 	 */
-	virtual void use() = 0;
+	virtual void use(GUI::Inventory *inv) = 0;
 
 	/**
 	 * @return text shown on the gui when focusing this object

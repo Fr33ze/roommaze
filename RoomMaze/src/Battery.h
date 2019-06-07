@@ -25,7 +25,7 @@ public:
 	Battery(const Battery &o, glm::mat4 modelMatrix);
 	~Battery();
 
-	void use() override;
+	void use(GUI::Inventory *inv) override;
 	std::string guitext() override;
 protected:
 	// in this case only creates a sphere query shape (for raycasts)

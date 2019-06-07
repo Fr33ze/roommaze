@@ -74,7 +74,6 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
 void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos);
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
 void processFocusedInteractable();
-void processInteractableText();
 
 void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam);
 std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg);
@@ -98,6 +97,9 @@ GUI *gui;
 
 // time between current frame and last frame
 float deltaTime;
+
+// inventory of player
+GUI::Inventory *inv;
 
 // 3d objects to render
 std::vector<Object3D*> renderObjects;
@@ -192,6 +194,9 @@ int main(int argc, char **argv) {
 }
 
 void initContent() {
+	// player inventory
+	inv = new GUI::Inventory();
+
 	// mouse stuff
 	lastXPosition = settings.width / 2.0f;
 	lastYPosition = settings.height / 2.0f;
@@ -208,7 +213,7 @@ void initContent() {
 	camera->setSpotLightParameters(1.0f, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
 
 	// GUI
-	gui = new GUI(settings.width, settings.height, 5);
+	gui = new GUI(settings.width, settings.height, inv);
 
 	/* ------------- */
 	// LOAD OBJECTS
@@ -228,7 +233,7 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);*/
 
-	bool testing = false;
+	bool testing = true;
 
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test/test.obj", shader);
@@ -433,7 +438,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		std::cout << "TOGGLE NIGHTVISION" << std::endl;
 		break;
 	case GLFW_KEY_SPACE:
-		gui->deleteBattery();
+		inv->batteries--;
 		break;
 	}
 }
@@ -464,7 +469,6 @@ void processInput(GLFWwindow *window) {
 	}
 	if (processInteractables) {
 		processFocusedInteractable();
-		processInteractableText();
 	}
 }
 
@@ -473,21 +477,15 @@ void processFocusedInteractable() {
 	if (camera->raycast(hit)) {
 		if (hit.hasBlock) {
 			focused = (Interactable3D*)hit.block.actor->userData;
+			gui->setInfoText(focused->guitext());
 		}
 		else {
 			focused = nullptr;
+			gui->setInfoText("");
 		}
 	}
 	else {
 		focused = nullptr;
-	}
-}
-
-void processInteractableText() {
-	if (focused) {
-		gui->setInfoText(focused->guitext());
-	}
-	else {
 		gui->setInfoText("");
 	}
 }
@@ -508,13 +506,13 @@ void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 	camera->processMouseMovement(xOffset, yOffset);
 
 	processFocusedInteractable();
-	processInteractableText();
 }
 
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (focused) {
-			focused->use();
+			focused->use(inv);
+			gui->setInfoText("");
 		}
 	}
 }

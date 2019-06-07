@@ -1,7 +1,7 @@
 #include "GUI.h"
 
-GUI::GUI(int windowWidth, int windowHeight, int startingBatteries)
-	: batteryCounter(startingBatteries), batteryTime(120.0f) {
+GUI::GUI(int windowWidth, int windowHeight, Inventory *inv)
+	: batteryTime(120.0f), inv(inv) {
 
 	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
@@ -10,7 +10,7 @@ GUI::GUI(int windowWidth, int windowHeight, int startingBatteries)
 
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
-	batteryStatus = GUIText(fontPath, std::to_string(startingBatteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
+	batteryStatus = GUIText(fontPath, std::to_string(inv->batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 1.2f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
 	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, 1.0f, windowWidth, windowHeight);
 }
@@ -48,6 +48,17 @@ void GUI::updateTime(float deltaT) {
 }
 
 void GUI::draw() {
+	if (lastBatteryCount < inv->batteries) {
+		batteryStatus.updateText(std::to_string(inv->batteries) + "/10");
+	}
+	else if (lastBatteryCount > inv->batteries) {
+		if (inv->batteries > 0) {
+			extern Camera *camera;
+			batteryStatus.updateText(std::to_string(inv->batteries) + "/10");
+			batteryTime = 120.0f;
+			camera->turnSpotlightOn();
+		}
+	}
 	battery.draw(componentShader);
 	batteryStatus.draw(textShader);
 
@@ -56,21 +67,7 @@ void GUI::draw() {
 	}
 
 	infoText.draw(textShader);
-}
-
-void GUI::addBattery() {
-	batteryCounter++;
-	batteryStatus.updateText(std::to_string(batteryCounter) + "/10");
-}
-
-void GUI::deleteBattery() {
-	if (batteryCounter > 0) {
-		extern Camera *camera;
-		batteryCounter--;
-		batteryStatus.updateText(std::to_string(batteryCounter) + "/10");
-		batteryTime = 120.0f;
-		camera->turnSpotlightOn();
-	}
+	lastBatteryCount = inv->batteries;
 }
 
 void GUI::setInfoText(std::string text) {

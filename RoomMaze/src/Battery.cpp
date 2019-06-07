@@ -60,12 +60,15 @@ void Battery::createShape(const char *path) {
 	pxShape->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
 }
 
-void Battery::use() {
+void Battery::use(GUI::Inventory *inv) {
+	if (!render)
+		return;
+	inv->batteries++;
 	pxActor->detachShape(*pxShape);
 	pxShape->release();
 	render = false;
 }
 
 std::string Battery::guitext() {
-	return "Batterie aufheben";
+	return "Take Battery";
 }
