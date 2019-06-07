@@ -234,7 +234,7 @@ void initContent() {
 	Dynamic3D *dynamicCube4 = new Dynamic3D("assets/objects/cube/cube.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 2.9f, -3.0f)));
 	renderObjects.push_back(dynamicCube4);*/
 
-	bool testing = true;
+	bool testing = false;
 
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test/maze.obj", shader);
@@ -262,7 +262,7 @@ void initContent() {
 		renderObjects.push_back(key1);
 		Static3D *key2 = new Static3D(*key1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-0.4f, 1.015f, -11.9f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(key2);
-		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));
+		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
 		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
