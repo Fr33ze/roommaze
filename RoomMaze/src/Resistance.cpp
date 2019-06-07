@@ -1,6 +1,8 @@
-#include "Battery.h"
+#include "Resistance.h"
 
-Battery::Battery(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
+
+
+Resistance::Resistance(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
 	: Interactable3D(path, shader, modelMatrix)
 {
 	physx::PxMat44 pose = physx::PxMat44();
@@ -21,7 +23,7 @@ Battery::Battery(const char *path, std::shared_ptr<Shader> shader, glm::mat4 mod
 	pxScene->addActor(*pxActor);
 }
 
-Battery::Battery(const Battery &o, glm::mat4 modelMatrix)
+Resistance::Resistance(const Resistance &o, glm::mat4 modelMatrix)
 	: Interactable3D(o, modelMatrix)
 {
 	physx::PxMat44 pose = physx::PxMat44();
@@ -43,11 +45,11 @@ Battery::Battery(const Battery &o, glm::mat4 modelMatrix)
 	pxScene->addActor(*pxActor);
 }
 
-Battery::~Battery()
+Resistance::~Resistance()
 {
 }
 
-void Battery::createShape(const char *path) {
+void Resistance::createShape(const char *path) {
 	// physX global variables
 	extern physx::PxFoundation *mFoundation;
 	extern physx::PxPhysics *mPhysics;
@@ -61,14 +63,14 @@ void Battery::createShape(const char *path) {
 	pxShape->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
 }
 
-void Battery::use(GUI::Inventory *inv) {
+void Resistance::use(GUI::Inventory *inv) {
 	if (!enabled)
 		return;
-	inv->batteries++;
+	inv->resistance = true;
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
-std::string Battery::guitext(GUI::Inventory *inv) {
-	return (enabled ? "Take Battery" : "");
+std::string Resistance::guitext(GUI::Inventory *inv) {
+	return (enabled ? "Take Resistance" : "");
 }

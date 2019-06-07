@@ -6,13 +6,13 @@ Object3D::Object3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 m
 	: shader(shader)
 {
 	components = OBJReader::readObject(path);
-	render = true;
+	enabled = true;
 }
 
 Object3D::Object3D(const Object3D &o, glm::mat4 modelMatrix) {
 	components = o.components;
 	shader = o.shader;
-	render = true;
+	enabled = true;
 }
 
 Object3D::~Object3D() {
@@ -23,7 +23,7 @@ Object3D::~Object3D() {
 
 void Object3D::draw()
 {
-	if (!render)
+	if (!enabled)
 		return;
 
 	extern Camera *camera;

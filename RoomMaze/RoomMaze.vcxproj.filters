@@ -69,6 +69,9 @@
     <ClCompile Include="src\Interactable3D.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="src\Resistance.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Camera.h">
@@ -120,6 +123,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="src\Interactable3D.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Resistance.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

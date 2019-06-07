@@ -29,7 +29,7 @@ public:
 	// inventory of player
 	struct Inventory {
 		unsigned int batteries = 5;
-		unsigned int keys = 0;
+		bool key = false;
 		bool button = false;
 		bool resistance = false;
 	} *inv;

@@ -19,6 +19,7 @@
 #include "Static3D.h"
 #include "Dynamic3D.h"
 #include "Battery.h"
+#include "Resistance.h"
 #include "INIReader.h"
 
 /* TODO
@@ -73,7 +74,7 @@ void processInput(GLFWwindow *window);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos);
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods);
-void processFocusedInteractable();
+void focusInteractable();
 
 void APIENTRY DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const GLvoid *userParam);
 std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, const char *msg);
@@ -240,6 +241,10 @@ void initContent() {
 		renderObjects.push_back(maze);
 		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
+		Battery *battery2 = new Battery(*battery, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.0f, 3.0f)));
+		renderObjects.push_back(battery2);
+		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.59f)));
+		renderObjects.push_back(resistance);
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
 		renderObjects.push_back(maze);
@@ -257,7 +262,7 @@ void initContent() {
 		renderObjects.push_back(key1);
 		Static3D *key2 = new Static3D(*key1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-0.4f, 1.015f, -11.9f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(key2);
-		Static3D *resistance = new Static3D("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));
+		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.59f)));
 		renderObjects.push_back(resistance);
 		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
@@ -468,16 +473,16 @@ void processInput(GLFWwindow *window) {
 		processInteractables = true;
 	}
 	if (processInteractables) {
-		processFocusedInteractable();
+		focusInteractable();
 	}
 }
 
-void processFocusedInteractable() {
+void focusInteractable() {
 	physx::PxRaycastBuffer hit;
 	if (camera->raycast(hit)) {
 		if (hit.hasBlock) {
 			focused = (Interactable3D*)hit.block.actor->userData;
-			gui->setInfoText(focused->guitext());
+			gui->setInfoText(focused->guitext(inv));
 		}
 		else {
 			focused = nullptr;
@@ -505,14 +510,14 @@ void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 
 	camera->processMouseMovement(xOffset, yOffset);
 
-	processFocusedInteractable();
+	focusInteractable();
 }
 
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (focused) {
 			focused->use(inv);
-			gui->setInfoText("");
+			gui->setInfoText(focused->guitext(inv));
 		}
 	}
 }

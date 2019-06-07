@@ -154,6 +154,7 @@
     <ClCompile Include="src\Component3D.cpp" />
     <ClCompile Include="src\LightCollection.cpp" />
     <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Resistance.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -174,6 +175,7 @@
     <ClInclude Include="src\Component3D.h" />
     <ClInclude Include="src\LightCollection.h" />
     <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\Resistance.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Static3D.h" />

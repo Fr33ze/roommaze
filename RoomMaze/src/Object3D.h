@@ -12,7 +12,7 @@ private:
 	Object3D();
 protected:
 	// render this?
-	bool render;
+	bool enabled;
 
 	// actor of the object
 	physx::PxRigidActor *pxActor;

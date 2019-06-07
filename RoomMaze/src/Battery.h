@@ -26,7 +26,7 @@ public:
 	~Battery();
 
 	void use(GUI::Inventory *inv) override;
-	std::string guitext() override;
+	std::string guitext(GUI::Inventory *inv) override;
 protected:
 	// in this case only creates a sphere query shape (for raycasts)
 	void createShape(const char *path) override;

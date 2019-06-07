@@ -23,7 +23,8 @@ public:
 	virtual void use(GUI::Inventory *inv) = 0;
 
 	/**
+	 * @param inv: inventory of the player
 	 * @return text shown on the gui when focusing this object
 	 */
-	virtual std::string guitext() = 0;
+	virtual std::string guitext(GUI::Inventory *inv) = 0;
 };
