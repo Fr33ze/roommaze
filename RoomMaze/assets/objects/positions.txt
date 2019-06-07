@@ -20,9 +20,9 @@
 
 [Resistance]
 # Resistance which is already inside the electric box.
--4.125 1.59 1.415 0 0 0 0
+-4.125 1.415 -1.587 0 0 0 0
 # Resistance placed by the character.
--4.125 1.69 1.415 0 0 0 0
+-4.125 1.415 -1.687 0 0 0 0
 # Possible places where the resistance could be hide.
 
 

@@ -237,13 +237,13 @@ void initContent() {
 	bool testing = true;
 
 	if (testing) {
-		Static3D *maze = new Static3D("assets/objects/test/test.obj", shader);
+		Static3D *maze = new Static3D("assets/objects/test/maze.obj", shader);
 		renderObjects.push_back(maze);
 		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
 		Battery *battery2 = new Battery(*battery, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.0f, 3.0f)));
 		renderObjects.push_back(battery2);
-		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.59f)));
+		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);

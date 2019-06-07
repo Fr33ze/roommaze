@@ -1,5 +1,5 @@
 # Blender MTL File: 'Maze.blend'
-# Material Count: 15
+# Material Count: 13
 
 newmtl Bricks1
 map_Kd bricks1.jpg
@@ -7,16 +7,6 @@ map_Ks bricks1_specular.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-
-newmtl Cable1
-Ns 200.000000
-Ka 1.000000 1.000000 1.000000
-Kd 0.3125000 0.000000 0.000000
 Ks 0.500000 0.500000 0.500000
 Ke 0.000000 0.000000 0.000000
 Ni 1.000000
@@ -62,19 +52,6 @@ illum 2
 newmtl Manhole1
 map_Kd manhole1.jpg
 map_Ks manhole1_specular.jpg
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-
-newmtl Metal1
-map_Kd metal1.jpg
-map_Ks metal1_specular.jpg
-map_N metal1_normal.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
