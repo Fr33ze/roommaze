@@ -245,6 +245,10 @@ void initContent() {
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
 		renderObjects.push_back(maze);
+		Static3D *electricBox = new Static3D("assets/objects/maze/electric_box.obj", shader);
+		renderObjects.push_back(electricBox);
+		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.587f)));
+		renderObjects.push_back(resistance);
 		Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_doors/elevator_right_door.obj", shader);
 		renderObjects.push_back(elevatorRightDoor);
 		Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_doors/elevator_left_door.obj", shader);
@@ -259,8 +263,6 @@ void initContent() {
 		renderObjects.push_back(key1);
 		Static3D *key2 = new Static3D(*key1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-0.4f, 1.015f, -11.9f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(key2);
-		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.587f)));
-		renderObjects.push_back(resistance);
 		Battery *battery = new Battery("assets/objects/battery/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
 	}
