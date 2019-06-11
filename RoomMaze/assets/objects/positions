@@ -1,0 +1,48 @@
+# How this file should be read:
+# [the name of the object]
+# <x-axis> <y-axis> <z-axis> <rotation angle in degrees> <rotation on x-axis> <rotation on y-axis> <rotation on z-axis>
+
+[Box]
+# Positions of the boxes placed in the scene.
+
+
+[ElectricBox]
+-4 0.65 -1.75 0 0 0 0
+
+[ElevatorDoor]
+# Position of the left door.
+-4.25 0 0 0 0 0 0
+# Position of the right door.
+-4.25 0 0 0 0 0 0
+
+[Door]
+# Position of door1.
+3.1 0 -8.5 0 0 0 0
+# Position of door2.
+0.5 0 -12.1 90 0 1 0
+
+[Battery]
+# Possible places where batteries could be hide (choose 20 from the list below).
+-0.2 1.3 3.3 0 0 0 0
+
+[Key]
+# Position where to start with the unlock animation for door1. 
+2.9 1.015 -9.4 0 0 0 0
+# Position where to start with the unlock animation for door2.
+-0.4 1.015 -11.9 90 0 1 0
+# Possible places where the key could be hide (choose 1 from the list below).
+
+
+[Resistance]
+# Resistance which is already inside the electric box.
+-4.125 1.415 -1.587 0 0 0 0
+# Resistance placed by the character.
+-4.125 1.415 -1.687 0 0 0 0
+# Possible places where the resistance could be hide (choose 1 from the list below).
+
+
+[Button]
+# Button placed by the character.
+
+# Possible places where the button could be hide (choose 1 from the list below).
+
