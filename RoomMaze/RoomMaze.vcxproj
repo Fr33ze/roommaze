@@ -144,10 +144,12 @@
     <ClCompile Include="src\Battery.cpp" />
     <ClCompile Include="src\CharacterCallback.cpp" />
     <ClCompile Include="src\Dynamic3D.cpp" />
+    <ClCompile Include="src\ElevatorDoor.cpp" />
     <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\GUIComponent.cpp" />
     <ClCompile Include="src\GUIText.cpp" />
     <ClCompile Include="src\Interactable3D.cpp" />
+    <ClCompile Include="src\OBJ.cpp" />
     <ClCompile Include="src\Object3D.cpp" />
     <ClCompile Include="src\INIReader.cpp" />
     <ClCompile Include="src\OBJReader.cpp" />
@@ -165,10 +167,12 @@
     <ClInclude Include="src\Battery.h" />
     <ClInclude Include="src\CharacterCallback.h" />
     <ClInclude Include="src\Dynamic3D.h" />
+    <ClInclude Include="src\ElevatorDoor.h" />
     <ClInclude Include="src\GUI.h" />
     <ClInclude Include="src\GUIComponent.h" />
     <ClInclude Include="src\GUIText.h" />
     <ClInclude Include="src\Interactable3D.h" />
+    <ClInclude Include="src\OBJ.h" />
     <ClInclude Include="src\Object3D.h" />
     <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\OBJReader.h" />

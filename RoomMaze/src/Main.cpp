@@ -20,6 +20,7 @@
 #include "Dynamic3D.h"
 #include "Battery.h"
 #include "Resistance.h"
+#include "ElevatorDoor.h"
 #include "INIReader.h"
 
 /* TODO
@@ -245,13 +246,11 @@ void initContent() {
 		renderObjects.push_back(battery2);
 		Resistance *resistance = new Resistance("assets/objects/resistance/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
+		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_doors/elevator_left_door.obj", "assets/objects/elevator_doors/elevator_right_door.obj", shader);
+		renderObjects.push_back(elevatorDoor);
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze/maze.obj", shader);
 		renderObjects.push_back(maze);
-		Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_doors/elevator_right_door.obj", shader);
-		renderObjects.push_back(elevatorRightDoor);
-		Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_doors/elevator_left_door.obj", shader);
-		renderObjects.push_back(elevatorLeftDoor);
 		Static3D *door1 = new Static3D("assets/objects/maze/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)), glm::radians(-110.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(door1);
 		Static3D *door2 = new Static3D(*door1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f)));

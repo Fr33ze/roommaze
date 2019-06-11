@@ -29,5 +29,5 @@ public:
 	std::string guitext(GUI::Inventory *inv) override;
 protected:
 	// in this case only creates a sphere query shape (for raycasts)
-	void createShape(const char *path) override;
+	physx::PxShape* createShape(const char *path) override;
 };

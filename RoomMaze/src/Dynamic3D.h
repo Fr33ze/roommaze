@@ -29,7 +29,7 @@ public:
 	~Dynamic3D();
 
 protected:
-	void createShape(const char *path) override;
+	physx::PxShape* createShape(const char *path) override;
 
 	/**
 	 * Creates the actor for the dynamic object (with mass)

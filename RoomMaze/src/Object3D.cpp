@@ -1,5 +1,4 @@
 #include "Object3D.h"
-#include "OBJReader.h"
 
 
 Object3D::Object3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)

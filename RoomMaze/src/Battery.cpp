@@ -13,7 +13,7 @@ Battery::Battery(const char *path, std::shared_ptr<Shader> shader, glm::mat4 mod
 	extern physx::PxPhysics *mPhysics;
 	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
 
-	createShape(path);
+	pxShape = createShape(path);
 	pxActor->attachShape(*pxShape);
 	pxActor->userData = this;
 
@@ -47,18 +47,15 @@ Battery::~Battery()
 {
 }
 
-void Battery::createShape(const char *path) {
-	// physX global variables
-	extern physx::PxFoundation *mFoundation;
+physx::PxShape* Battery::createShape(const char *path) {
 	extern physx::PxPhysics *mPhysics;
-	extern physx::PxPvd *mPvd;
-	extern physx::PxCooking *mCooking;
 
 	physx::PxSphereGeometry geom = physx::PxSphereGeometry(physx::PxReal(0.3f));
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
-	pxShape = mPhysics->createShape(geom, *mat, false);
-	pxShape->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
+	physx::PxShape *temp = mPhysics->createShape(geom, *mat, false);
+	temp->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
+	return temp;
 }
 
 void Battery::use(GUI::Inventory *inv) {

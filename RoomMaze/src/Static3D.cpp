@@ -15,7 +15,7 @@ Static3D::Static3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 m
 	extern physx::PxPhysics *mPhysics;
 	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
 
-	createShape(path);
+	pxShape = createShape(path);
 	pxActor->attachShape(*pxShape);
 
 	extern physx::PxScene *pxScene;
@@ -47,7 +47,7 @@ Static3D::~Static3D()
 {
 }
 
-void Static3D::createShape(const char *path) {
+physx::PxShape* Static3D::createShape(const char *path) {
 	// physX global variables
 	extern physx::PxFoundation *mFoundation;
 	extern physx::PxPhysics *mPhysics;
@@ -68,10 +68,11 @@ void Static3D::createShape(const char *path) {
 	physx::PxTriangleMeshCookingResult::Enum result;
 	bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
 	if (!status)
-		return;
+		return nullptr;
 	physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
 	physx::PxTriangleMeshGeometry trigeom = physx::PxTriangleMeshGeometry(mPhysics->createTriangleMesh(readBuffer));
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
-	pxShape = mPhysics->createShape(trigeom, *mat, false);
-	pxShape->setQueryFilterData(physx::PxFilterData(COLLISION, 0, 0, 0));
+	physx::PxShape *temp = mPhysics->createShape(trigeom, *mat, false);
+	temp->setQueryFilterData(physx::PxFilterData(COLLISION, 0, 0, 0));
+	return temp;
 }

@@ -135,7 +135,7 @@ bool Camera::raycast(physx::PxRaycastBuffer &hit) {
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
 	physx::PxVec3 origin = physx::PxVec3(pos.x, pos.y + CHARACTER_EYE_HEIGHT, pos.z);
 	physx::PxVec3 destination = physx::PxVec3(front.x, front.y, front.z);
-	physx::PxReal range = physx::PxReal(0.5f);
+	physx::PxReal range = physx::PxReal(1.f);
 	const physx::PxHitFlags outputFlags = physx::PxHitFlag::ePOSITION;
 	physx::PxQueryFilterData filterData = physx::PxQueryFilterData();
 	filterData.data.word0 = INTERACTABLE;

@@ -4,6 +4,7 @@
 
 #include "Component3D.h"
 #include "Camera.h"
+#include "OBJReader.h"
 
 class Object3D
 {
@@ -31,7 +32,7 @@ protected:
 	 *
 	 * @param path: the filename of the COL/OBJ file used as collision
 	 */
-	virtual void createShape(const char *path) = 0;
+	virtual physx::PxShape* createShape(const char *path) = 0;
 public:
 	/**
 	 * CONSTRUCTOR
@@ -55,6 +56,6 @@ public:
 	/**
 	 * Draws the object and sets the needed Uniforms on the shader
 	 */
-	void draw();
+	virtual void draw();
 	void destroy();
 };

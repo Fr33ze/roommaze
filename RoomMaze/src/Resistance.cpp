@@ -15,7 +15,7 @@ Resistance::Resistance(const char *path, std::shared_ptr<Shader> shader, glm::ma
 	extern physx::PxPhysics *mPhysics;
 	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
 
-	createShape(path);
+	pxShape = createShape(path);
 	pxActor->attachShape(*pxShape);
 	pxActor->userData = this;
 
@@ -49,7 +49,7 @@ Resistance::~Resistance()
 {
 }
 
-void Resistance::createShape(const char *path) {
+physx::PxShape* Resistance::createShape(const char *path) {
 	// physX global variables
 	extern physx::PxFoundation *mFoundation;
 	extern physx::PxPhysics *mPhysics;
@@ -59,8 +59,9 @@ void Resistance::createShape(const char *path) {
 	physx::PxSphereGeometry geom = physx::PxSphereGeometry(physx::PxReal(0.3f));
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
-	pxShape = mPhysics->createShape(geom, *mat, false);
-	pxShape->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
+	physx::PxShape *temp = mPhysics->createShape(geom, *mat, false);
+	temp->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
+	return temp;
 }
 
 void Resistance::use(GUI::Inventory *inv) {

@@ -17,7 +17,7 @@ Dynamic3D::Dynamic3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4
 	std::vector<std::string> splitfile = OBJReader::splitFilename(path);
 	size_t found = splitfile[1].find_last_of(".");
 	std::string colfile = splitfile[0] + splitfile[1].substr(0, found + 1) + "col";
-	createShape(colfile.c_str());
+	pxShape = createShape(colfile.c_str());
 	pxActor->attachShape(*pxShape);
 
 	extern physx::PxScene *pxScene;
@@ -47,7 +47,7 @@ Dynamic3D::~Dynamic3D()
 {
 }
 
-void Dynamic3D::createShape(const char *path) {
+physx::PxShape* Dynamic3D::createShape(const char *path) {
 	// physX global variables
 	extern physx::PxFoundation *mFoundation;
 	extern physx::PxPhysics *mPhysics;
@@ -74,7 +74,7 @@ void Dynamic3D::createShape(const char *path) {
 	physx::PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.7f));
-	pxShape = mPhysics->createShape(physx::PxConvexMeshGeometry(convexMesh), *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
+	return mPhysics->createShape(physx::PxConvexMeshGeometry(convexMesh), *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
 }
 
 void Dynamic3D::createActor(physx::PxTransform transform) {

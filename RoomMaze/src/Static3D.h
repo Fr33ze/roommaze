@@ -28,5 +28,5 @@ public:
 	~Static3D();
 
 protected:
-	void createShape(const char *path) override;
+	physx::PxShape* createShape(const char *path) override;
 };
