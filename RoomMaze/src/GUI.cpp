@@ -12,7 +12,7 @@ GUI::GUI(int windowWidth, int windowHeight, Inventory *inv)
 
 	batteryStatus = GUIText(fontPath, std::to_string(inv->batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 1.2f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
-	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, 1.0f, windowWidth, windowHeight);
+	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, 0.75f, windowWidth, windowHeight);
 }
 
 GUI::GUI() {

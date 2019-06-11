@@ -28,9 +28,6 @@
 Modell:
 
 -> Knopf
--> Boxen verteilen
--> Rohre verlegen
--> Lüftungsschächte verteilen
 
 Code:
 

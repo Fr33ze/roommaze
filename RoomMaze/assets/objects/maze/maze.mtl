@@ -1,5 +1,5 @@
 # Blender MTL File: 'Maze.blend'
-# Material Count: 13
+# Material Count: 17
 
 newmtl Bricks1
 map_Kd bricks1.jpg
@@ -49,10 +49,45 @@ Ni 1.000000
 d 1.000000
 illum 2
 
+newmtl Hand
+map_Kd hand.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
 newmtl Manhole1
 map_Kd manhole1.jpg
 map_Ks manhole1_specular.jpg
 Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Marble1
+map_Kd marble1.jpg
+map_Ks marble1_specular.jpg
+Ns 50.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Marble2
+map_Kd marble2.jpg
+map_Ks marble2_specular.jpg
+Ns 50.000000
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
 Ks 0.500000 0.500000 0.500000
@@ -126,7 +161,10 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl None
+newmtl Paving1
+map_Kd paving1.jpg
+map_Ks paving1_specular.jpg
+map_N paving1_normal.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -136,10 +174,9 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Paving1
-map_Kd paving1.jpg
-map_Ks paving1_specular.jpg
-map_N paving1_normal.jpg
+newmtl Tiles1
+map_Kd tiles1.jpg
+map_Ks tiles1_specular.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000

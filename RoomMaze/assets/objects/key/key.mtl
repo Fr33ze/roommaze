@@ -1,8 +1,8 @@
 # Blender MTL File: 'Key.blend'
 # Material Count: 1
 
-newmtl Gold
-map_Kd gold.jpg
+newmtl Metal
+map_Kd metal.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
