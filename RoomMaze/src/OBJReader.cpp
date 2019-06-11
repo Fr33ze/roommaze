@@ -1,6 +1,6 @@
 #include "OBJReader.h"
 
-std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::readMaterials(const char *path, const char *filename) {
+robin_hood::unordered_flat_map<std::string, std::shared_ptr<Material>> OBJReader::readMaterials(const char *path, const char *filename) {
 	FILE *mtlfile;
 	std::string fullpath = std::string(path);
 	fullpath += filename;
@@ -12,11 +12,11 @@ std::unordered_map<std::string, std::shared_ptr<Material>> OBJReader::readMateri
 		exit(-1);
 	}
 	//define temporary map
-	std::unordered_map<std::string, std::shared_ptr<Material>> matMap;
+	robin_hood::unordered_flat_map<std::string, std::shared_ptr<Material>> matMap;
 	//define and assign default values for material
 	glm::vec3 ka = glm::vec3(0.2f, 0.2f, 0.2f);
-	glm::vec3 kd = glm::vec3(0.8f, 0.8f, 0.8f);
-	glm::vec3 ks = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 kd = glm::vec3(0.8f, 0.8f, 0.8f);;
+	glm::vec3 ks = glm::vec3(1.0f, 1.0f, 1.0f);;
 	float alpha = 1.0f;
 	float shininess = 0.0f;
 	char map_ka[256];
@@ -185,12 +185,16 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 
 	//define temporary lists
 	std::vector<glm::vec3> positions;
+	positions.reserve(128);
 	std::vector<glm::vec3> normals;
+	positions.reserve(128);
 	std::vector<glm::vec2> uvs;
-	std::unordered_map<std::string, std::shared_ptr<Material>> materialNameMap;
-	std::unordered_map<std::string, std::vector<std::vector<unsigned int>>> materialFaceMap;
+	uvs.reserve(128);
+	robin_hood::unordered_flat_map<std::string, std::shared_ptr<Material>> materialNameMap;
+	robin_hood::unordered_flat_map<std::string, std::vector<std::vector<unsigned int>>> materialFaceMap;
 	std::string currentMaterial;
 	std::vector<std::vector<unsigned int>> currentFaces = {};
+	currentFaces.reserve(32);
 
 	//start reading .obj file line by line
 	while (1) {
@@ -235,6 +239,7 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 			//temporary faces
 			else if (strcmp(lineheader, "f") == 0) {
 				std::vector<unsigned int> face;
+				face.reserve(9);
 				unsigned int vertexIndex[3], uvIndex[3], normalIndex[3];
 				int matches = fscanf_s(objfile, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &uvIndex[0], &normalIndex[0], &vertexIndex[1], &uvIndex[1], &normalIndex[1], &vertexIndex[2], &uvIndex[2], &normalIndex[2]);
 				if (matches != 9) {
@@ -266,6 +271,7 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 						materialFaceMap[currentMaterial] = currentFaces;
 
 						currentFaces = {};
+						currentFaces.reserve(32);
 					}
 					//get current material and add the new faces to its list (if it does already exist)
 					else {
@@ -273,6 +279,7 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 						tempfaces.insert(tempfaces.end(), currentFaces.begin(), currentFaces.end());
 
 						currentFaces = {};
+						currentFaces.reserve(32);
 					}
 				}
 				currentMaterial = material;
@@ -287,21 +294,28 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 	}
 	//Geometry split up by materials
 	std::vector<Component3D> allGeometries;
-	int counter = 0;
-	for (std::unordered_map<std::string, std::vector<std::vector<unsigned int>>>::iterator iter = materialFaceMap.begin(); iter != materialFaceMap.end(); iter++) {
+	allGeometries.reserve(materialFaceMap.size());
+	for (robin_hood::unordered_flat_map<std::string, std::vector<std::vector<unsigned int>>>::iterator iter = materialFaceMap.begin(); iter != materialFaceMap.end(); iter.next()) {
 		//iter->first is material_name
 		//iter->second are its faces
 
 		Component3D::GeometryData gd;
+		gd.vertices.reserve(128);
+		gd.normals.reserve(128);
+		gd.tangents.reserve(128);
+		gd.indices.reserve(128);
+		gd.UVCoords.reserve(128);
 
 		//to reuse already created vertices for face construction
-		//std::unordered_map<std::string, unsigned int> reuseVertexMap;
-		//unsigned int reuseCount = 0;
+		robin_hood::unordered_flat_map<std::string, unsigned int> reuseVertexMap;
+		reuseVertexMap.reserve(128);
+		unsigned int reuseCount = 0;
 
 		for (std::vector<unsigned int> &face : iter->second) {
-			//std::string first = std::to_string(face[0]) + "/" + std::to_string(face[1]) + "/" + std::to_string(face[2]);
-			//std::string second = std::to_string(face[3]) + "/" + std::to_string(face[4]) + "/" + std::to_string(face[5]);
-			//std::string third = std::to_string(face[6]) + "/" + std::to_string(face[7]) + "/" + std::to_string(face[8]);
+			std::string
+				first = std::to_string(face[0]) + "/" + std::to_string(face[1]) + "/" + std::to_string(face[2]),
+				second = std::to_string(face[3]) + "/" + std::to_string(face[4]) + "/" + std::to_string(face[5]),
+				third = std::to_string(face[6]) + "/" + std::to_string(face[7]) + "/" + std::to_string(face[8]);
 
 			//Calculate tangents for this face
 			glm::vec3 & v0 = positions[face[0] - 1];
@@ -323,7 +337,7 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 
 			//create vertices only if they do not exist (to save resources)
 			//always substract 1 from face[i] because indexing starts at 0 in c++
-			/*if (!reuseVertexMap.count(first)) {
+			if (!reuseVertexMap.count(first)) {
 				gd.vertices.push_back(positions[face[0] - 1]);
 				gd.UVCoords.push_back(uvs[face[1] - 1]);
 				gd.normals.push_back(normals[face[2] - 1]);
@@ -366,34 +380,16 @@ std::vector<Component3D> OBJReader::readObject(const char * filename)
 				gd.indices.push_back(reuseVertexMap[third]);
 				gd.tangents[reuseVertexMap[third]] += tangent;
 				reuseCount++;
-			}*/
-			gd.vertices.push_back(positions[face[0] - 1]);
-			gd.UVCoords.push_back(uvs[face[1] - 1]);
-			gd.normals.push_back(normals[face[2] - 1]);
-			gd.tangents.push_back(tangent);
-			unsigned int index = gd.indices.size();
-			gd.indices.push_back(index);
-
-			gd.vertices.push_back(positions[face[3] - 1]);
-			gd.UVCoords.push_back(uvs[face[4] - 1]);
-			gd.normals.push_back(normals[face[5] - 1]);
-			gd.tangents.push_back(tangent);
-			gd.indices.push_back(++index);
-
-			gd.vertices.push_back(positions[face[6] - 1]);
-			gd.UVCoords.push_back(uvs[face[7] - 1]);
-			gd.normals.push_back(normals[face[8] - 1]);
-			gd.tangents.push_back(tangent);
-			gd.indices.push_back(++index);
+			}
 		}
 		allGeometries.push_back(Component3D(gd, materialNameMap[iter->first]));
 
 		//reset GeometryData gd and reuseVertexMap for next material
-		std::cout << iter->first << ": " << gd.vertices.size() << std::endl;
-		counter += gd.vertices.size();
 		gd = {};
+		reuseVertexMap.clear();
+		reuseCount = 0;
 	}
-	std::cout << "---" << std::endl;
+
 	return allGeometries;
 }
 
@@ -408,6 +404,7 @@ std::vector<glm::vec3> OBJReader::readCollisionConvex(const char *filename) {
 	}
 
 	std::vector<glm::vec3> positions;
+	positions.reserve(128);
 
 	//start reading .col file line by line
 	while (1) {
@@ -439,7 +436,9 @@ Component3D::GeometryData OBJReader::readCollisionTrimesh(const char *filename) 
 	}
 
 	std::vector<glm::vec3> positions;
+	positions.reserve(128);
 	std::vector<unsigned int> indices;
+	indices.reserve(128);
 
 	//start reading .obj file line by line
 	while (1) {

@@ -1,20 +1,20 @@
 #pragma once
 
-#include <map>
+#include <robinhood\robin_hood.h>
 #include "Component3D.h"
 
 /*!
  * Wavefront Object (.obj) Reader
  */
 class OBJReader {
-protected:
+private:
 	/**
 	 * Reads from the specified .mtl file (filename) and returns all materials
 	 *
 	 * @param path: path of the file without its filename
 	 * @param filename: filename of the MTL file without its path
 	 */
-	static std::unordered_map<std::string, std::shared_ptr<Material>> readMaterials(const char *path, const char *filename);
+	static robin_hood::unordered_flat_map<std::string, std::shared_ptr<Material>> readMaterials(const char *path, const char *filename);
 public:
 	/**
 	 * Returns the directory path and the filename of a full filename

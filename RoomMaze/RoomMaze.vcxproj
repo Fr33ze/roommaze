@@ -149,7 +149,6 @@
     <ClCompile Include="src\GUIComponent.cpp" />
     <ClCompile Include="src\GUIText.cpp" />
     <ClCompile Include="src\Interactable3D.cpp" />
-    <ClCompile Include="src\OBJ.cpp" />
     <ClCompile Include="src\Object3D.cpp" />
     <ClCompile Include="src\INIReader.cpp" />
     <ClCompile Include="src\OBJReader.cpp" />
@@ -172,7 +171,6 @@
     <ClInclude Include="src\GUIComponent.h" />
     <ClInclude Include="src\GUIText.h" />
     <ClInclude Include="src\Interactable3D.h" />
-    <ClInclude Include="src\OBJ.h" />
     <ClInclude Include="src\Object3D.h" />
     <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\OBJReader.h" />
