@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = true;
+	bool testing = !true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -239,7 +239,7 @@ void initContent() {
 		renderObjects.push_back(door1);
 		Static3D *door2 = new Static3D(*door1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(door2);
-		Static3D *water = new Static3D("assets/objects/water.obj", shader);
+		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
 		renderObjects.push_back(water);
 		Static3D *key1 = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.9f, 1.015f, -9.4f)));
 		renderObjects.push_back(key1);

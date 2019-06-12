@@ -1,5 +1,5 @@
 # Blender MTL File: 'Maze.blend'
-# Material Count: 18
+# Material Count: 17
 
 newmtl Bricks
 map_Kd textures/bricks.jpg
@@ -200,19 +200,6 @@ illum 2
 newmtl Ventilation
 map_Kd textures/ventilation.jpg
 map_Ks textures/ventilation_specular.jpg
-Ns 96.078431
-Ka 1.000000 1.000000 1.000000
-Kd 0.640000 0.640000 0.640000
-Ks 0.500000 0.500000 0.500000
-Ke 0.000000 0.000000 0.000000
-Ni 1.000000
-d 1.000000
-illum 2
-
-newmtl Wood
-map_Kd textures/wood.jpg
-map_Ks textures/wood_specular.jpg
-map_N textures/wood_normal.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
