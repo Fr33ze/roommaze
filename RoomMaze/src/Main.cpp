@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = !true;
+	bool testing = true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -230,6 +230,12 @@ void initContent() {
 		renderObjects.push_back(resistance);
 		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader);
 		renderObjects.push_back(elevatorDoor);
+		Static3D *key1 = new Static3D("assets/objects/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		renderObjects.push_back(key1);
+		Static3D *key2 = new Static3D("assets/objects/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.1f)), glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 0.0f)));
+		renderObjects.push_back(key2);
+		Static3D *key3 = new Static3D("assets/objects/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.2f)), glm::radians(90.0f), glm::vec3(0.0f, 0.25f, 0.0f)));
+		renderObjects.push_back(key3);
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
 		renderObjects.push_back(maze);
@@ -241,10 +247,6 @@ void initContent() {
 		renderObjects.push_back(door2);
 		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
 		renderObjects.push_back(water);
-		Static3D *key1 = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(2.9f, 1.015f, -9.4f)));
-		renderObjects.push_back(key1);
-		Static3D *key2 = new Static3D(*key1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-0.4f, 1.015f, -11.9f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		renderObjects.push_back(key2);
 		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
 		Battery *battery = new Battery("assets/objects/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));

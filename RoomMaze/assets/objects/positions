@@ -64,7 +64,10 @@
 # Position where to start with the unlock animation for door2.
 -0.4 1.015 -11.9 90 0 1 0
 # Possible places where the key could be hide (choose 1 from the list below).
-
+# -88.7 2.91 72.5
+-7.9519 0.33851 -10.316 -90 1 -1.241379 0
+# -90 0 72.5
+-8.3121 1.0734 -11.901 -88.7 1 -1.223448 30.481099
 
 [Resistance]
 # Resistance which is already inside the electric box.
