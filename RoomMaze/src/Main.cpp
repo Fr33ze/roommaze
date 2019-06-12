@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = true;
+	bool testing = !true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -230,12 +230,6 @@ void initContent() {
 		renderObjects.push_back(resistance);
 		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader);
 		renderObjects.push_back(elevatorDoor);
-		Static3D *key1 = new Static3D("assets/objects/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.0f)), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		renderObjects.push_back(key1);
-		Static3D *key2 = new Static3D("assets/objects/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.1f)), glm::radians(90.0f), glm::vec3(0.0f, 0.5f, 0.0f)));
-		renderObjects.push_back(key2);
-		Static3D *key3 = new Static3D("assets/objects/key.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(1.2f)), glm::radians(90.0f), glm::vec3(0.0f, 0.25f, 0.0f)));
-		renderObjects.push_back(key3);
 	} else {
 		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
 		renderObjects.push_back(maze);
@@ -251,6 +245,8 @@ void initContent() {
 		renderObjects.push_back(resistance);
 		Battery *battery = new Battery("assets/objects/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
 		renderObjects.push_back(battery);
+		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(1.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-88.7f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.91f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		renderObjects.push_back(key);
 	}
 }
 
