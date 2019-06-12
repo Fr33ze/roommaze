@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = !true;
+	bool testing = true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -231,22 +231,33 @@ void initContent() {
 		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader);
 		renderObjects.push_back(elevatorDoor);
 	} else {
+		// maze
 		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
 		renderObjects.push_back(maze);
-		Static3D *electricBox = new Static3D("assets/objects/electric_box.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 0.65f, -1.75f)));
-		renderObjects.push_back(electricBox);
+		// first battery from positions file
+		Battery *battery = new Battery("assets/objects/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.25f, 1.2185f, 3.35f)));
+		renderObjects.push_back(battery);
+		// first box from positions file
+		// TODO: .col file
+		Static3D *box = new Static3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		renderObjects.push_back(box);
+		// opened doors from positions file
 		Static3D *door1 = new Static3D("assets/objects/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)), glm::radians(-110.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(door1);
 		Static3D *door2 = new Static3D(*door1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(door2);
-		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
-		renderObjects.push_back(water);
+		// electric box from positions file
+		Static3D *electricBox = new Static3D("assets/objects/electric_box.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 0.65f, -1.75f)));
+		renderObjects.push_back(electricBox);
+		// second key from positions file
+		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-8.3121f, 1.0737f, -11.901f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.6f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		renderObjects.push_back(key);
+		// first resistance from positions file
 		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
-		Battery *battery = new Battery("assets/objects/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
-		renderObjects.push_back(battery);
-		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(1.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-88.7f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.91f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		renderObjects.push_back(key);
+		// water from positions file
+		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
+		renderObjects.push_back(water);
 	}
 }
 
