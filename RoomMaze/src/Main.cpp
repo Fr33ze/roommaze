@@ -241,6 +241,9 @@ void initContent() {
 		// TODO: .col file
 		Dynamic3D *box = new Dynamic3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(box);
+		// first button from positions file
+		Static3D *button = new Static3D("assets/objects/button.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.03f, -1.49f)), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		renderObjects.push_back(button);
 		// button panel from positions file
 		Static3D *buttonPanel = new Static3D("assets/objects/button_panel.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.1f, -1.5f)));
 		renderObjects.push_back(buttonPanel);
