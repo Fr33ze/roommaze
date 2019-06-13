@@ -1,9 +1,21 @@
 # Blender MTL File: 'ElevatorDoors.blend'
-# Material Count: 1
+# Material Count: 2
 
-newmtl Doors
-map_Kd textures/doors.jpg
-map_Ks textures/doors_specular.jpg
+newmtl Doors1
+map_Kd textures/doors1.jpg
+map_Ks textures/doors1_specular.jpg
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Doors2
+map_Kd textures/doors2.jpg
+map_Ks textures/doors2_specular.jpg
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000

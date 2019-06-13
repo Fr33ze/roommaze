@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = true;
+	bool testing = !true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -241,6 +241,9 @@ void initContent() {
 		// TODO: .col file
 		Dynamic3D *box = new Dynamic3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(box);
+		// button panel from positions file
+		Static3D *buttonPanel = new Static3D("assets/objects/button_panel.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-5.9f, 1.1f, -1.5f)));
+		renderObjects.push_back(buttonPanel);
 		// opened doors from positions file
 		Static3D *door1 = new Static3D("assets/objects/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)), glm::radians(-110.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(door1);
@@ -249,6 +252,11 @@ void initContent() {
 		// electric box from positions file
 		Static3D *electricBox = new Static3D("assets/objects/electric_box.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 0.65f, -1.75f)));
 		renderObjects.push_back(electricBox);
+		// opened elevator doors from the positions file
+		Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_left_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, 0.95f)));
+		renderObjects.push_back(elevatorLeftDoor);
+		Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_right_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, -0.95f)));
+		renderObjects.push_back(elevatorRightDoor);
 		// second key from positions file
 		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-8.3121f, 1.0737f, -11.901f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.6f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		renderObjects.push_back(key);

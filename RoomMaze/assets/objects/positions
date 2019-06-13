@@ -66,6 +66,9 @@
 # Possible places where the button could be hide (choose 1 from the list below).
 
 
+[ButtonPanel]
+-5.9 1.5 1.1 0 0 0
+
 [Door]
 # Position of door1 (closed).
 3.1 8.5 0 0 0 0
@@ -80,13 +83,13 @@
 -4 1.75 0.65 0 0 0
 
 [ElevatorDoor]
-# Position of the left door (closed).
+# Position of the left doors (closed).
 -4.25 0 0 0 0 0
-# Position of the left door (opened).
+# Position of the left doors (opened).
 -4.25 -0.95 0 0 0 0
-# Position of the right door (closed).
+# Position of the right doors (closed).
 -4.25 0 0 0 0 0
-# Position of the right door (opened).
+# Position of the right doors (opened).
 -4.25 0.95 0 0 0 0
 
 [Key]
@@ -136,5 +139,4 @@
 5.3608 -23.85 0.019397 90 0 -30
 
 [Water]
-# Position of the water layer placed in the scene.
 0 0 -4.825 0 0 0
