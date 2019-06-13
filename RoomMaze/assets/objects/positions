@@ -3,7 +3,7 @@
 # <x-axis> <y-axis> <z-axis> <rotation angle in degrees on x-axis> <rotation angle in degrees on y-axis> <rotation angle in degrees on z-axis>
 
 [Battery]
-# Possible places where batteries could be hide (choose 20 from the list below).
+# Possible places where batteries could be hide (choose 10 from the list below).
 -0.25 -3.35 1.2185 0 0 0
 -3.6176 12.75 0.91159 0 0 0
 10.382 20.25 0.91159 0 0 0
@@ -18,6 +18,14 @@
 20.75 5.1 1.2185 0 0 0
 -18.9 15.25 3.7185 0 0 0
 26.9 31 1.2185 0 0 0
+-7.25 17.2 2.5 0 0 0
+22.8 20.25 0 0 0 0
+4.2538 31.75 -4.48 0 0 0
+28.404 20.75 -4.488 0 0 0
+19.404 -3.9 -4.488 0 0 0
+6.4038 -11.15 -4.488 0 0 0
+-4.6962 -16.55 -4.485 0 0 0
+-16.596 2.3 -4.485 0 0 0
 
 [Box]
 # Positions of the boxes placed in the scene.
