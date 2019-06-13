@@ -228,8 +228,8 @@ void initContent() {
 		renderObjects.push_back(battery2);
 		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
-		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader);
-		renderObjects.push_back(elevatorDoor);
+		ElevatorDoor *elevatorDoors = new ElevatorDoor("assets/objects/elevator_left_doors.obj", "assets/objects/elevator_right_doors.obj", shader);
+		renderObjects.push_back(elevatorDoors);
 	} else {
 		// maze
 		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
@@ -253,10 +253,10 @@ void initContent() {
 		Static3D *electricBox = new Static3D("assets/objects/electric_box.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 0.65f, -1.75f)));
 		renderObjects.push_back(electricBox);
 		// opened elevator doors from the positions file
-		Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_left_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, 0.95f)));
-		renderObjects.push_back(elevatorLeftDoor);
-		Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_right_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, -0.95f)));
-		renderObjects.push_back(elevatorRightDoor);
+		Static3D *elevatorLeftDoors = new Static3D("assets/objects/elevator_left_doors.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, 0.95f)));
+		renderObjects.push_back(elevatorLeftDoors);
+		Static3D *elevatorRightDoors = new Static3D("assets/objects/elevator_right_doors.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, -0.95f)));
+		renderObjects.push_back(elevatorRightDoors);
 		// second key from positions file
 		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-8.3121f, 1.0737f, -11.901f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.6f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		renderObjects.push_back(key);
