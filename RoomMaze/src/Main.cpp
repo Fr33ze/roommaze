@@ -239,7 +239,7 @@ void initContent() {
 		renderObjects.push_back(battery);
 		// first box from positions file
 		// TODO: .col file
-		Static3D *box = new Static3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+		Dynamic3D *box = new Dynamic3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(box);
 		// opened doors from positions file
 		Static3D *door1 = new Static3D("assets/objects/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)), glm::radians(-110.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
