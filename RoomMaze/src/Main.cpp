@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = true;
+	bool testing = !true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -242,7 +242,7 @@ void initContent() {
 		Dynamic3D *box = new Dynamic3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 		renderObjects.push_back(box);
 		// button panel from positions file
-		Static3D *buttonPanel = new Static3D("assets/objects/button_panel.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-5.9f, 1.1f, -1.5f)));
+		Static3D *buttonPanel = new Static3D("assets/objects/button_panel.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.1f, -1.5f)));
 		renderObjects.push_back(buttonPanel);
 		// opened doors from positions file
 		Static3D *door1 = new Static3D("assets/objects/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)), glm::radians(-110.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
