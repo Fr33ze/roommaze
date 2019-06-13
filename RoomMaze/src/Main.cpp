@@ -218,7 +218,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = true;
+	bool testing = !true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
