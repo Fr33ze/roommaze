@@ -33,6 +33,7 @@ protected:
 	 * @param path: the filename of the COL/OBJ file used as collision
 	 */
 	virtual physx::PxShape* createShape(const char *path) = 0;
+
 public:
 	/**
 	 * CONSTRUCTOR

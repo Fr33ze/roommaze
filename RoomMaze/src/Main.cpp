@@ -117,6 +117,12 @@ physx::PxPvd *mPvd;
 physx::PxPvdTransport *mTransport;
 #endif
 
+// shadow map
+void initShadowMap();
+const GLuint SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
+GLuint depthMapFBO;
+GLuint depthMap;
+
 /* ----- */
 // MAIN
 /* ----- */
@@ -204,8 +210,9 @@ void initContent() {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glEnable(GL_DEPTH_TEST);
 
-	// shader
+	// shaders
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
+	std::shared_ptr<Shader> depthShader = std::make_shared<Shader>("assets/shaders/depthShader.vert", "assets/shaders/depthShader.frag");
 
 	// camera (includes character controller)
 	camera = new Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
@@ -228,8 +235,8 @@ void initContent() {
 		renderObjects.push_back(battery2);
 		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
-		ElevatorDoor *elevatorDoors = new ElevatorDoor("assets/objects/elevator_left_doors.obj", "assets/objects/elevator_right_doors.obj", shader);
-		renderObjects.push_back(elevatorDoors);
+		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader);
+		renderObjects.push_back(elevatorDoor);
 	} else {
 		// maze
 		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
@@ -254,11 +261,11 @@ void initContent() {
 		// electric box from positions file
 		Static3D *electricBox = new Static3D("assets/objects/electric_box.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 0.65f, -1.75f)));
 		renderObjects.push_back(electricBox);
-		// opened elevator doors from the positions file
-		Static3D *elevatorLeftDoors = new Static3D("assets/objects/elevator_left_doors.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, 0.95f)));
-		renderObjects.push_back(elevatorLeftDoors);
-		Static3D *elevatorRightDoors = new Static3D("assets/objects/elevator_right_doors.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.25f, 0.0f, -0.95f)));
-		renderObjects.push_back(elevatorRightDoors);
+		// opened front elevator doors from the positions file
+		Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_left_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.3f, 0.0f, 0.95f)));
+		renderObjects.push_back(elevatorLeftDoor);
+		Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_right_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.3f, 0.0f, -0.95f)));
+		renderObjects.push_back(elevatorRightDoor);
 		// second key from positions file
 		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-8.3121f, 1.0737f, -11.901f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.6f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		renderObjects.push_back(key);
@@ -269,6 +276,20 @@ void initContent() {
 		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
 		renderObjects.push_back(water);
 	}
+}
+
+void initShadowMap() {
+	// depth map framebuffer (FBO)
+	glGenFramebuffers(1, &depthMapFBO);
+
+	// depth map texture
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
 GLFWwindow* initOpenGL() {

@@ -2,8 +2,8 @@
 
 
 Object3D::Object3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
-	: shader(shader)
-{
+	: shader(shader) {
+
 	components = OBJReader::readObject(path);
 	enabled = true;
 }
@@ -20,8 +20,7 @@ Object3D::~Object3D() {
 	pxActor->release();
 }
 
-void Object3D::draw()
-{
+void Object3D::draw() {
 	if (!enabled)
 		return;
 
