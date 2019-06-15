@@ -117,12 +117,6 @@ physx::PxPvd *mPvd;
 physx::PxPvdTransport *mTransport;
 #endif
 
-// shadow map
-void initShadowMap();
-const GLuint SHADOW_MAP_WIDTH = 1024, SHADOW_MAP_HEIGHT = 1024;
-GLuint depthMapFBO;
-GLuint depthMap;
-
 /* ----- */
 // MAIN
 /* ----- */
@@ -276,20 +270,6 @@ void initContent() {
 		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
 		renderObjects.push_back(water);
 	}
-}
-
-void initShadowMap() {
-	// depth map framebuffer (FBO)
-	glGenFramebuffers(1, &depthMapFBO);
-
-	// depth map texture
-	glGenTextures(1, &depthMap);
-	glBindTexture(GL_TEXTURE_2D, depthMap);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_MAP_WIDTH, SHADOW_MAP_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 }
 
 GLFWwindow* initOpenGL() {
