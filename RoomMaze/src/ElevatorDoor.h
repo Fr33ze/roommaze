@@ -24,11 +24,12 @@ protected:
 	// in this case only creates a sphere query shape (for raycasts)
 	physx::PxShape* createShape(const char *path) override;
 	// animations for opening the doors
-	Animation *openLeft;
-	Animation *openRight;
-	bool playopenleft = false;
-	bool playopenright = false;
-	bool playcloseleft = false;
-	bool playcloseright = false;
+	Animation *animLeft;
+	Animation *animRight;
+	// should play open/close animation
+	bool playopen = false;
+	bool playclose = false;
+	// current state of doors (true = open, false = closed)
+	bool open = false;
 };
 

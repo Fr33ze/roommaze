@@ -17,15 +17,13 @@ ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::sha
 	pxActorRight = mPhysics->createRigidStatic(physx::PxTransform(pose));
 
 	std::vector<Animation::KeyFrame> keyframesLeft = {
-		Animation::KeyFrame(5, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f, 90.f, 0.f)),
-		Animation::KeyFrame(2, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f))
+		Animation::KeyFrame(1, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f))
 	};
 	std::vector<Animation::KeyFrame> keyframesRight = {
-		Animation::KeyFrame(5, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f, 90.f, 0.f)),
-		Animation::KeyFrame(2, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f))
+		Animation::KeyFrame(1, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f))
 	};
-	openLeft = new Animation(pxActor, keyframesLeft);
-	openRight = new Animation(pxActorRight, keyframesRight);
+	animLeft = new Animation(pxActor, keyframesLeft);
+	animRight = new Animation(pxActorRight, keyframesRight);
 
 	pxShape = createShape(pathLeft);
 	pxShapeRight = createShape(pathRight);
@@ -57,11 +55,13 @@ void ElevatorDoor::draw(float dt) {
 	extern Camera *camera;
 	shader->use();
 
-	if (playopenleft) {
-		playopenleft = openLeft->animate(dt);
+	if (playopen) {
+		playopen = animLeft->animate(dt);
+		playopen = animRight->animate(dt);
 	}
-	if (playopenright) {
-		playopenright = openRight->animate(dt);
+	if (playclose) {
+		playclose = animLeft->reverse(dt);
+		playclose = animRight->reverse(dt);
 	}
 
 	//left door
@@ -81,10 +81,17 @@ void ElevatorDoor::draw(float dt) {
 
 void ElevatorDoor::use(GUI::Inventory * inv)
 {
-	openLeft->reset();
-	openRight->reset();
-	playopenleft = true;
-	playopenright = true;
+	if (!(playopen || playclose)) {
+		animLeft->reset();
+		animRight->reset();
+		if (open) {
+			playclose = true;
+		}
+		else {
+			playopen = true;
+		}
+		open = !open;
+	}
 }
 
 std::string ElevatorDoor::guitext(GUI::Inventory * inv)

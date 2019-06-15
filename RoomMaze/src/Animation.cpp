@@ -56,7 +56,8 @@ bool Animation::reverse(float dt) {
 			return false;
 		}
 	}
-	float progress = dt / keyframes[laststage - stage].time;
+	//-dt to make progress negative (transform backwards)
+	float progress = -dt / keyframes[laststage - stage].time;
 	float radians = 0;// glm::radians(keyframes[laststage - stage].rotate.maxElement() * progress);
 	physx::PxTransform transformation = physx::PxTransform(
 		keyframes[laststage - stage].translate * progress,
