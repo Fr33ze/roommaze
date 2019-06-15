@@ -61,4 +61,6 @@ public:
 	 */
 	virtual void draw(float dt);
 	void destroy();
+	// returns the actor of this Object3D
+	physx::PxRigidActor* getActor();
 };

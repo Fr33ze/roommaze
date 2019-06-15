@@ -39,3 +39,8 @@ void Object3D::destroy() {
 		components.at(i).destroy();
 	}
 }
+
+physx::PxRigidActor * Object3D::getActor()
+{
+	return pxActor;
+}
