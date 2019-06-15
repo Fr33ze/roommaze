@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <random>
 
 #include <physx\PxPhysicsAPI.h>
 #include <inireader\INIReader.h>
@@ -64,6 +65,8 @@ Code:
 void readSettings();
 GLFWwindow* initOpenGL();
 void initPhysX();
+void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader);
+void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::vec3 &rot, std::shared_ptr<Shader> shader);
 void initContent();
 void update(float deltaT);
 void draw(float deltaT);
@@ -110,6 +113,9 @@ GUI::Inventory *inv;
 
 // 3d objects to render
 std::vector<Object3D*> renderObjects;
+
+// last generated 3d object
+Object3D *lastGenerated;
 
 // physX
 physx::PxDefaultErrorCallback gErrorCallback;
@@ -230,7 +236,7 @@ void initContent() {
 
 	// camera (includes character controller)
 	camera = new Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera->setSpotLightParameters(1.0f, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
+	camera->setSpotLightParameters(settings.brightness, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
 
 	// GUI
 	gui = new GUI(settings.width, settings.height, inv);
@@ -238,8 +244,19 @@ void initContent() {
 	/* ------------- */
 	// LOAD OBJECTS
 	/* ------------- */
+	Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
+	renderObjects.push_back(maze);
 
-	bool testing = true;
+	INIReader positions("assets/positions.ini");
+	INIReader animations("assets/animations.ini");
+	
+	std::set<std::string> sections = positions.Sections();
+	for (std::string section : sections) {
+		readObjectsFromINI(positions, animations, section, shader);
+	}
+
+
+	/*bool testing = true;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -289,6 +306,126 @@ void initContent() {
 		// water from positions file
 		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
 		renderObjects.push_back(water);
+	}*/
+}
+
+void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader) {
+	std::string path = positions.Get(section, "path", "assets/box.obj");
+	unsigned int size = positions.GetInteger(section, "size", 1);
+	unsigned int load = positions.GetInteger(section, "load", 1);
+	unsigned int type = positions.GetInteger(section, "type", 9);
+
+	if (size == load) {
+		for (int i = 0; i < size; i++) {
+			glm::vec3 trans(1.f);
+			glm::vec3 rot(0.f);
+			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f", &trans.x, &trans.z, &trans.y, &rot.x, &rot.z, &rot.y);
+			trans.z = -trans.z;
+			createObject(path.c_str(), type, trans, rot, shader);
+		}
+	}
+	else {
+		std::random_device rd;
+		std::mt19937 eng(rd());
+		std::uniform_int_distribution<> distr(0, size - 1);
+		std::vector<unsigned int> loadIds;
+		for (int i = 0; i < load; i++) {
+			unsigned int num = distr(eng);
+			while (std::find(loadIds.begin(), loadIds.end(), num) != loadIds.end()) {
+				num = distr(eng);
+			}
+			loadIds.push_back(num);
+
+			glm::vec3 trans(1.f);
+			glm::vec3 rot(0.f);
+			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f", &trans.x, &trans.z, &trans.y, &rot.x, &rot.z, &rot.y);
+			trans.z = -trans.z;
+			createObject(path.c_str(), type, trans, rot, shader);
+		}
+	}
+	lastGenerated = nullptr;
+}
+
+void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::vec3 &rot, std::shared_ptr<Shader> shader) {
+	float rx = glm::radians(rot.x);
+	float ry = glm::radians(rot.y);
+	float rz = glm::radians(rot.z);
+	switch (type) {
+
+	case 0: //Battery
+		if (!lastGenerated)
+			lastGenerated = new Battery(
+				path,
+				shader,
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		else
+			lastGenerated = new Battery(
+				*((Battery*)lastGenerated),
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		renderObjects.push_back(lastGenerated);
+		break;
+
+	case 1: //Dynamic3D
+		if (!lastGenerated)
+			lastGenerated = new Dynamic3D(
+				path,
+				shader,
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		else
+			lastGenerated = new Dynamic3D(
+				*((Dynamic3D*)lastGenerated),
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		renderObjects.push_back(lastGenerated);
+		break;
+
+	case 2: //Button
+		break;
+
+	case 3: //ButtonPanel
+		break;
+
+	case 4: //Door
+		break;
+
+	case 5: //ElectricBox
+		break;
+
+	case 7: //Key
+		break;
+
+	case 8: //Resistance
+		if (!lastGenerated)
+			lastGenerated = new Resistance(
+				path,
+				shader,
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		else
+			lastGenerated = new Resistance(
+				*((Resistance*)lastGenerated),
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		renderObjects.push_back(lastGenerated);
+		break;
+
+	case 9: //Static3D
+		if (!lastGenerated)
+			lastGenerated = new Static3D(
+				path,
+				shader,
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		else
+			lastGenerated = new Static3D(
+				*((Static3D*)lastGenerated),
+				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+			);
+		renderObjects.push_back(lastGenerated);
+		break;
 	}
 }
 
