@@ -138,7 +138,7 @@ bool Camera::raycast(physx::PxRaycastBuffer &hit) {
 	physx::PxReal range = physx::PxReal(1.f);
 	const physx::PxHitFlags outputFlags = physx::PxHitFlag::ePOSITION;
 	physx::PxQueryFilterData filterData = physx::PxQueryFilterData();
-	filterData.data.word0 = INTERACTABLE;
+	filterData.data.word1 = INTERACTABLE;
 	return pxScene->raycast(origin, destination, range, hit, outputFlags, filterData);
 }
 

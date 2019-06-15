@@ -65,7 +65,7 @@ GLFWwindow* initOpenGL();
 void initPhysX();
 void initContent();
 void update(float deltaT);
-void draw();
+void draw(float deltaT);
 void cleanup();
 
 void processInput(GLFWwindow *window);
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 		update(deltaTime);
 
 		// draw all game components
-		draw();
+		draw(deltaTime);
 		glfwSwapBuffers(window);
 
 		// physx make simulation step
@@ -225,7 +225,7 @@ void initContent() {
 	// LOAD OBJECTS
 	/* ------------- */
 
-	bool testing = true;
+	bool testing = false;
 	if (testing) {
 		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
 		renderObjects.push_back(maze);
@@ -235,8 +235,8 @@ void initContent() {
 		renderObjects.push_back(battery2);
 		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.587f)));
 		renderObjects.push_back(resistance);
-		ElevatorDoor *elevatorDoor = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader);
-		renderObjects.push_back(elevatorDoor);
+		ElevatorDoor *elevatorDoors = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.3f, 0, 0)));
+		renderObjects.push_back(elevatorDoors);
 	} else {
 		// maze
 		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
@@ -429,9 +429,9 @@ void update(float deltaT) {
 	gui->updateTime(deltaT);
 }
 
-void draw() {
+void draw(float deltaT) {
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
-		renderObjects.at(i)->draw();
+		renderObjects.at(i)->draw(deltaT);
 	}
 
 	gui->draw();

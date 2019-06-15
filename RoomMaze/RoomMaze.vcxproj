@@ -141,6 +141,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Battery.cpp" />
     <ClCompile Include="src\CharacterCallback.cpp" />
     <ClCompile Include="src\Dynamic3D.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Battery.h" />
     <ClInclude Include="src\CharacterCallback.h" />
     <ClInclude Include="src\Dynamic3D.h" />

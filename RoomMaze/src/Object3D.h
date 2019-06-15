@@ -56,7 +56,9 @@ public:
 	~Object3D();
 	/**
 	 * Draws the object and sets the needed Uniforms on the shader
+	 *
+	 * @param dt: delta time of current and last drawn frame
 	 */
-	virtual void draw();
+	virtual void draw(float dt);
 	void destroy();
 };

@@ -54,7 +54,7 @@ physx::PxShape* Battery::createShape(const char *path) {
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
 	physx::PxShape *temp = mPhysics->createShape(geom, *mat, false);
-	temp->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
+	temp->setQueryFilterData(physx::PxFilterData(0, INTERACTABLE, 0, 0));
 	return temp;
 }
 

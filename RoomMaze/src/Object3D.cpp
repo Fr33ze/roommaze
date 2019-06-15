@@ -20,7 +20,7 @@ Object3D::~Object3D() {
 	pxActor->release();
 }
 
-void Object3D::draw() {
+void Object3D::draw(float dt) {
 	if (!enabled)
 		return;
 

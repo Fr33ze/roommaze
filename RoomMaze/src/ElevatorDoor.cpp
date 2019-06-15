@@ -13,25 +13,24 @@ ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::sha
 	}
 
 	extern physx::PxPhysics *mPhysics;
-	pxActor = mPhysics->createRigidDynamic(physx::PxTransform(pose));
-	pxActorRight = mPhysics->createRigidDynamic(physx::PxTransform(pose));
+	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
+	pxActorRight = mPhysics->createRigidStatic(physx::PxTransform(pose));
 
-	physx::PxSphereGeometry geom = physx::PxSphereGeometry(physx::PxReal(0.3f));
-	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
-	pxShape = mPhysics->createShape(geom, *mat, false);
-	pxShape->setQueryFilterData(physx::PxFilterData(INTERACTABLE, 0, 0, 0));
+	std::vector<Animation::KeyFrame> keyframesLeft = {
+		Animation::KeyFrame(5, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f, 90.f, 0.f)),
+		Animation::KeyFrame(2, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f))
+	};
+	std::vector<Animation::KeyFrame> keyframesRight = {
+		Animation::KeyFrame(5, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f, 90.f, 0.f)),
+		Animation::KeyFrame(2, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f))
+	};
+	openLeft = new Animation(pxActor, keyframesLeft);
+	openRight = new Animation(pxActorRight, keyframesRight);
 
-	std::vector<std::string> splitfile = OBJReader::splitFilename(pathLeft);
-	size_t found = splitfile[1].find_last_of(".");
-	std::string colfile = splitfile[0] + splitfile[1].substr(0, found + 1) + "col";
-	pxShapeLeft = createShape(colfile.c_str());
-	splitfile = OBJReader::splitFilename(pathRight);
-	found = splitfile[1].find_last_of(".");
-	colfile = splitfile[0] + splitfile[1].substr(0, found + 1) + "col";
-	pxShapeRight = createShape(colfile.c_str());
+	pxShape = createShape(pathLeft);
+	pxShapeRight = createShape(pathRight);
 
 	pxActor->attachShape(*pxShape);
-	pxActor->attachShape(*pxShapeLeft);
 	pxActorRight->attachShape(*pxShapeRight);
 
 	pxActor->userData = this;
@@ -39,9 +38,10 @@ ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::sha
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+	pxScene->addActor(*pxActorRight);
 }
 
-ElevatorDoor::ElevatorDoor(const ElevatorDoor & o, glm::mat4 modelMatrix)
+ElevatorDoor::ElevatorDoor(const ElevatorDoor &o, glm::mat4 modelMatrix)
 	: Interactable3D(o, modelMatrix)
 {
 }
@@ -50,14 +50,46 @@ ElevatorDoor::~ElevatorDoor()
 {
 }
 
+void ElevatorDoor::draw(float dt) {
+	if (!enabled)
+		return;
+
+	extern Camera *camera;
+	shader->use();
+
+	if (playopenleft) {
+		playopenleft = openLeft->animate(dt);
+	}
+	if (playopenright) {
+		playopenright = openRight->animate(dt);
+	}
+
+	//left door
+	shader->setUniform("modelMatrix", pxActor->getGlobalPose());
+	camera->setUniforms(shader);
+	for (unsigned int i = 0; i < components.size(); i++) {
+		components.at(i).draw(shader);
+	}
+	//right door
+	shader->setUniform("modelMatrix", pxActorRight->getGlobalPose());
+	for (unsigned int i = 0; i < componentsRight.size(); i++) {
+		componentsRight.at(i).draw(shader);
+	}
+
+	shader->unuse();
+}
+
 void ElevatorDoor::use(GUI::Inventory * inv)
 {
-	pxActor->detachShape(*pxShape);
+	openLeft->reset();
+	openRight->reset();
+	playopenleft = true;
+	playopenright = true;
 }
 
 std::string ElevatorDoor::guitext(GUI::Inventory * inv)
 {
-	return "Repiar the electro box to your right.";
+	return "Repiar the switch box to your right.";
 }
 
 physx::PxShape* ElevatorDoor::createShape(const char *path)
@@ -65,25 +97,25 @@ physx::PxShape* ElevatorDoor::createShape(const char *path)
 	extern physx::PxPhysics *mPhysics;
 	extern physx::PxCooking *mCooking;
 
-	std::vector<glm::vec3> convexVerts = OBJReader::readCollisionConvex(path);
+	Component3D::GeometryData gd = OBJReader::readCollisionTrimesh(path);
 
-	physx::PxConvexMeshDesc convexDesc;
-	convexDesc.points.count = convexVerts.size();
-	convexDesc.points.stride = sizeof(glm::vec3);
-	convexDesc.points.data = convexVerts.data();
-	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
-
-	physx::PxDefaultMemoryOutputStream buf;
-	physx::PxConvexMeshCookingResult::Enum result;
-	if (!mCooking->cookConvexMesh(convexDesc, buf, &result)) {
-		std::cout << "Unable to create convex mesh " << path << std::endl;
-		std::cout << "Press ENTER to close this window." << std::endl;
-		getchar();
-		exit(-1);
-	}
-	physx::PxDefaultMemoryInputData input(buf.getData(), buf.getSize());
-	physx::PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
-
-	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.7f));
-	return mPhysics->createShape(physx::PxConvexMeshGeometry(convexMesh), *mat, false);
+	physx::PxTriangleMeshDesc meshDesc;
+	meshDesc.points.count = gd.vertices.size();
+	meshDesc.points.stride = sizeof(glm::vec3);
+	meshDesc.points.data = gd.vertices.data();
+	meshDesc.triangles.count = gd.indices.size() / 3;
+	meshDesc.triangles.stride = 3 * sizeof(unsigned int);
+	meshDesc.triangles.data = gd.indices.data();
+	//meshDesc.flags = physx::PxMeshFlag::eFLIPNORMALS;
+	physx::PxDefaultMemoryOutputStream writeBuffer;
+	physx::PxTriangleMeshCookingResult::Enum result;
+	bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer, &result);
+	if (!status)
+		return nullptr;
+	physx::PxDefaultMemoryInputData readBuffer(writeBuffer.getData(), writeBuffer.getSize());
+	physx::PxTriangleMeshGeometry trigeom = physx::PxTriangleMeshGeometry(mPhysics->createTriangleMesh(readBuffer));
+	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
+	physx::PxShape *temp = mPhysics->createShape(trigeom, *mat, false);
+	temp->setQueryFilterData(physx::PxFilterData(COLLISION, INTERACTABLE, 0, 0));
+	return temp;
 }
