@@ -77,7 +77,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLEW_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -112,7 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)external\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -151,7 +151,6 @@
     <ClCompile Include="src\GUIText.cpp" />
     <ClCompile Include="src\Interactable3D.cpp" />
     <ClCompile Include="src\Object3D.cpp" />
-    <ClCompile Include="src\INIReader.cpp" />
     <ClCompile Include="src\OBJReader.cpp" />
     <ClCompile Include="src\Component3D.cpp" />
     <ClCompile Include="src\LightCollection.cpp" />
@@ -174,7 +173,6 @@
     <ClInclude Include="src\GUIText.h" />
     <ClInclude Include="src\Interactable3D.h" />
     <ClInclude Include="src\Object3D.h" />
-    <ClInclude Include="src\INIReader.h" />
     <ClInclude Include="src\OBJReader.h" />
     <ClInclude Include="src\Component3D.h" />
     <ClInclude Include="src\LightCollection.h" />

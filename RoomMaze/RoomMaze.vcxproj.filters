@@ -36,9 +36,6 @@
     <ClCompile Include="src\OBJReader.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="src\INIReader.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="src\Object3D.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
@@ -96,9 +93,6 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="src\OBJReader.h">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
-    <ClInclude Include="src\INIReader.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="src\Object3D.h">

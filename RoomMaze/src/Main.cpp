@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include <physx\PxPhysicsAPI.h>
+#include <inireader\INIReader.h>
 
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
@@ -21,7 +22,6 @@
 #include "Battery.h"
 #include "Resistance.h"
 #include "ElevatorDoor.h"
-#include "INIReader.h"
 
 /* TODO
 
@@ -61,6 +61,7 @@ Code:
 // PROTOTYPES
 /* ----------- */
 
+void readSettings();
 GLFWwindow* initOpenGL();
 void initPhysX();
 void initContent();
@@ -82,7 +83,14 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 /* ----------------- */
 
 //settings
-INIReader::Settings settings;
+struct Settings {
+	unsigned int width;
+	unsigned int height;
+	unsigned int refresh_rate;
+	bool fullscreen;
+	float field_of_view;
+	float brightness;
+} settings;
 
 // camera
 Camera *camera;
@@ -130,7 +138,7 @@ int main(int argc, char **argv) {
 	/* ------------------------- */
 	// READ SETTINGS.INI FILE
 	/* ------------------------- */
-	settings = INIReader::readSettings();
+	readSettings();
 
 	/* ------------------------- */
 	// SETTING UP OPENGL WINDOW
@@ -190,6 +198,18 @@ int main(int argc, char **argv) {
 	glfwTerminate();
 
 	return EXIT_SUCCESS;
+}
+
+void readSettings() {
+	INIReader reader("assets/settings.ini");
+
+	settings.width = reader.GetInteger("window", "width", 1280);
+	settings.height = reader.GetInteger("window", "height", 720);
+	settings.refresh_rate = reader.GetInteger("window", "refresh_rate", 60);
+	settings.fullscreen = reader.GetBoolean("window", "fullscreen", false);
+	
+	settings.field_of_view = reader.GetReal("camera", "fov", 50.0f);
+	settings.brightness = reader.GetReal("camera", "brightness", 1.f);
 }
 
 void initContent() {

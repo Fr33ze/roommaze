@@ -58,10 +58,10 @@ bool Animation::reverse(float dt) {
 	}
 	//-dt to make progress negative (transform backwards)
 	float progress = -dt / keyframes[laststage - stage].time;
-	float radians = 0;// glm::radians(keyframes[laststage - stage].rotate.maxElement() * progress);
+	float degrees = keyframes[laststage - stage].rotate.maxElement() * progress;
 	physx::PxTransform transformation = physx::PxTransform(
 		keyframes[laststage - stage].translate * progress,
-		physx::PxQuat(radians, keyframes[laststage - stage].rotate.getNormalized())
+		physx::PxQuat(glm::radians(degrees), keyframes[laststage - stage].rotate.getNormalized())
 	);
 	actor->setGlobalPose(actor->getGlobalPose().transform(transformation));
 
