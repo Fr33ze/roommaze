@@ -22,20 +22,20 @@
 #include "Battery.h"
 #include "Resistance.h"
 #include "ElevatorDoor.h"
+#include "Particles.h"
 
 /* TODO
 
-Modell:
-
--> Knopf
-
 Code:
+
+---------- Mäx' shittiest shit ANFANG ----------
+-> Particles
+-> Kantenfilter um fokussiertes Item
+-> GUI (Startscreen / Endscreen)
+---------- Mäx' shittiest shit ENDE ----------
 
 -> Brightness in settings.ini (1.0f als Default-Wert)
 -> Überlegung bei Start nur erste paar Räume laden (eigenes Objekt-File) und dann wenn das Spiel läuft das restliche Modell.
--> Schattenwurf
--> Glow
--> GUI (Startscreen / Endscreen)
 -> Sound:
 	- Ambient
 	- Gehen auf Stein
@@ -110,6 +110,9 @@ GUI::Inventory *inv;
 
 // 3d objects to render
 std::vector<Object3D*> renderObjects;
+
+// particles to render
+std::vector<Particles*> renderParticles;
 
 // physX
 physx::PxDefaultErrorCallback gErrorCallback;
@@ -432,6 +435,10 @@ void update(float deltaT) {
 void draw(float deltaT) {
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
 		renderObjects.at(i)->draw(deltaT);
+	}
+
+	for (unsigned int i = 0; i < renderParticles.size(); i++) {
+		renderParticles.at(i)->draw(deltaT);
 	}
 
 	gui->draw();
