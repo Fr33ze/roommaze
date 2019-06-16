@@ -101,7 +101,7 @@ void ElevatorDoor::closeDoor() {
 
 std::string ElevatorDoor::guitext(GUI *gui)
 {
-	return "Repiar the switch box to your right.";
+	return "Repair the switch box to your right.";
 }
 
 physx::PxShape* ElevatorDoor::createShape(const char *path)

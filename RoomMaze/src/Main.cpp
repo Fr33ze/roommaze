@@ -292,7 +292,6 @@ void initContent() {
 	for (std::string section : sections) {
 		readObjectsFromINI(positions, animations, section, shader);
 	}
-
 	/* ------------- */
 	// LOAD PARTICLES
 	/* ------------- */
