@@ -73,8 +73,6 @@ protected:
 
 	void updateCameraVectors();
 
-	glm::mat4 getViewMatrix();
-
 public:
 	
 	/**
@@ -108,6 +106,10 @@ public:
 	 * @param shader: shader used for rendering
 	 */
 	void setUniforms(std::shared_ptr<Shader> shader);
+
+	glm::mat4 getViewMatrix();
+
+	glm::mat4 getProjectionMatrix();
 
 	/**
 	 * Updates the camera concerning the pressed key.

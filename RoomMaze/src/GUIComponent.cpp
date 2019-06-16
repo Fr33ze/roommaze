@@ -13,7 +13,10 @@ GUIComponent::GUIComponent(std::string texturePath, glm::vec2 position, float si
 	glGenBuffers(1, &vboVertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
 	size = windowWidth * size;
-	float vertices[] = { position.x, position.y, position.x, position.y - size, position.x + size, position.y, position.x + size, position.y - size };
+	float vertices[] = { position.x, position.y,
+		position.x, position.y - size,
+		position.x + size, position.y,
+		position.x + size, position.y - size };
 	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);

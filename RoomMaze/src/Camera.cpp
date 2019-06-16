@@ -81,6 +81,10 @@ glm::mat4 Camera::getViewMatrix() {
 	return glm::lookAt(position + right * cam_offset, (position + front) + right * cam_offset, up);
 }
 
+glm::mat4 Camera::getProjectionMatrix() {
+	return projectionMatrix;
+}
+
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
 	bobbingTime = fmod((bobbingTime + deltaTime * 7 /*change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
