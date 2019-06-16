@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <random>
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm\glm.hpp>
@@ -16,42 +17,34 @@ protected:
 	// shader used for rendering particles
 	std::shared_ptr<Shader> shader;
 
+	float deltaTime;
+
 	struct ParticleObject {
 		glm::vec3 position, velocity;
-		float gravity;
-		float remainingLifeTime;
-		float rotation;
-		float size;
+		float gravityEffect, remainingLifeTime, rotation, scale;
 
-		ParticleObject(glm::vec3 position, glm::vec3 velocity, float gravity, float remainingLifeTime, float rotation, float size)
-			: position(position), velocity(velocity), gravity(gravity), remainingLifeTime(remainingLifeTime), rotation(rotation), size(size) {
+		ParticleObject(glm::vec3 position, glm::vec3 velocity, float gravityEffect, float remainingLifeTime, float rotation, float scale)
+			: position(position), velocity(velocity), gravityEffect(gravityEffect), remainingLifeTime(remainingLifeTime), rotation(rotation), scale(scale) {
 		};
 
 		~ParticleObject() {}
 	};
-
 	std::vector<ParticleObject> particles;
+	std::vector<glm::vec4> positions;
 
 	glm::vec3 origin, velocity;
-	float gravity;
-	float lifeLength;
-	float particleSize;
+	float gravityEffect, lifeLength, scale;
 
 	GLuint vao;
 	GLuint vboVertices;
+	GLuint vboPositionsAndScaling;
 
-	void createNewParticle();
+	void createNewParticles(int amount);
+	void updateParticles();
 
 public:
 	
-	/**
-	 * CONSTRUCTOR
-	 *
-	 * Blablabla, da kommt dann noch was hin. ;D
-	 *
-	 * @param orogin: blablabla
-	 */
-	Particles(glm::vec3 origin, glm::vec3 velocity, float gravity, float lifeLength, float particleSize);
+	Particles(glm::vec3 origin, glm::vec3 velocity, float gravityEffect, float lifeLength, float scale);
 	
 	Particles();
 
