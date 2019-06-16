@@ -7,9 +7,9 @@ class Interactable3D : public Object3D
 {
 public:
 	// DO NOT USE
-	Interactable3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
+	Interactable3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 	// DO NOT USE
-	Interactable3D(const Interactable3D &o, glm::mat4 modelMatrix);
+	Interactable3D(const Interactable3D &o, physx::PxTransform modelMatrix);
 
 	~Interactable3D();
 

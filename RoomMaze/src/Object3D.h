@@ -12,9 +12,6 @@ private:
 	// default constructor is private so it cant be used
 	Object3D();
 protected:
-	// render this?
-	bool enabled;
-
 	// actor of the object
 	physx::PxRigidActor *pxActor;
 
@@ -43,7 +40,7 @@ public:
 	 * @param shader : Shader used to render this object
 	 * @param modelMatrix: model matrix of the object
 	 */
-	Object3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
+	Object3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 
 	/**
 	 * COPY CONSTRUCTOR
@@ -52,7 +49,7 @@ public:
 	 * @param o: object to copy
 	 * @param modelMatrix: modelMatrix of the new copy
 	 */
-	Object3D(const Object3D &o, glm::mat4 modelMatrix);
+	Object3D(const Object3D &o, physx::PxTransform modelMatrix);
 	~Object3D();
 	/**
 	 * Draws the object and sets the needed Uniforms on the shader
@@ -63,4 +60,6 @@ public:
 	void destroy();
 	// returns the actor of this Object3D
 	physx::PxRigidActor* getActor();
+	// render this?
+	bool enabled;
 };

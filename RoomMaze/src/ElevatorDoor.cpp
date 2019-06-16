@@ -1,20 +1,13 @@
 #include "ElevatorDoor.h"
 
-ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
+ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix)
 	: Interactable3D(pathLeft, shader, modelMatrix)
 {
 	componentsRight = OBJReader::readObject(pathRight);
 
-	physx::PxMat44 pose = physx::PxMat44();
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			pose[x][y] = modelMatrix[x][y];
-		}
-	}
-
 	extern physx::PxPhysics *mPhysics;
-	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
-	pxActorRight = mPhysics->createRigidStatic(physx::PxTransform(pose));
+	pxActor = mPhysics->createRigidStatic(modelMatrix);
+	pxActorRight = mPhysics->createRigidStatic(modelMatrix);
 
 	std::vector<Animation::KeyFrame> keyframesLeft = {
 		Animation::KeyFrame(1, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f))
@@ -39,7 +32,7 @@ ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::sha
 	pxScene->addActor(*pxActorRight);
 }
 
-ElevatorDoor::ElevatorDoor(const ElevatorDoor &o, glm::mat4 modelMatrix)
+ElevatorDoor::ElevatorDoor(const ElevatorDoor &o, physx::PxTransform modelMatrix)
 	: Interactable3D(o, modelMatrix)
 {
 }
@@ -81,16 +74,28 @@ void ElevatorDoor::draw(float dt) {
 
 void ElevatorDoor::use(GUI::Inventory * inv)
 {
+	//TODO play sound
+}
+
+void ElevatorDoor::openDoor() {
+	if (!(playopen || playclose)) {
+		animLeft->reset();
+		animRight->reset();
+		if (!open) {
+			playopen = true;
+			open = true;
+		}
+	}
+}
+
+void ElevatorDoor::closeDoor() {
 	if (!(playopen || playclose)) {
 		animLeft->reset();
 		animRight->reset();
 		if (open) {
 			playclose = true;
+			open = false;
 		}
-		else {
-			playopen = true;
-		}
-		open = !open;
 	}
 }
 
@@ -113,7 +118,6 @@ physx::PxShape* ElevatorDoor::createShape(const char *path)
 	meshDesc.triangles.count = gd.indices.size() / 3;
 	meshDesc.triangles.stride = 3 * sizeof(unsigned int);
 	meshDesc.triangles.data = gd.indices.data();
-	//meshDesc.flags = physx::PxMeshFlag::eFLIPNORMALS;
 	physx::PxDefaultMemoryOutputStream writeBuffer;
 	physx::PxTriangleMeshCookingResult::Enum result;
 	bool status = mCooking->cookTriangleMesh(meshDesc, writeBuffer, &result);

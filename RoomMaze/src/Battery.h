@@ -13,7 +13,7 @@ public:
 	 * @param shader : Shader used to render this object
 	 * @param modelMatrix: model matrix of the object
 	 */
-	Battery(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
+	Battery(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 
 	/**
 	 * COPY CONSTRUCTOR
@@ -22,7 +22,7 @@ public:
 	 * @param o: object to copy
 	 * @param modelMatrix: modelMatrix of the new copy
 	 */
-	Battery(const Battery &o, glm::mat4 modelMatrix);
+	Battery(const Battery &o, physx::PxTransform modelMatrix);
 	~Battery();
 
 	void use(GUI::Inventory *inv) override;

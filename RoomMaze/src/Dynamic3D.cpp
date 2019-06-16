@@ -2,17 +2,10 @@
 #include "OBJReader.h"
 
 
-Dynamic3D::Dynamic3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
+Dynamic3D::Dynamic3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix)
 	: Object3D(path, shader, modelMatrix)
 {
-	physx::PxMat44 pose = physx::PxMat44();
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			pose[x][y] = modelMatrix[x][y];
-		}
-	}
-
-	createActor(physx::PxTransform(pose));
+	createActor(modelMatrix);
 
 	std::vector<std::string> splitfile = OBJReader::splitFilename(path);
 	size_t found = splitfile[1].find_last_of(".");
@@ -24,19 +17,12 @@ Dynamic3D::Dynamic3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4
 	pxScene->addActor(*pxActor);
 }
 
-Dynamic3D::Dynamic3D(const Dynamic3D &o, glm::mat4 modelMatrix)
+Dynamic3D::Dynamic3D(const Dynamic3D &o, physx::PxTransform modelMatrix)
 	: Object3D(o, modelMatrix)
 {
 	pxShape = o.pxShape;
 
-	physx::PxMat44 pose = physx::PxMat44();
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			pose[x][y] = modelMatrix[x][y];
-		}
-	}
-
-	createActor(physx::PxTransform(pose));
+	createActor(modelMatrix);
 	pxActor->attachShape(*pxShape);
 
 	extern physx::PxScene *pxScene;

@@ -1,14 +1,14 @@
 #include "Object3D.h"
 
 
-Object3D::Object3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
+Object3D::Object3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix)
 	: shader(shader) {
 
 	components = OBJReader::readObject(path);
 	enabled = true;
 }
 
-Object3D::Object3D(const Object3D &o, glm::mat4 modelMatrix) {
+Object3D::Object3D(const Object3D &o, physx::PxTransform modelMatrix) {
 	components = o.components;
 	shader = o.shader;
 	enabled = true;

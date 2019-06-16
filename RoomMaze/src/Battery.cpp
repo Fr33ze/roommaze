@@ -1,17 +1,10 @@
 #include "Battery.h"
 
-Battery::Battery(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix)
+Battery::Battery(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix)
 	: Interactable3D(path, shader, modelMatrix)
 {
-	physx::PxMat44 pose = physx::PxMat44();
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			pose[x][y] = modelMatrix[x][y];
-		}
-	}
-
 	extern physx::PxPhysics *mPhysics;
-	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
+	pxActor = mPhysics->createRigidStatic(modelMatrix);
 
 	pxShape = createShape(path);
 	pxActor->attachShape(*pxShape);
@@ -21,20 +14,13 @@ Battery::Battery(const char *path, std::shared_ptr<Shader> shader, glm::mat4 mod
 	pxScene->addActor(*pxActor);
 }
 
-Battery::Battery(const Battery &o, glm::mat4 modelMatrix)
+Battery::Battery(const Battery &o, physx::PxTransform modelMatrix)
 	: Interactable3D(o, modelMatrix)
 {
-	physx::PxMat44 pose = physx::PxMat44();
-	for (int x = 0; x < 4; x++) {
-		for (int y = 0; y < 4; y++) {
-			pose[x][y] = modelMatrix[x][y];
-		}
-	}
-
 	pxShape = o.pxShape;
 
 	extern physx::PxPhysics *mPhysics;
-	pxActor = mPhysics->createRigidStatic(physx::PxTransform(pose));
+	pxActor = mPhysics->createRigidStatic(modelMatrix);
 
 	pxActor->attachShape(*pxShape);
 	pxActor->userData = this;

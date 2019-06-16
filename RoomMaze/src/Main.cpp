@@ -23,6 +23,8 @@
 #include "Battery.h"
 #include "Resistance.h"
 #include "ElevatorDoor.h"
+#include "Key3D.h"
+#include "ElectricBox.h"
 #include "Particles.h"
 
 /* TODO
@@ -66,7 +68,7 @@ void readSettings();
 GLFWwindow* initOpenGL();
 void initPhysX();
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader);
-void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::vec3 &rot, std::shared_ptr<Shader> shader);
+void createObject(const char *path, unsigned int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
 void initContent();
 void update(float deltaT);
 void draw(float deltaT);
@@ -249,6 +251,10 @@ void initContent() {
 	/* ------------- */
 	Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
 	renderObjects.push_back(maze);
+	ElevatorDoor *elevatorDoors = new ElevatorDoor("assets/objects/elevator_left_doors.obj", "assets/objects/elevator_right_doors.obj", shader, physx::PxTransform(physx::PxVec3(-4.3f, 0, 0), physx::PxQuat(physx::PxIdentity)));
+	renderObjects.push_back(elevatorDoors);
+	ElectricBox *electricBox = new ElectricBox("assets/objects/electric_box.obj", shader, physx::PxTransform(physx::PxVec3(-4.f, 0.65f, -1.75), physx::PxQuat(0.f, 0.f, 0.f, 1.f)));
+	renderObjects.push_back(electricBox);
 
 	INIReader positions("assets/positions.ini");
 	INIReader animations("assets/animations.ini");
@@ -320,11 +326,11 @@ void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string
 
 	if (size == load) {
 		for (int i = 0; i < size; i++) {
-			glm::vec3 trans(1.f);
-			glm::vec3 rot(0.f);
-			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f", &trans.x, &trans.z, &trans.y, &rot.x, &rot.z, &rot.y);
-			trans.z = -trans.z;
-			createObject(path.c_str(), type, trans, rot, shader);
+			physx::PxVec3 trans = physx::PxVec3(physx::PxIdentity);
+			physx::PxVec4 rot = physx::PxVec4(0.f);
+			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+			physx::PxTransform transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+			createObject(path.c_str(), type, transformation, shader);
 		}
 	}
 	else {
@@ -339,20 +345,17 @@ void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string
 			}
 			loadIds.push_back(num);
 
-			glm::vec3 trans(1.f);
-			glm::vec3 rot(0.f);
-			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f", &trans.x, &trans.z, &trans.y, &rot.x, &rot.z, &rot.y);
-			trans.z = -trans.z;
-			createObject(path.c_str(), type, trans, rot, shader);
+			physx::PxVec3 trans = physx::PxVec3(physx::PxIdentity);
+			physx::PxVec4 rot = physx::PxVec4(0.f);
+			sscanf_s(positions.Get(section, std::to_string(num), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+			physx::PxTransform transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+			createObject(path.c_str(), type, transformation, shader);
 		}
 	}
 	lastGenerated = nullptr;
 }
 
-void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::vec3 &rot, std::shared_ptr<Shader> shader) {
-	float rx = glm::radians(rot.x);
-	float ry = glm::radians(rot.y);
-	float rz = glm::radians(rot.z);
+void createObject(const char *path, unsigned int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader) {
 	switch (type) {
 
 	case 0: //Battery
@@ -360,12 +363,12 @@ void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::v
 			lastGenerated = new Battery(
 				path,
 				shader,
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		else
 			lastGenerated = new Battery(
 				*((Battery*)lastGenerated),
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		renderObjects.push_back(lastGenerated);
 		break;
@@ -375,17 +378,18 @@ void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::v
 			lastGenerated = new Dynamic3D(
 				path,
 				shader,
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		else
 			lastGenerated = new Dynamic3D(
 				*((Dynamic3D*)lastGenerated),
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		renderObjects.push_back(lastGenerated);
 		break;
 
 	case 2: //Button
+
 		break;
 
 	case 3: //ButtonPanel
@@ -394,10 +398,19 @@ void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::v
 	case 4: //Door
 		break;
 
-	case 5: //ElectricBox
-		break;
-
 	case 7: //Key
+		if (!lastGenerated)
+			lastGenerated = new Key3D(
+				path,
+				shader,
+				trans
+			);
+		else
+			lastGenerated = new Key3D(
+				*((Key3D*)lastGenerated),
+				trans
+			);
+		renderObjects.push_back(lastGenerated);
 		break;
 
 	case 8: //Resistance
@@ -405,12 +418,12 @@ void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::v
 			lastGenerated = new Resistance(
 				path,
 				shader,
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		else
 			lastGenerated = new Resistance(
 				*((Resistance*)lastGenerated),
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		renderObjects.push_back(lastGenerated);
 		break;
@@ -420,12 +433,12 @@ void createObject(const char *path, unsigned int &type, glm::vec3 &trans, glm::v
 			lastGenerated = new Static3D(
 				path,
 				shader,
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		else
 			lastGenerated = new Static3D(
 				*((Static3D*)lastGenerated),
-				glm::rotate(glm::rotate(glm::rotate(glm::translate(glm::mat4(1.f), trans), rx, glm::vec3(1.f, 0.f, 0.f)), ry, glm::vec3(0.f, 1.f, 0.f)), rz, glm::vec3(0.f, 0.f, 1.f))
+				trans
 			);
 		renderObjects.push_back(lastGenerated);
 		break;

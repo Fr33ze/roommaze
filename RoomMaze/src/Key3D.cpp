@@ -1,8 +1,6 @@
-#include "Resistance.h"
+#include "Key3D.h"
 
-
-
-Resistance::Resistance(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix)
+Key3D::Key3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix)
 	: Interactable3D(path, shader, modelMatrix)
 {
 	extern physx::PxPhysics *mPhysics;
@@ -16,7 +14,7 @@ Resistance::Resistance(const char *path, std::shared_ptr<Shader> shader, physx::
 	pxScene->addActor(*pxActor);
 }
 
-Resistance::Resistance(const Resistance &o, physx::PxTransform modelMatrix)
+Key3D::Key3D(const Key3D &o, physx::PxTransform modelMatrix)
 	: Interactable3D(o, modelMatrix)
 {
 	pxShape = o.pxShape;
@@ -31,33 +29,29 @@ Resistance::Resistance(const Resistance &o, physx::PxTransform modelMatrix)
 	pxScene->addActor(*pxActor);
 }
 
-Resistance::~Resistance()
+Key3D::~Key3D()
 {
 }
 
-physx::PxShape* Resistance::createShape(const char *path) {
-	// physX global variables
-	extern physx::PxFoundation *mFoundation;
+physx::PxShape* Key3D::createShape(const char *path) {
 	extern physx::PxPhysics *mPhysics;
-	extern physx::PxPvd *mPvd;
-	extern physx::PxCooking *mCooking;
 
-	physx::PxSphereGeometry geom = physx::PxSphereGeometry(physx::PxReal(0.3f));
+	physx::PxSphereGeometry geom = physx::PxSphereGeometry(physx::PxReal(0.7f));
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
 	physx::PxShape *temp = mPhysics->createShape(geom, *mat, false);
-	temp->setQueryFilterData(physx::PxFilterData(COLLISION, INTERACTABLE, 0, 0));
+	temp->setQueryFilterData(physx::PxFilterData(0, INTERACTABLE, 0, 0));
 	return temp;
 }
 
-void Resistance::use(GUI::Inventory *inv) {
+void Key3D::use(GUI::Inventory *inv) {
 	if (!enabled)
 		return;
-	inv->resistance = true;
+	inv->batteries++;
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
-std::string Resistance::guitext(GUI::Inventory *inv) {
-	return (enabled ? "Take Resistance" : "");
+std::string Key3D::guitext(GUI::Inventory *inv) {
+	return (enabled ? "Take Key" : "");
 }

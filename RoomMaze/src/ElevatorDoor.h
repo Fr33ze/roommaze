@@ -6,10 +6,12 @@
 class ElevatorDoor : public Interactable3D
 {
 public:
-	ElevatorDoor(const char *pathLeft, const char *pathRight, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
-	ElevatorDoor(const ElevatorDoor &o, glm::mat4 modelMatrix);
+	ElevatorDoor(const char *pathLeft, const char *pathRight, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
+	ElevatorDoor(const ElevatorDoor &o, physx::PxTransform modelMatrix);
 	~ElevatorDoor();
 	void use(GUI::Inventory *inv) override;
+	void openDoor();
+	void closeDoor();
 	std::string guitext(GUI::Inventory *inv) override;
 	void draw(float dt) override;
 protected:

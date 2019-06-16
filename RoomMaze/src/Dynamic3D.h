@@ -16,7 +16,7 @@ public:
 	 * @param shader : Shader used to render this object
 	 * @param modelMatrix: model matrix of the object
 	 */
-	Dynamic3D(const char *path, std::shared_ptr<Shader> shader, glm::mat4 modelMatrix = glm::mat4(1.0f));
+	Dynamic3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 
 	/**
 	 * COPY CONSTRUCTOR
@@ -25,7 +25,7 @@ public:
 	 * @param o: object to copy
 	 * @param modelMatrix: modelMatrix of the new copy
 	 */
-	Dynamic3D(const Dynamic3D &o, glm::mat4 modelMatrix);
+	Dynamic3D(const Dynamic3D &o, physx::PxTransform modelMatrix);
 	~Dynamic3D();
 
 protected:
