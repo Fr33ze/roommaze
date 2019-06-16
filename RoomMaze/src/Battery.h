@@ -25,8 +25,8 @@ public:
 	Battery(const Battery &o, physx::PxTransform modelMatrix);
 	~Battery();
 
-	void use(GUI::Inventory *inv) override;
-	std::string guitext(GUI::Inventory *inv) override;
+	void use(GUI *gui) override;
+	std::string guitext(GUI *gui) override;
 protected:
 	// in this case only creates a sphere query shape (for raycasts)
 	physx::PxShape* createShape(const char *path) override;

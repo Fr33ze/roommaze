@@ -10,8 +10,8 @@ public:
 	ElectricBox(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 	ElectricBox(const ElectricBox &o, physx::PxTransform modelMatrix);
 	~ElectricBox();
-	void use(GUI::Inventory *inv) override;
-	std::string guitext(GUI::Inventory *inv) override;
+	void use(GUI *gui) override;
+	std::string guitext(GUI *gui) override;
 	void setHiddenRes(Static3D *hiddenRes);
 	void setShownRes(Static3D *shownRes);
 	void setElevatorDoor(ElevatorDoor *elevatorDoor);

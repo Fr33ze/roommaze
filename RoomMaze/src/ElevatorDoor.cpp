@@ -72,7 +72,7 @@ void ElevatorDoor::draw(float dt) {
 	shader->unuse();
 }
 
-void ElevatorDoor::use(GUI::Inventory * inv)
+void ElevatorDoor::use(GUI *gui)
 {
 	//TODO play sound
 }
@@ -99,7 +99,7 @@ void ElevatorDoor::closeDoor() {
 	}
 }
 
-std::string ElevatorDoor::guitext(GUI::Inventory * inv)
+std::string ElevatorDoor::guitext(GUI *gui)
 {
 	return "Repiar the switch box to your right.";
 }

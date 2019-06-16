@@ -102,9 +102,6 @@ GUI *gui;
 // time between current frame and last frame
 float deltaTime;
 
-// inventory of player
-GUI::Inventory *inv;
-
 // 3d objects to render
 std::vector<Object3D*> renderObjects;
 
@@ -216,9 +213,6 @@ void readSettings() {
 }
 
 void initContent() {
-	// player inventory
-	inv = new GUI::Inventory();
-
 	// mouse stuff
 	lastXPosition = settings.width / 2.0f;
 	lastYPosition = settings.height / 2.0f;
@@ -235,7 +229,7 @@ void initContent() {
 	camera->setSpotLightParameters(settings.brightness, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
 
 	// GUI
-	gui = new GUI(settings.width, settings.height, inv);
+	gui = new GUI(settings.width, settings.height);
 
 	/* ------------- */
 	// LOAD OBJECTS (type==-1)
@@ -625,7 +619,7 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 		std::cout << "TOGGLE NIGHTVISION" << std::endl;
 		break;
 	case GLFW_KEY_SPACE:
-		inv->batteries--;
+		gui->removeBattery();
 		break;
 	}
 }
@@ -664,7 +658,7 @@ void focusInteractable() {
 	if (camera->raycast(hit)) {
 		if (hit.hasBlock) {
 			focused = (Interactable3D*)hit.block.actor->userData;
-			gui->setInfoText(focused->guitext(inv));
+			gui->setInfoText(focused->guitext(gui));
 		}
 		else {
 			focused = nullptr;
@@ -698,8 +692,8 @@ void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 void mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		if (focused) {
-			focused->use(inv);
-			gui->setInfoText(focused->guitext(inv));
+			focused->use(gui);
+			gui->setInfoText(focused->guitext(gui));
 		}
 	}
 }

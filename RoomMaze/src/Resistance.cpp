@@ -50,14 +50,14 @@ physx::PxShape* Resistance::createShape(const char *path) {
 	return temp;
 }
 
-void Resistance::use(GUI::Inventory *inv) {
+void Resistance::use(GUI *gui) {
 	if (!enabled)
 		return;
-	inv->resistance = true;
+	gui->addResistance();
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
-std::string Resistance::guitext(GUI::Inventory *inv) {
+std::string Resistance::guitext(GUI *gui) {
 	return (enabled ? "Take Resistance" : "");
 }

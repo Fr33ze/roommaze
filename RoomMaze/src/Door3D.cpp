@@ -74,14 +74,14 @@ Door3D::~Door3D()
 {
 }
 
-void Door3D::use(GUI::Inventory *inv)
+void Door3D::use(GUI *gui)
 {
-	if (inv->key) {
+	if (gui->hasKey()) {
 		openDoor();
 	}
 }
 
-std::string Door3D::guitext(GUI::Inventory *inv)
+std::string Door3D::guitext(GUI *gui)
 {
 	return (open ? "" : "Find and use a key to open");
 }

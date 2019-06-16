@@ -10,8 +10,8 @@ public:
 	Door3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 	Door3D(const Door3D &o, physx::PxTransform modelMatrix);
 	~Door3D();
-	void use(GUI::Inventory *inv) override;
-	std::string guitext(GUI::Inventory *inv) override;
+	void use(GUI *gui) override;
+	std::string guitext(GUI *gui) override;
 	void openDoor();
 	void draw(float dt) override;
 protected:

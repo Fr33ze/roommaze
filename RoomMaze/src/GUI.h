@@ -20,19 +20,17 @@ protected:
 	// shader used for rendering text
 	std::shared_ptr<Shader> textShader;
 
-	unsigned int lastBatteryCount;
 	float batteryTime;
 	GUIComponent battery;
 	GUIText batteryStatus, batteryCountdown, infoText;
 
-public:
 	// inventory of player
-	struct Inventory {
-		unsigned int batteries = 5;
-		bool key = false;
-		bool button = false;
-		bool resistance = false;
-	} *inv;
+	unsigned int batteries = 5;
+	bool key = false;
+	bool button = false;
+	bool resistance = false;
+
+public:
 
 	/**
 	 * CONSTRUCTOR
@@ -40,9 +38,8 @@ public:
 	 *
 	 * @param windowWidth: the width of the window
 	 * @param windowHeight: the height of the window
-	 * @param inv: inventory of the player
 	 */
-	GUI(int windowWidth, int windowHeight, Inventory *inv);
+	GUI(int windowWidth, int windowHeight);
 	
 	GUI();
 
@@ -56,4 +53,15 @@ public:
 
 	void setInfoText(std::string text);
 
+	void addBattery();
+	void removeBattery();
+	unsigned int getBatteries();
+	void addKey();
+	void addButton();
+	void addResistance();
+	void removeResistance();
+	void removeButton();
+	bool hasKey();
+	bool hasResistance();
+	bool hasButton();
 };

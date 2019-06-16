@@ -44,14 +44,14 @@ physx::PxShape* Battery::createShape(const char *path) {
 	return temp;
 }
 
-void Battery::use(GUI::Inventory *inv) {
+void Battery::use(GUI *gui) {
 	if (!enabled)
 		return;
-	inv->batteries++;
+	gui->addBattery();
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
-std::string Battery::guitext(GUI::Inventory *inv) {
+std::string Battery::guitext(GUI *gui) {
 	return (enabled ? "Take Battery" : "");
 }

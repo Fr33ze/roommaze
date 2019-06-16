@@ -36,17 +36,18 @@ ElectricBox::~ElectricBox()
 {
 }
 
-void ElectricBox::use(GUI::Inventory *inv)
+void ElectricBox::use(GUI *gui)
 {
-	if (inv->resistance && elevatorDoor && hiddenRes) {
+	if (gui->hasResistance() && elevatorDoor && hiddenRes) {
+		gui->removeResistance();
 		hiddenRes->enable(true);
 		elevatorDoor->openDoor();
 	}
 }
 
-std::string ElectricBox::guitext(GUI::Inventory *inv)
+std::string ElectricBox::guitext(GUI *gui)
 {
-	return "Find and insert a Resistance to repair";
+	return (gui->hasResistance() ? "Insert Resistance" : "Find and insert a Resistance to repair");
 }
 
 void ElectricBox::setHiddenRes(Static3D *hiddenRes)

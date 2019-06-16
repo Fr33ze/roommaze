@@ -44,14 +44,14 @@ physx::PxShape* Key3D::createShape(const char *path) {
 	return temp;
 }
 
-void Key3D::use(GUI::Inventory *inv) {
+void Key3D::use(GUI *gui) {
 	if (!enabled)
 		return;
-	inv->key = true;
+	gui->addKey();
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
-std::string Key3D::guitext(GUI::Inventory *inv) {
+std::string Key3D::guitext(GUI *gui) {
 	return (enabled ? "Take Key" : "");
 }

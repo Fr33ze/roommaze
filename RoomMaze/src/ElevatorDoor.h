@@ -9,10 +9,10 @@ public:
 	ElevatorDoor(const char *pathLeft, const char *pathRight, std::shared_ptr<Shader> shader, physx::PxTransform modelMatrix = physx::PxTransform(physx::PxIdentity));
 	ElevatorDoor(const ElevatorDoor &o, physx::PxTransform modelMatrix);
 	~ElevatorDoor();
-	void use(GUI::Inventory *inv) override;
+	void use(GUI *gui) override;
 	void openDoor();
 	void closeDoor();
-	std::string guitext(GUI::Inventory *inv) override;
+	std::string guitext(GUI *gui) override;
 	void draw(float dt) override;
 protected:
 	// actor of the right doorwing
