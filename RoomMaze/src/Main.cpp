@@ -260,7 +260,7 @@ void initContent() {
 		readObjectsFromINI(positions, animations, section, shader);
 	}
 
-	Particles *testParticles = new Particles(glm::vec3(1.0f), 0.05f);
+	Particles *testParticles = new Particles(glm::vec3(1.0f), glm::vec3(0.0f), 0.0f, 0.0f, 0.05f);
 	renderParticles.push_back(testParticles);
 
 	/*bool testing = true;
