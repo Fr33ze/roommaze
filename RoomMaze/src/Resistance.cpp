@@ -45,7 +45,7 @@ physx::PxShape* Resistance::createShape(const char *path) {
 	physx::PxSphereGeometry geom = physx::PxSphereGeometry(physx::PxReal(0.3f));
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.6f));
-	physx::PxShape *temp = mPhysics->createShape(geom, *mat, false);
+	physx::PxShape *temp = mPhysics->createShape(geom, *mat, false, physx::PxShapeFlag::eSCENE_QUERY_SHAPE);
 	temp->setQueryFilterData(physx::PxFilterData(0, INTERACTABLE, 0, 0));
 	return temp;
 }

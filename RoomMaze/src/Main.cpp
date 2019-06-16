@@ -25,17 +25,18 @@
 #include "ElevatorDoor.h"
 #include "Key3D.h"
 #include "ElectricBox.h"
+#include "Door3D.h"
 #include "Particles.h"
 
 /* TODO
+Model:
+-> Split Concrete2 Material für Bad und Decke (wegen normal maps)
 
 Code:
 
 -> Particles
 -> Kantenfilter um fokussiertes Item
 -> GUI (Startscreen / Endscreen)
--> Brightness in settings.ini (1.0f als Default-Wert)
--> Überlegung bei Start nur erste paar Räume laden (eigenes Objekt-File) und dann wenn das Spiel läuft das restliche Modell.
 -> Sound:
 	- Ambient
 	- Gehen auf Stein
@@ -45,14 +46,8 @@ Code:
 	- Türen in Raum 2 öffnen sich
 	- Knopf wird gedrückt (im Aufzug)
 -> Animation:
-	- Schlüssel in Schloss von einer der Türen in Raum 2 stecken und drehen.
-	- Türe in Raum zwei öffnet sich
 	- Drücken von Aufzug-Knopf
-	- Aufzugtüren öffnen sich beim Einfügen des Widerstands im Elektro-Kasten
 -> Interaktion mit Objekten:
-	- Batterie
-	- Schlüssel
-	- Widerstand
 	- Knopf
 
 */
@@ -250,11 +245,11 @@ void initContent() {
 
 	physx::PxVec3 trans = physx::PxVec3(physx::PxIdentity);
 	physx::PxVec4 rot = physx::PxVec4(0.f);
-	sscanf_s(positions.Get("ElevatorDoor", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	sscanf_s(positions.Get("ElevatorDoors", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 	physx::PxTransform transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	ElevatorDoor *elevatorDoors = new ElevatorDoor(
-		positions.Get("ElevatorDoor", "pathLeft", "assets/objects/elevator_left_doors.obj").c_str(),
-		positions.Get("ElevatorDoor", "pathRight", "assets/objects/elevator_right_doors.obj").c_str(),
+		positions.Get("ElevatorDoors", "pathLeft", "assets/objects/elevator_left_doors.obj").c_str(),
+		positions.Get("ElevatorDoors", "pathRight", "assets/objects/elevator_right_doors.obj").c_str(),
 		shader,
 		transformation
 	);
@@ -276,12 +271,11 @@ void initContent() {
 	sscanf_s(positions.Get("Resistance", "hidden", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	Static3D *hiddenRes = new Static3D(
-		positions.Get("Resistance", "path", "assets/objects/resistance.obj").c_str(),
-		shader,
+		*shownRes,
 		transformation
 	);
 	hiddenRes->enable(false);
-	renderObjects.push_back(shownRes);
+	renderObjects.push_back(hiddenRes);
 
 	trans = physx::PxVec3(physx::PxIdentity);
 	rot = physx::PxVec4(0.f);
@@ -392,6 +386,18 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 		break;
 
 	case 4: //Door
+		if (!lastGenerated)
+			lastGenerated = new Door3D(
+				path,
+				shader,
+				trans
+			);
+		else
+			lastGenerated = new Door3D(
+				*((Door3D*)lastGenerated),
+				trans
+			);
+		renderObjects.push_back(lastGenerated);
 		break;
 
 	case 7: //Key
