@@ -31,12 +31,9 @@
 
 Code:
 
----------- Mäx' shittiest shit ANFANG ----------
 -> Particles
 -> Kantenfilter um fokussiertes Item
 -> GUI (Startscreen / Endscreen)
----------- Mäx' shittiest shit ENDE ----------
-
 -> Brightness in settings.ini (1.0f als Default-Wert)
 -> Überlegung bei Start nur erste paar Räume laden (eigenes Objekt-File) und dann wenn das Spiel läuft das restliche Modell.
 -> Sound:
