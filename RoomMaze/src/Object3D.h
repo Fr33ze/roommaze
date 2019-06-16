@@ -24,6 +24,9 @@ protected:
 	// physx shape
 	physx::PxShape *pxShape;
 
+	// render this?
+	bool enabled;
+
 	/**
 	 * Creates corresponding shape (dynamic/static)
 	 *
@@ -60,6 +63,5 @@ public:
 	void destroy();
 	// returns the actor of this Object3D
 	physx::PxRigidActor* getActor();
-	// render this?
-	bool enabled;
+	void enable(bool b);
 };

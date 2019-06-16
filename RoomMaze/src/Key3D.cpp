@@ -47,7 +47,7 @@ physx::PxShape* Key3D::createShape(const char *path) {
 void Key3D::use(GUI::Inventory *inv) {
 	if (!enabled)
 		return;
-	inv->batteries++;
+	inv->key = true;
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }

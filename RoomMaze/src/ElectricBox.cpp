@@ -16,7 +16,7 @@ ElectricBox::ElectricBox(const char *path, std::shared_ptr<Shader> shader, physx
 	pxScene->addActor(*pxActor);
 }
 
-ElectricBox::ElectricBox(const ElectricBox & o, physx::PxTransform modelMatrix)
+ElectricBox::ElectricBox(const ElectricBox &o, physx::PxTransform modelMatrix)
 	: Interactable3D(o, modelMatrix)
 {
 	pxShape = o.pxShape;
@@ -38,8 +38,8 @@ ElectricBox::~ElectricBox()
 
 void ElectricBox::use(GUI::Inventory *inv)
 {
-	if (inv->resistance) {
-		hiddenRes->enabled = true;
+	if (inv->resistance && elevatorDoor && hiddenRes) {
+		hiddenRes->enable(true);
 		elevatorDoor->openDoor();
 	}
 }
@@ -47,6 +47,21 @@ void ElectricBox::use(GUI::Inventory *inv)
 std::string ElectricBox::guitext(GUI::Inventory *inv)
 {
 	return "Find and insert a Resistance to repair";
+}
+
+void ElectricBox::setHiddenRes(Static3D *hiddenRes)
+{
+	this->hiddenRes = hiddenRes;
+}
+
+void ElectricBox::setShownRes(Static3D *shownRes)
+{
+	this->shownRes = shownRes;
+}
+
+void ElectricBox::setElevatorDoor(ElevatorDoor *elevatorDoor)
+{
+	this->elevatorDoor = elevatorDoor;
 }
 
 physx::PxShape* ElectricBox::createShape(const char *path)

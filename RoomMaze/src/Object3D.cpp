@@ -44,3 +44,8 @@ physx::PxRigidActor * Object3D::getActor()
 {
 	return pxActor;
 }
+
+void Object3D::enable(bool b)
+{
+	enabled = b;
+}

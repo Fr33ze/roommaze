@@ -65,7 +65,7 @@ void readSettings();
 GLFWwindow* initOpenGL();
 void initPhysX();
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader);
-void createObject(const char *path, unsigned int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
+void createObject(const char *path, int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
 void initContent();
 void update(float deltaT);
 void draw(float deltaT);
@@ -243,90 +243,88 @@ void initContent() {
 	gui = new GUI(settings.width, settings.height, inv);
 
 	/* ------------- */
-	// LOAD OBJECTS
+	// LOAD OBJECTS (type==-1)
 	/* ------------- */
-	Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
-	renderObjects.push_back(maze);
-	ElevatorDoor *elevatorDoors = new ElevatorDoor("assets/objects/elevator_left_doors.obj", "assets/objects/elevator_right_doors.obj", shader, physx::PxTransform(physx::PxVec3(-4.3f, 0, 0), physx::PxQuat(physx::PxIdentity)));
-	renderObjects.push_back(elevatorDoors);
-	ElectricBox *electricBox = new ElectricBox("assets/objects/electric_box.obj", shader, physx::PxTransform(physx::PxVec3(-4.f, 0.65f, -1.75), physx::PxQuat(0.f, 0.f, 0.f, 1.f)));
-	renderObjects.push_back(electricBox);
-
 	INIReader positions("assets/positions.ini");
 	INIReader animations("assets/animations.ini");
-	
+
+	physx::PxVec3 trans = physx::PxVec3(physx::PxIdentity);
+	physx::PxVec4 rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("ElevatorDoor", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	physx::PxTransform transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	ElevatorDoor *elevatorDoors = new ElevatorDoor(
+		positions.Get("ElevatorDoor", "pathLeft", "assets/objects/elevator_left_doors.obj").c_str(),
+		positions.Get("ElevatorDoor", "pathRight", "assets/objects/elevator_right_doors.obj").c_str(),
+		shader,
+		transformation
+	);
+	renderObjects.push_back(elevatorDoors);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("Resistance", "shown", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	Static3D *shownRes = new Static3D(
+		positions.Get("Resistance", "path", "assets/objects/resistance.obj").c_str(),
+		shader,
+		transformation
+	);
+	renderObjects.push_back(shownRes);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("Resistance", "hidden", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	Static3D *hiddenRes = new Static3D(
+		positions.Get("Resistance", "path", "assets/objects/resistance.obj").c_str(),
+		shader,
+		transformation
+	);
+	hiddenRes->enable(false);
+	renderObjects.push_back(shownRes);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("ElectricBox", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	ElectricBox *electricBox = new ElectricBox(
+		positions.Get("ElectricBox", "path", "assets/objects/electric_box.obj").c_str(),
+		shader,
+		transformation
+	);
+	electricBox->setElevatorDoor(elevatorDoors);
+	electricBox->setShownRes(shownRes);
+	electricBox->setHiddenRes(hiddenRes);
+	renderObjects.push_back(electricBox);
+
+	/* ------------- */
+	// LOAD OBJECTS (type!=-1)
+	/* ------------- */
 	std::set<std::string> sections = positions.Sections();
 	for (std::string section : sections) {
 		readObjectsFromINI(positions, animations, section, shader);
 	}
 
-	Particles *testParticles = new Particles(glm::vec3(1.0f), glm::vec3(0.0f), 0.0f, 0.0f, 0.05f);
-	renderParticles.push_back(testParticles);
-
-	/*bool testing = true;
-	if (testing) {
-		Static3D *maze = new Static3D("assets/objects/test.obj", shader);
-		renderObjects.push_back(maze);
-		Battery *battery = new Battery("assets/objects/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.3f, 3.3f)));
-		renderObjects.push_back(battery);
-		Battery *battery2 = new Battery(*battery, glm::translate(glm::mat4(1.0f), glm::vec3(-0.2f, 1.0f, 3.0f)));
-		renderObjects.push_back(battery2);
-		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-1.125f, 1.415f, -1.587f)));
-		renderObjects.push_back(resistance);
-		ElevatorDoor *elevatorDoors = new ElevatorDoor("assets/objects/elevator_left_door.obj", "assets/objects/elevator_right_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.3f, 0, 0)));
-		renderObjects.push_back(elevatorDoors);
-	} else {
-		// maze
-		Static3D *maze = new Static3D("assets/objects/maze.obj", shader);
-		renderObjects.push_back(maze);
-		// first battery from positions file
-		Battery *battery = new Battery("assets/objects/battery.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-0.25f, 1.2185f, 3.35f)));
-		renderObjects.push_back(battery);
-		// first box from positions file
-		Dynamic3D *box = new Dynamic3D("assets/objects/box.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.2439f, 0.0f, 3.2545f)), glm::radians(-30.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		renderObjects.push_back(box);
-		// first button from positions file
-		Static3D *button = new Static3D("assets/objects/button.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.03f, -1.49f)), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		renderObjects.push_back(button);
-		// button panel from positions file
-		Static3D *buttonPanel = new Static3D("assets/objects/button_panel.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 1.1f, -1.5f)));
-		renderObjects.push_back(buttonPanel);
-		// opened doors from positions file
-		Static3D *door1 = new Static3D("assets/objects/door.obj", shader, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(3.1f, 0.0f, -8.5f)), glm::radians(-110.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		renderObjects.push_back(door1);
-		Static3D *door2 = new Static3D(*door1, glm::rotate(glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 0.0f, -12.1f)), glm::radians(-20.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-		renderObjects.push_back(door2);
-		// electric box from positions file
-		Static3D *electricBox = new Static3D("assets/objects/electric_box.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.0f, 0.65f, -1.75f)));
-		renderObjects.push_back(electricBox);
-		// opened front elevator doors from the positions file
-		Static3D *elevatorLeftDoor = new Static3D("assets/objects/elevator_left_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.3f, 0.0f, 0.95f)));
-		renderObjects.push_back(elevatorLeftDoor);
-		Static3D *elevatorRightDoor = new Static3D("assets/objects/elevator_right_door.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.3f, 0.0f, -0.95f)));
-		renderObjects.push_back(elevatorRightDoor);
-		// second key from positions file
-		Static3D *key = new Static3D("assets/objects/key.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-8.3121f, 1.0737f, -11.901f)) * glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(2.6f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::mat4(1.0f), glm::radians(72.5f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		renderObjects.push_back(key);
-		// first resistance from positions file
-		Resistance *resistance = new Resistance("assets/objects/resistance.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(-4.125f, 1.415f, -1.587f)));
-		renderObjects.push_back(resistance);
-		// water from positions file
-		Static3D *water = new Static3D("assets/objects/water.obj", shader, glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -4.825f, 0.0f)));
-		renderObjects.push_back(water);
-	}*/
+	/* ------------- */
+	// LOAD PARTICLES
+	/* ------------- */
+	//Particles *testParticles = new Particles(glm::vec3(1.0f), glm::vec3(0.0f), 0.0f, 0.0f, 0.05f);
+	//renderParticles.push_back(testParticles);
 }
 
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader) {
 	std::string path = positions.Get(section, "path", "assets/box.obj");
-	unsigned int size = positions.GetInteger(section, "size", 1);
-	unsigned int load = positions.GetInteger(section, "load", 1);
-	unsigned int type = positions.GetInteger(section, "type", 9);
+	int size = positions.GetInteger(section, "size", 1);
+	int load = positions.GetInteger(section, "load", 1);
+	int type = positions.GetInteger(section, "type", -1);
+	if (type == -1)
+		return;
 
 	if (size == load) {
 		for (int i = 0; i < size; i++) {
 			physx::PxVec3 trans = physx::PxVec3(physx::PxIdentity);
 			physx::PxVec4 rot = physx::PxVec4(0.f);
-			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+			sscanf_s(positions.Get(section, std::to_string(i), "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 			physx::PxTransform transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 			createObject(path.c_str(), type, transformation, shader);
 		}
@@ -345,7 +343,7 @@ void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string
 
 			physx::PxVec3 trans = physx::PxVec3(physx::PxIdentity);
 			physx::PxVec4 rot = physx::PxVec4(0.f);
-			sscanf_s(positions.Get(section, std::to_string(num), "0 0 0 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+			sscanf_s(positions.Get(section, std::to_string(num), "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 			physx::PxTransform transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 			createObject(path.c_str(), type, transformation, shader);
 		}
@@ -353,7 +351,7 @@ void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string
 	lastGenerated = nullptr;
 }
 
-void createObject(const char *path, unsigned int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader) {
+void createObject(const char *path, int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader) {
 	switch (type) {
 
 	case 0: //Battery

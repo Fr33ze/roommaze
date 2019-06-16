@@ -12,9 +12,14 @@ public:
 	~ElectricBox();
 	void use(GUI::Inventory *inv) override;
 	std::string guitext(GUI::Inventory *inv) override;
+	void setHiddenRes(Static3D *hiddenRes);
+	void setShownRes(Static3D *shownRes);
+	void setElevatorDoor(ElevatorDoor *elevatorDoor);
 protected:
 	physx::PxShape* createShape(const char *path) override;
+	// resistance as Static3D that is activated in use()
 	Static3D *hiddenRes;
+	// resistance as Static3D that is shown from the beginning
 	Static3D *shownRes;
 	ElevatorDoor *elevatorDoor;
 };
