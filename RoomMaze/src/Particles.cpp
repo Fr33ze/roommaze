@@ -5,7 +5,7 @@ Particles::Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
-	for (int i = 0; i < MAX_PARTICLES; i++) {
+	for (int i = 0; i < maxParticles; i++) {
 		particles[i].remainingLifeTime = 0.0f;
 		particles[i].cameraDistance = 0.0f;
 	}
@@ -24,11 +24,17 @@ Particles::Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight
 		 0.5, -0.5, 0.0f
 	};
 	glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribDivisor(0, 0);
 
 	// VBO for positions and scaling
 	glGenBuffers(1, &vboPositionsAndScaling);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-	glBufferData(GL_ARRAY_BUFFER, 4 * MAX_PARTICLES * sizeof(float), nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4 * maxParticles * sizeof(float), nullptr, GL_STREAM_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	glVertexAttribDivisor(1, 1);
 
 	// unbind VAO
 	glBindVertexArray(0);
@@ -50,7 +56,7 @@ Particles::~Particles() {
 void Particles::createNewParticles(int amount) {
 	std::random_device rd;
 	std::mt19937 eng(rd());
-	std::uniform_int_distribution<> distr(91, 110);
+	std::uniform_int_distribution<> distr(51, 150);
 
 	for (int i = 0; i < amount; i++) {
 		int index = getUnusedParticle();
@@ -67,7 +73,7 @@ void Particles::updateParticles(float deltaTime) {
 	extern Camera *camera;
 
 	particleCounter = 0;
-	for (int i = 0; i < MAX_PARTICLES; i++) {
+	for (int i = 0; i < maxParticles; i++) {
 		ParticleObject &particle = particles[i];
 		if (particle.remainingLifeTime > 0.0f) {
 			// update remaining life time of the particle
@@ -90,16 +96,16 @@ void Particles::updateParticles(float deltaTime) {
 	}
 
 	// generate 1 new particle each millisecond
-	int amountOfNewParticles = (int)(deltaTime * 1000.0f);
+	int amountOfNewParticles = (int)(deltaTime * 100.0f);
 	// limiter to 16 ms (60 FPS)
-	if (amountOfNewParticles > (int)(0.016f * 1000.0f)) {
-		amountOfNewParticles = (int)(0.016f * 1000.0f);
+	if (amountOfNewParticles > (int)(0.016f * 100.0f)) {
+		amountOfNewParticles = (int)(0.016f * 100.0f);
 	}
 	createNewParticles(amountOfNewParticles);
 }
 
 int Particles::getUnusedParticle() {
-	for (int i = lastUsedParticle; i < MAX_PARTICLES; i++) {
+	for (int i = lastUsedParticle; i < maxParticles; i++) {
 		if (particles[i].remainingLifeTime <= 0.0f) {
 			lastUsedParticle = i;
 			return i;
@@ -117,7 +123,7 @@ int Particles::getUnusedParticle() {
 }
 
 void Particles::sortParticles() {
-	std::sort(&particles[0], &particles[MAX_PARTICLES]);
+	std::sort(&particles[0], &particles[maxParticles]);
 }
 
 void Particles::draw(float deltaTime) {
@@ -125,7 +131,7 @@ void Particles::draw(float deltaTime) {
 
 	// update buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-	glBufferData(GL_ARRAY_BUFFER, 4 * MAX_PARTICLES * sizeof(float), nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 4 * maxParticles * sizeof(float), nullptr, GL_STREAM_DRAW);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, particleCounter * sizeof(GLfloat) * 4, positions);
 
 	// render
@@ -140,21 +146,9 @@ void Particles::draw(float deltaTime) {
 
 	glBindVertexArray(vao);
 
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 1);
-
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleCounter);
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	glBindVertexArray(0);
 
 	shader->unuse();
 }

@@ -333,7 +333,7 @@ void initContent() {
 	/* ------------- */
 	// LOAD PARTICLES
 	/* ------------- */
-	Particles *testParticles = new Particles(glm::vec3(0.0f), glm::vec3(0.0f, 2.0f, 0.0f), 0.05f, 0.25f, 4.0f);
+	Particles *testParticles = new Particles(glm::vec3(0.0f), glm::vec3(0.5f, 2.0f, 0.5f), 0.025f, 0.001f, 4.0f);
 	renderParticles.push_back(testParticles);
 }
 

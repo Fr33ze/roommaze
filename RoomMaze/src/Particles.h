@@ -10,8 +10,6 @@
 #include "Shader.h"
 #include "Camera.h"
 
-static const int MAX_PARTICLES = 10000;
-
 class Particles {
 
 protected:
@@ -19,6 +17,7 @@ protected:
 	// shader used for rendering particles
 	std::shared_ptr<Shader> shader;
 
+	static const int maxParticles = 50;
 	glm::vec3 origin, speed;
 	float size, weight, lifeLength;
 
@@ -31,11 +30,11 @@ protected:
 			return this->cameraDistance > that.cameraDistance;
 		}
 	};
-	ParticleObject particles[MAX_PARTICLES];
+	ParticleObject particles[maxParticles];
 	int lastUsedParticle;
 	int particleCounter;
 
-	float *positions = new float[4 * MAX_PARTICLES];
+	float *positions = new float[4 * maxParticles];
 
 	GLuint vao;
 	GLuint vboVertices;
