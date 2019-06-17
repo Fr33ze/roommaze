@@ -8,16 +8,11 @@
 #include <GL\glew.h>
 #include <GLFW\glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
-#include <AL\al.h>
-#include <AL\alc.h>
+#include <AL\alut.h>
 
 #ifndef _DEBUG
 #include <Windows.h>
 #endif
-
-#define NUM_BUFFERS 10
-#define NUM_SOURCES 10
-#define NUM_ENVIRONMENTS 1
 
 #include "Shader.h"
 #include "Camera.h"
@@ -57,7 +52,6 @@ Code:
 
 void readSettings();
 GLFWwindow* initOpenGL();
-ALCdevice* initOpenAL();
 void initPhysX();
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader);
 void createObject(const char *path, int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
@@ -145,6 +139,16 @@ int main(int argc, char **argv) {
 	// SETTING UP OPENGL WINDOW
 	/* ------------------------- */
 	GLFWwindow* window = initOpenGL();
+
+	/* ------------------------- */
+	// SETTING UP OPENAL
+	/* ------------------------- */
+	if (!alutInit(&argc, argv))
+	{
+		ALenum error = alutGetError();
+		fprintf(stderr, "%s\n", alutGetErrorString(error));
+		exit(EXIT_FAILURE);
+	}
 
 	/* ----------- */
 	// PHYSX INIT
@@ -568,29 +572,6 @@ GLFWwindow* initOpenGL() {
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	return window;
-}
-
-ALCdevice* initOpenAL() {
-	// open default audio device
-	ALCdevice *device = alcOpenDevice(NULL);
-
-	// get context for device and make it current
-	ALCcontext *context;
-	if (device) {
-		context = alcCreateContext(device, NULL);
-		alcMakeContextCurrent(context);
-	}
-
-	// check for EAX2.0 support (what is this shit??)
-	ALboolean g_bEAX = alIsExtensionPresent("EAX2.0");
-
-	// clear error cache
-	alGetError();
-
-	// generate buffers
-	
-
-	return device;
 }
 
 void initPhysX() {

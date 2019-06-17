@@ -5,6 +5,7 @@
 #include <glm\glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <math.h>
+#include <AL\alut.h>
 
 #include "Shader.h"
 #include "CharacterCallback.h"
@@ -36,6 +37,14 @@ static const float CHARACTER_EYE_HEIGHT = 1.6f;
 class Camera {
 
 protected:
+	// audio source for concrete and water footsteps
+	ALuint audioSource;
+
+	// audio buffers for concrete and water footsteps
+	ALuint concreteBuffer;
+	ALuint waterBuffer;
+
+	bool playstepsound = false;
 
 	// displacement (movement) vector
 	physx::PxVec3 displacement;

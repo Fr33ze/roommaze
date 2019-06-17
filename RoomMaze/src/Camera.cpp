@@ -5,6 +5,18 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	
 	displacement = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
+	alListener3f(AL_POSITION, position.x, position.y, position.z);
+	alListener3f(AL_VELOCITY, position.x + front.x, position.y + front.y, position.z + front.z);
+
+	//TODO: reference real audio files
+	concreteBuffer = alutCreateBufferFromFile("assets/audio/test.wav");
+	waterBuffer = alutCreateBufferFromFile("assets/audio/test.wav");
+
+	alGenSources(1, &audioSource);
+	alSourcei(audioSource, AL_BUFFER, concreteBuffer);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+
 	//create physx controller
 	extern physx::PxScene* pxScene;
 	extern physx::PxPhysics* mPhysics;
@@ -107,7 +119,9 @@ glm::mat4 Camera::getProjectionMatrix() {
 }
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
+	bool before = sin(bobbingTime) < 0;
 	bobbingTime = fmod((bobbingTime + deltaTime * 7 /*change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
+	playstepsound = sin(bobbingTime) < 0 != before;
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 	switch (key) {
 	case(W):
@@ -149,6 +163,21 @@ void Camera::move(float deltaTime)
 
 	// movement
 	controller->move(displacement, 0.01f, deltaTime, filters);
+
+	// new source position
+	physx::PxExtendedVec3 position = controller->getFootPosition();
+	alSource3f(audioSource, AL_POSITION, position.x, position.y, position.z);
+
+	// new listener position and velocity
+	position.y += CHARACTER_EYE_HEIGHT;
+	alListener3f(AL_POSITION, position.x, position.y, position.z);
+	alListener3f(AL_VELOCITY, position.x + front.x, position.y + front.y, position.z + front.z);
+
+	if (playstepsound) {
+		alSourcePlay(audioSource);
+		playstepsound = false;
+	}
+
 
 	// reset vector
 	displacement.x = 0.0f;
