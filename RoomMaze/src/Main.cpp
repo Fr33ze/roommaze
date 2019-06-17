@@ -241,7 +241,7 @@ void initContent() {
 	/* ------------- */
 	Particles *electroBoxParticles = new Particles(0.15f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.2f, 0.1f, 0.002f), 0.025f, 2.0f, "assets/particles/spark.png", true);
 	renderParticles.push_back(electroBoxParticles);
-	collectParticles = new Particles(0.01f, glm::vec3(0.0f, 1.5f, 0.0f), glm::vec3(0.02f, 0.1f, 0.02f), 0.1f, 0.5f, "assets/particles/smoke.png", false);
+	collectParticles = new Particles(0.01f, glm::vec3(0.0f), glm::vec3(0.02f, 0.1f, 0.02f), 0.1f, 0.5f, "assets/particles/smoke.png", false);
 	renderParticles.push_back(collectParticles);
 
 	/* ------------- */
