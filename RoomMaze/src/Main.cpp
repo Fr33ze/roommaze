@@ -701,8 +701,7 @@ void processInput(GLFWwindow *window) {
 	}
 	if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS) {
 		gui->setInfoText("I'm a noob and need cheats!");
-		for (int i = 0; i < 10; i++)
-			gui->addBattery();
+		gui->addBattery();
 		gui->addButton();
 		gui->addKey();
 		gui->addResistance();
