@@ -41,7 +41,6 @@ protected:
 	GLuint vboVertices;
 	GLuint vboPositionsAndScaling;
 
-	
 	void createNewParticles(int amount);
 	void updateParticles(float deltaTime);
 	int getUnusedParticle();
