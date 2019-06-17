@@ -443,7 +443,7 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 				*((Door3D*)lastGenerated),
 				trans
 			);
-		((Door3D*)lastGenerated)->setParticle(collectParticles);
+		renderObjects.push_back(lastGenerated);
 		break;
 
 	case 7: //Key
