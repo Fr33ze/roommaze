@@ -124,7 +124,8 @@ void Particles::updateParticles(float deltaTime) {
 		}
 	}
 
-	if (enabledForSeconds > 0.0f) {
+	// only create new particles if spawning is enabled
+	if (enabledForSeconds == -1.0f || enabledForSeconds > 0.0f) {
 		secondCounter += deltaTime;
 		if (secondCounter >= particleSpawningRate) {
 			secondCounter = 0.0f;
@@ -138,7 +139,7 @@ void Particles::setOrigin(glm::vec3 position) {
 }
 
 void Particles::draw(float deltaTime) {
-	// check if particle spawning is enabled
+	// only render if particle spawing is enabled or there are still some particles alive
 	if (enabledForSeconds == -1.0f || enabledForSeconds > 0.0f || particles.size() > 0) {
 		if (enabledForSeconds > 0.0f) {
 			enabledForSeconds -= deltaTime;
