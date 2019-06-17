@@ -50,12 +50,12 @@ std::string ElectricBox::guitext(GUI *gui)
 	return (gui->hasResistance() ? "Insert Resistance" : "Find and insert a Resistance to repair");
 }
 
-void ElectricBox::setHiddenRes(Static3D *hiddenRes)
+void ElectricBox::setHiddenRes(NoCollision3D *hiddenRes)
 {
 	this->hiddenRes = hiddenRes;
 }
 
-void ElectricBox::setShownRes(Static3D *shownRes)
+void ElectricBox::setShownRes(NoCollision3D *shownRes)
 {
 	this->shownRes = shownRes;
 }

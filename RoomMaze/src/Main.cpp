@@ -26,6 +26,8 @@
 #include "Key3D.h"
 #include "ElectricBox.h"
 #include "Door3D.h"
+#include "Button3D.h"
+#include "ButtonPanel.h"
 #include "Particles.h"
 
 /* TODO
@@ -225,7 +227,7 @@ void initContent() {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 
 	// camera (includes character controller)
-	camera = new Camera(glm::vec3(0.0f, 2.0f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera = new Camera(glm::vec3(0.0f, 0.5f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
 	camera->setSpotLightParameters(settings.brightness, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
 
 	// GUI
@@ -253,7 +255,7 @@ void initContent() {
 	rot = physx::PxVec4(0.f);
 	sscanf_s(positions.Get("Resistance", "shown", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
-	Static3D *shownRes = new Static3D(
+	NoCollision3D *shownRes = new NoCollision3D(
 		positions.Get("Resistance", "path", "assets/objects/resistance.obj").c_str(),
 		shader,
 		transformation
@@ -264,7 +266,7 @@ void initContent() {
 	rot = physx::PxVec4(0.f);
 	sscanf_s(positions.Get("Resistance", "hidden", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
-	Static3D *hiddenRes = new Static3D(
+	NoCollision3D *hiddenRes = new NoCollision3D(
 		*shownRes,
 		transformation
 	);
@@ -284,6 +286,42 @@ void initContent() {
 	electricBox->setShownRes(shownRes);
 	electricBox->setHiddenRes(hiddenRes);
 	renderObjects.push_back(electricBox);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("Button", "shown", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	NoCollision3D *shownButton = new NoCollision3D(
+		positions.Get("Button", "path", "assets/objects/button.obj").c_str(),
+		shader,
+		transformation
+	);
+	renderObjects.push_back(shownButton);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("Button", "hidden", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	NoCollision3D *hiddenButton = new NoCollision3D(
+		*shownButton,
+		transformation
+	);
+	hiddenButton->enable(false);
+	renderObjects.push_back(hiddenButton);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("ButtonPanel", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	ButtonPanel *buttonPanel = new ButtonPanel(
+		positions.Get("ButtonPanel", "path", "assets/objects/button_panel.obj").c_str(),
+		shader,
+		transformation
+	);
+	buttonPanel->setElevatorDoor(elevatorDoors);
+	buttonPanel->setShownButton(shownButton);
+	buttonPanel->setHiddenButton(hiddenButton);
+	renderObjects.push_back(buttonPanel);
 
 	/* ------------- */
 	// LOAD OBJECTS (type!=-1)
@@ -371,8 +409,19 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 		renderObjects.push_back(lastGenerated);
 		break;
 
-	case 2: //Button
-
+	case 2: //Button3D
+		if (!lastGenerated)
+			lastGenerated = new Button3D(
+				path,
+				shader,
+				trans
+			);
+		else
+			lastGenerated = new Button3D(
+				*((Button3D*)lastGenerated),
+				trans
+			);
+		renderObjects.push_back(lastGenerated);
 		break;
 
 	case 3: //ButtonPanel

@@ -14,6 +14,7 @@ public:
 	void closeDoor();
 	std::string guitext(GUI *gui) override;
 	void draw(float dt) override;
+	bool isOpen();
 protected:
 	// actor of the right doorwing
 	physx::PxRigidActor *pxActorRight;

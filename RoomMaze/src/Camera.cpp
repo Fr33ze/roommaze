@@ -86,7 +86,9 @@ glm::mat4 Camera::getProjectionMatrix() {
 }
 
 glm::vec3 Camera::getPosition() {
-	return glm::vec3(1.0f);
+	physx::PxExtendedVec3 pos = controller->getFootPosition();
+	glm::vec3 position = glm::vec3(pos.x, pos.y + CHARACTER_EYE_HEIGHT, pos.z);
+	return position;
 }
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {

@@ -72,6 +72,11 @@ void ElevatorDoor::draw(float dt) {
 	shader->unuse();
 }
 
+bool ElevatorDoor::isOpen()
+{
+	return open;
+}
+
 void ElevatorDoor::use(GUI *gui)
 {
 	//TODO play sound

@@ -144,6 +144,7 @@
     <ClCompile Include="src\Button3D.cpp" />
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Battery.cpp" />
+    <ClCompile Include="src\ButtonPanel.cpp" />
     <ClCompile Include="src\CharacterCallback.cpp" />
     <ClCompile Include="src\Door3D.cpp" />
     <ClCompile Include="src\Dynamic3D.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="src\Button3D.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Battery.h" />
+    <ClInclude Include="src\ButtonPanel.h" />
     <ClInclude Include="src\CharacterCallback.h" />
     <ClInclude Include="src\Door3D.h" />
     <ClInclude Include="src\Dynamic3D.h" />
