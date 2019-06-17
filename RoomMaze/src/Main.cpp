@@ -37,13 +37,9 @@
 #include "Particles.h"
 
 /* TODO
-Model:
--> Split Concrete2 Material für Bad und Decke (wegen normal maps)
-
 Code:
 
--> Particles
--> Kantenfilter um fokussiertes Item
+-> Bloom-Johnnyboy
 -> GUI (Startscreen / Endscreen)
 -> Sound:
 	- Ambient
@@ -239,9 +235,9 @@ void initContent() {
 	/* ------------- */
 	// LOAD PARTICLES
 	/* ------------- */
-	Particles *electroBoxParticles = new Particles(0.15f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.2f, 0.1f, 0.002f), 0.025f, 2.0f, "assets/particles/spark.png", true);
+	Particles *electroBoxParticles = new Particles(0.1f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.55f, 0.3f, 0.0f), 0.02f, 0.2f, 2.0f, 5.0f, "assets/particles/spark.png", true);
 	renderParticles.push_back(electroBoxParticles);
-	collectParticles = new Particles(0.01f, glm::vec3(0.0f), glm::vec3(0.02f, 0.1f, 0.02f), 0.1f, 0.5f, "assets/particles/smoke.png", false);
+	collectParticles = new Particles(0.1f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 0.075f, 0.1f, 2.0f, 2.0f, "assets/particles/hand.png", !false);
 	renderParticles.push_back(collectParticles);
 
 	/* ------------- */

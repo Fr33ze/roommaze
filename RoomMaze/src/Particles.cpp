@@ -1,7 +1,7 @@
 #include "Particles.h"
 
-Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float lifeLength, std::string texturePath, bool isEnabled)
-	: particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), lifeLength(lifeLength), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
+Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled)
+	: particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), randomizeSpeedFactor(randomizeSpeedFactor), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
@@ -93,8 +93,9 @@ void Particles::createNewParticles(int amount) {
 	for (int i = 0; i < amount && particles.size() < MAX_AMOUNT_OF_PARTICLES; i++) {
 		ParticleObject particle;
 		particle.position = origin;
-		particle.speed = speed * glm::vec3(distr(eng), distr(eng), distr(eng));
+		particle.speed = speed + (glm::vec3(distr(eng), distr(eng), distr(eng)) - 1.25f) / randomizeSpeedFactor;
 		particle.size = size * distr(eng);
+		particle.weight = weight * distr(eng);
 		particle.remainingLifeTime = lifeLength * distr(eng);
 		particles.push_back(particle);
 	}
@@ -114,7 +115,7 @@ void Particles::updateParticles(float deltaTime) {
 		// alive particle
 		else {
 			// simulate particle
-			particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * particle.size * 1.5f;
+			particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * particle.weight * deltaTime;
 			particle.position += particle.speed * deltaTime;
 			// inster particle into positions vector
 			positions.push_back(particle.position.x);
@@ -164,7 +165,6 @@ void Particles::draw(float deltaTime) {
 		glBindTexture(GL_TEXTURE_2D, textureHandle);
 		shader->setUniform("textureUnit", 0);
 
-		//glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND); // enable rendering semi-transparent materials
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // set how blendig is accomplished
 
@@ -172,7 +172,6 @@ void Particles::draw(float deltaTime) {
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, positions.size() / 4);
 		glBindVertexArray(0);
 
-		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 
 		shader->unuse();

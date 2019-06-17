@@ -26,5 +26,5 @@ void main() {
 	
 	gl_Position = viewProjectionMatrix  * vec4(vertexPositionWorldspace, 1.0);
 
-	UVCoords = vertices.xy + vec2(0.5, 0.5);
+	UVCoords = vertices.xy - vec2(0.5, 0.5);
 }

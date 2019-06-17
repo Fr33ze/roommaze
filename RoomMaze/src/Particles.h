@@ -30,11 +30,11 @@ protected:
 	float secondCounter = 0.0f;
 
 	glm::vec3 origin, speed;
-	float size, lifeLength;
+	float size, weight, lifeLength, randomizeSpeedFactor;
 
 	struct ParticleObject {
 		glm::vec3 position, speed;
-		float size, remainingLifeTime;
+		float size, weight, remainingLifeTime;
 	};
 	std::vector<ParticleObject> particles;
 	std::vector<float> positions;
@@ -59,11 +59,13 @@ public:
 	 * @param origin: position where all particles spawn
 	 * @param speed: defines the particle's direction (length of the vector is the speed)
 	 * @param size: defines the size in meters of a single particle
+	 * @param weight: defines the weight of a single particle (how it is affected by gravity)
 	 * @param lifeLength: defines after how many seconds a particle disappears
+	 * @param randomizeSpeedFactor: defines how much the randomizer is allowed to change the speed vector (the lower the value, the higher the randomization)
 	 * @param texturePath: path to the texture for the particles
 	 * @param isEnabled: defines whether particle spawning is enabled or not
 	 */
-	Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float lifeLength, std::string texturePath, bool isEnabled);
+	Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled);
 	
 	Particles();
 
