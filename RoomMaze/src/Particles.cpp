@@ -84,6 +84,12 @@ void Particles::updateParticles(float deltaTime) {
 				particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.5f;
 				particle.position += particle.speed * deltaTime;
 				particle.cameraDistance = glm::length(particle.position - camera->getPosition());
+				
+				positions[4 * particleCounter + 0] = particle.position.x;
+				positions[4 * particleCounter + 1] = particle.position.y;
+				positions[4 * particleCounter + 2] = particle.position.z;
+				positions[4 * particleCounter + 3] = particle.size;
+
 			}
 		} else {
 			particle.cameraDistance = 0.0f;
@@ -130,20 +136,9 @@ void Particles::draw(float deltaTime) {
 
 	shader->use();
 	
-	extern Camera *camera;
-	glm::mat4 viewMatrix = camera->getViewMatrix();
-	shader->setUniform("viewProjectionMatrix", camera->getProjectionMatrix() * viewMatrix);
-	shader->setUniform("cameraRightWorldspace", glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
-	shader->setUniform("cameraUpWorldspace", glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]));
 	
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(glm::vec4), positions.data());
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, positions.size());
-
-	glBindVertexArray(0);
+	
 
 	shader->unuse();
 }
