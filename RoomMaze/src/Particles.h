@@ -10,6 +10,8 @@
 #include "Shader.h"
 #include "Camera.h"
 
+static const int MAX_PARTICLES = 10000;
+
 class Particles {
 
 protected:
@@ -17,34 +19,36 @@ protected:
 	// shader used for rendering particles
 	std::shared_ptr<Shader> shader;
 
-	float deltaTime;
+	glm::vec3 origin, speed;
+	float size, weight, lifeLength;
 
 	struct ParticleObject {
-		glm::vec3 position, velocity;
-		float gravityEffect, remainingLifeTime, rotation, scale;
+		glm::vec3 position, speed;
+		float size, angle, weight, remainingLifeTime, cameraDistance;
 
-		ParticleObject(glm::vec3 position, glm::vec3 velocity, float gravityEffect, float remainingLifeTime, float rotation, float scale)
-			: position(position), velocity(velocity), gravityEffect(gravityEffect), remainingLifeTime(remainingLifeTime), rotation(rotation), scale(scale) {
-		};
-
-		~ParticleObject() {}
+		bool operator<(const ParticleObject& that) const {
+			// sort in reverse order --> far particles drawn first
+			return this->cameraDistance > that.cameraDistance;
+		}
 	};
-	std::vector<ParticleObject> particles;
-	std::vector<glm::vec4> positions;
+	ParticleObject particles[MAX_PARTICLES];
+	int lastUsedParticle;
 
-	glm::vec3 origin, velocity;
-	float gravityEffect, lifeLength, scale;
+	float *positions = new float[4 * MAX_PARTICLES];
 
 	GLuint vao;
 	GLuint vboVertices;
 	GLuint vboPositionsAndScaling;
 
+	
 	void createNewParticles(int amount);
-	void updateParticles();
+	void updateParticles(float deltaTime);
+	int getUnusedParticle();
+	void sortParticles();
 
 public:
 	
-	Particles(glm::vec3 origin, glm::vec3 velocity, float gravityEffect, float lifeLength, float scale);
+	Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength);
 	
 	Particles();
 

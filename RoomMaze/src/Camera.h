@@ -111,6 +111,8 @@ public:
 
 	glm::mat4 getProjectionMatrix();
 
+	glm::vec3 getPosition();
+
 	/**
 	 * Updates the camera concerning the pressed key.
 	 * 
