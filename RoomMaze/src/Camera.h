@@ -56,6 +56,11 @@ protected:
 	// time to calculate bobbing effect (ranges from 0-2PI)
 	float bobbingTime;
 
+	// turn this pointlights on or off
+	bool electricBoxLight = true;
+
+	int pointLightAmount = 0;
+
 	// the light of the camera is a spot light
 	struct CameraLight {
 		float brightness;
@@ -139,6 +144,8 @@ public:
 	void move(float deltaTime);
 
 	bool raycast(physx::PxRaycastBuffer &hit);
+
+	void turnElectricBoxOff();
 
 	void turnSpotlightOn();
 

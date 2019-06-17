@@ -53,6 +53,13 @@ physx::PxShape* Resistance::createShape(const char *path) {
 void Resistance::use(GUI *gui) {
 	if (!enabled)
 		return;
+
+	if (particles) {
+		physx::PxVec3 pos = pxActor->getGlobalPose().p;
+		particles->setOrigin(glm::vec3(pos.x, pos.y, pos.z));
+		particles->enableFor(0.5f);
+	}
+
 	gui->addResistance();
 	pxActor->detachShape(*pxShape);
 	enabled = false;

@@ -47,6 +47,13 @@ physx::PxShape* Battery::createShape(const char *path) {
 void Battery::use(GUI *gui) {
 	if (!enabled)
 		return;
+
+	if (particles) {
+		physx::PxVec3 pos = pxActor->getGlobalPose().p;
+		particles->setOrigin(glm::vec3(pos.x, pos.y, pos.z));
+		particles->enableFor(0.5f);
+	}
+
 	gui->addBattery();
 	pxActor->detachShape(*pxShape);
 	enabled = false;

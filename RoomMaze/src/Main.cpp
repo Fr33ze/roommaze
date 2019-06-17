@@ -109,6 +109,7 @@ std::vector<Object3D*> renderObjects;
 
 // particles to render
 std::vector<Particles*> renderParticles;
+Particles *collectParticles;
 
 // last generated 3d object
 Object3D *lastGenerated;
@@ -238,8 +239,8 @@ void initContent() {
 	/* ------------- */
 	Particles *electroBoxParticles = new Particles(0.15f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.2f, 0.1f, 0.002f), 0.025f, 2.0f, "assets/particles/spark.png", true);
 	renderParticles.push_back(electroBoxParticles);
-	Particles *batteryParticles = new Particles(0.01f, glm::vec3(0.0f, 1.5f, 0.0f), glm::vec3(0.02f, 0.1f, 0.02f), 0.1f, 0.5f, "assets/particles/smoke.png", true);
-	renderParticles.push_back(batteryParticles);
+	collectParticles = new Particles(0.01f, glm::vec3(0.0f, 1.5f, 0.0f), glm::vec3(0.02f, 0.1f, 0.02f), 0.1f, 0.5f, "assets/particles/smoke.png", false);
+	renderParticles.push_back(collectParticles);
 
 	/* ------------- */
 	// LOAD OBJECTS (type==-1)
@@ -293,6 +294,7 @@ void initContent() {
 	electricBox->setElevatorDoor(elevatorDoors);
 	electricBox->setShownRes(shownRes);
 	electricBox->setHiddenRes(hiddenRes);
+	electricBox->setParticle(electroBoxParticles);
 	renderObjects.push_back(electricBox);
 
 	trans = physx::PxVec3(physx::PxIdentity);
@@ -394,6 +396,7 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 				*((Battery*)lastGenerated),
 				trans
 			);
+		((Battery*)lastGenerated)->setParticle(collectParticles);
 		renderObjects.push_back(lastGenerated);
 		break;
 
@@ -424,10 +427,8 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 				*((Button3D*)lastGenerated),
 				trans
 			);
+		((Button3D*)lastGenerated)->setParticle(collectParticles);
 		renderObjects.push_back(lastGenerated);
-		break;
-
-	case 3: //ButtonPanel
 		break;
 
 	case 4: //Door
@@ -442,7 +443,7 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 				*((Door3D*)lastGenerated),
 				trans
 			);
-		renderObjects.push_back(lastGenerated);
+		((Door3D*)lastGenerated)->setParticle(collectParticles);
 		break;
 
 	case 7: //Key
@@ -457,6 +458,7 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 				*((Key3D*)lastGenerated),
 				trans
 			);
+		((Key3D*)lastGenerated)->setParticle(collectParticles);
 		renderObjects.push_back(lastGenerated);
 		break;
 
@@ -472,6 +474,7 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 				*((Resistance*)lastGenerated),
 				trans
 			);
+		((Resistance*)lastGenerated)->setParticle(collectParticles);
 		renderObjects.push_back(lastGenerated);
 		break;
 

@@ -13,3 +13,8 @@ Interactable3D::Interactable3D(const Interactable3D &o, physx::PxTransform model
 Interactable3D::~Interactable3D()
 {
 }
+
+void Interactable3D::setParticle(Particles *particles)
+{
+	this->particles = particles;
+}

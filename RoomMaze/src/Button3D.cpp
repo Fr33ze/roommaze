@@ -47,6 +47,13 @@ physx::PxShape* Button3D::createShape(const char *path) {
 void Button3D::use(GUI *gui) {
 	if (!enabled)
 		return;
+
+	if (particles) {
+		physx::PxVec3 pos = pxActor->getGlobalPose().p;
+		particles->setOrigin(glm::vec3(pos.x, pos.y, pos.z));
+		particles->enableFor(0.5f);
+	}
+
 	gui->addButton();
 	pxActor->detachShape(*pxShape);
 	enabled = false;

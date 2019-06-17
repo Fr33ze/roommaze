@@ -59,16 +59,21 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 
 void Camera::setLights(std::shared_ptr<Shader> shader) {
 	// electric box light
-	shader->setUniform("pointLights[0].color", glm::vec3(0.5f, 0.125f, 0.0f));
-	shader->setUniform("pointLights[0].position", glm::vec3(-3.95f, 1.2f, -1.75f));
-	shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.8f, 1.0f));
+	if (electricBoxLight) {
+		shader->setUniform("pointLights[0].color", glm::vec3(0.5f, 0.125f, 0.0f));
+		shader->setUniform("pointLights[0].position", glm::vec3(-3.95f, 1.2f, -1.75f));
+		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.8f, 1.0f));
+		pointLightAmount++;
+	}
 
 	// elevator light
 	shader->setUniform("pointLights[1].color", glm::vec3(1.0f));
 	shader->setUniform("pointLights[1].position", glm::vec3(-6.0f, 2.0f, 0.0f));
 	shader->setUniform("pointLights[1].attenuation", glm::vec3(1.0f, 0.8f, 2.0f));
+	pointLightAmount++;
 
-	shader->setUniform("amountOfPointLights", 2);
+	shader->setUniform("amountOfPointLights", pointLightAmount);
+	pointLightAmount = 0;
 }
 
 Camera::Camera() {
@@ -160,6 +165,11 @@ bool Camera::raycast(physx::PxRaycastBuffer &hit) {
 	physx::PxQueryFilterData filterData = physx::PxQueryFilterData();
 	filterData.data.word1 = INTERACTABLE;
 	return pxScene->raycast(origin, destination, range, hit, outputFlags, filterData);
+}
+
+void Camera::turnElectricBoxOff()
+{
+	electricBoxLight = false;
 }
 
 void Camera::turnSpotlightOn() {

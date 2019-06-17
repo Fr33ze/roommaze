@@ -42,6 +42,13 @@ void ElectricBox::use(GUI *gui)
 		gui->removeResistance();
 		hiddenRes->enable(true);
 		elevatorDoor->openDoor();
+
+		extern Camera *camera;
+		camera->turnElectricBoxOff();
+
+		if (particles) {
+			particles->disable();
+		}
 	}
 }
 

@@ -2,6 +2,7 @@
 
 #include "Object3D.h"
 #include "GUI.h"
+#include "Particles.h"
 
 class Interactable3D : public Object3D
 {
@@ -27,4 +28,8 @@ public:
 	 * @return text shown on the gui when focusing this object
 	 */
 	virtual std::string guitext(GUI *gui) = 0;
+
+	void setParticle(Particles *particles);
+protected:
+	Particles *particles;
 };
