@@ -124,10 +124,12 @@ void Particles::updateParticles(float deltaTime) {
 		}
 	}
 
-	secondCounter += deltaTime;
-	if (secondCounter >= particleSpawningRate) {
-		secondCounter = 0.0f;
-		createNewParticles(1);
+	if (enabledForSeconds > 0.0f) {
+		secondCounter += deltaTime;
+		if (secondCounter >= particleSpawningRate) {
+			secondCounter = 0.0f;
+			createNewParticles(1);
+		}
 	}
 }
 
@@ -137,7 +139,7 @@ void Particles::setOrigin(glm::vec3 position) {
 
 void Particles::draw(float deltaTime) {
 	// check if particle spawning is enabled
-	if (enabledForSeconds == -1.0f || enabledForSeconds > 0.0f) {
+	if (enabledForSeconds == -1.0f || enabledForSeconds > 0.0f || particles.size() > 0) {
 		if (enabledForSeconds > 0.0f) {
 			enabledForSeconds -= deltaTime;
 		}
