@@ -86,9 +86,10 @@ void Particles::updateParticles(float deltaTime) {
 		} else {
 			particle.cameraDistance = 0.0f;
 		}
+		particleCounter++;
 	}
 
-	// generate 1 new particles each millisecond
+	// generate 1 new particle each millisecond
 	int amountOfNewParticles = (int)(deltaTime * 1000.0f);
 	// limiter to 16 ms (60 FPS)
 	if (amountOfNewParticles > (int)(0.016f * 1000.0f)) {
