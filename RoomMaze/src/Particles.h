@@ -33,6 +33,7 @@ protected:
 	};
 	ParticleObject particles[MAX_PARTICLES];
 	int lastUsedParticle;
+	int particleCounter;
 
 	float *positions = new float[4 * MAX_PARTICLES];
 

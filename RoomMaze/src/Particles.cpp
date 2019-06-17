@@ -1,7 +1,7 @@
 #include "Particles.h"
 
 Particles::Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength)
-	: origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), lastUsedParticle(0) {
+	: origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), lastUsedParticle(0), particleCounter(0) {
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
@@ -30,20 +30,13 @@ Particles::Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight
 	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
 	glBufferData(GL_ARRAY_BUFFER, 4 * MAX_PARTICLES * sizeof(float), nullptr, GL_STREAM_DRAW);
 
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	glVertexAttribDivisor(0, 0);
-	glVertexAttribDivisor(1, 1);
-
 	// unbind VAO
 	glBindVertexArray(0);
 
 	// unbind VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	createNewParticles(10);
+	createNewParticles(1);
 }
 
 Particles::Particles() {
@@ -73,7 +66,7 @@ void Particles::createNewParticles(int amount) {
 void Particles::updateParticles(float deltaTime) {
 	extern Camera *camera;
 
-	int particleCounter = 0;
+	particleCounter = 0;
 	for (int i = 0; i < MAX_PARTICLES; i++) {
 		ParticleObject &particle = particles[i];
 		if (particle.remainingLifeTime > 0.0f) {
@@ -89,18 +82,17 @@ void Particles::updateParticles(float deltaTime) {
 				positions[4 * particleCounter + 1] = particle.position.y;
 				positions[4 * particleCounter + 2] = particle.position.z;
 				positions[4 * particleCounter + 3] = particle.size;
-
 			}
 		} else {
 			particle.cameraDistance = 0.0f;
 		}
 	}
 
-	// generate 10 new particles each millisecond
-	int amountOfNewParticles = (int)(deltaTime * 10000.0f);
+	// generate 1 new particles each millisecond
+	int amountOfNewParticles = (int)(deltaTime * 1000.0f);
 	// limiter to 16 ms (60 FPS)
-	if (amountOfNewParticles > (int)(0.016f * 10000.0f)) {
-		amountOfNewParticles = (int)(0.016f * 10000.0f);
+	if (amountOfNewParticles > (int)(0.016f * 1000.0f)) {
+		amountOfNewParticles = (int)(0.016f * 1000.0f);
 	}
 	createNewParticles(amountOfNewParticles);
 }
@@ -130,15 +122,38 @@ void Particles::sortParticles() {
 void Particles::draw(float deltaTime) {
 	updateParticles(deltaTime);
 
-	// -----------------
-	// RENDER PARTICLES
-	// -----------------
+	// update buffer
+	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
+	glBufferData(GL_ARRAY_BUFFER, 4 * MAX_PARTICLES * sizeof(float), nullptr, GL_STREAM_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, particleCounter * sizeof(GLfloat) * 4, positions);
 
+	// render
 	shader->use();
 	
-	
+	extern Camera *camera;
+	glm::mat4 viewMatrix = camera->getViewMatrix();
 
-	
+	shader->setUniform("cameraRightWorldspace", glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
+	shader->setUniform("cameraUpWorldspace", glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]));
+	shader->setUniform("viewProjectionMatrix", camera->getProjectionMatrix() * camera->getViewMatrix());
+
+	glBindVertexArray(vao);
+
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+
+	glVertexAttribDivisor(0, 0);
+	glVertexAttribDivisor(1, 1);
+
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleCounter);
+
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	shader->unuse();
 }
