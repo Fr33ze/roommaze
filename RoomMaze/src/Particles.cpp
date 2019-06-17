@@ -39,7 +39,7 @@ Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 spe
 	// unbind VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	createNewParticles(1);
+	createNewParticles(10);
 }
 
 Particles::Particles() {
@@ -130,7 +130,7 @@ void Particles::updateParticles(float deltaTime) {
 		secondCounter += deltaTime;
 		if (secondCounter >= particleSpawningRate) {
 			secondCounter = 0.0f;
-			createNewParticles(1);
+			createNewParticles(10);
 		}
 	}
 }
