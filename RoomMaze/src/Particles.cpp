@@ -1,14 +1,11 @@
 #include "Particles.h"
 
-Particles::Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength)
-	: origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), lastUsedParticle(0), particleCounter(0) {
+Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, std::string texturePath, bool isEnabled)
+	: particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
-	for (int i = 0; i < maxParticles; i++) {
-		particles[i].remainingLifeTime = 0.0f;
-		particles[i].cameraDistance = 0.0f;
-	}
+	initTexture(texturePath);
 
 	// VAO
 	glGenVertexArrays(1, &vao);
@@ -31,7 +28,7 @@ Particles::Particles(glm::vec3 origin, glm::vec3 speed, float size, float weight
 	// VBO for positions and scaling
 	glGenBuffers(1, &vboPositionsAndScaling);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-	glBufferData(GL_ARRAY_BUFFER, 4 * maxParticles * sizeof(float), nullptr, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, MAX_AMOUNT_OF_PARTICLES, nullptr, GL_STREAM_DRAW);
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
 	glVertexAttribDivisor(1, 1);
@@ -53,102 +50,136 @@ Particles::~Particles() {
 
 }
 
+void Particles::initTexture(std::string texturePath) {
+	glGenTextures(1, &textureHandle);
+	glBindTexture(GL_TEXTURE_2D, textureHandle);
+
+	// load texture
+	int width, height, nrChannels;
+	unsigned char *data = stbi_load(texturePath.c_str(), &width, &height, &nrChannels, 0);
+	if (data) {
+		switch (nrChannels) {
+		case 1:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+			break;
+		case 3:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+			break;
+		case 4:
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+			break;
+		}
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	else {
+		std::cout << "Failed to load texture from: " + texturePath << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+
+	stbi_image_free(data);
+}
+
 void Particles::createNewParticles(int amount) {
 	std::random_device rd;
 	std::mt19937 eng(rd());
-	std::uniform_int_distribution<> distr(51, 150);
+	std::uniform_int_distribution<> distr(0, 1000);
 
-	for (int i = 0; i < amount; i++) {
-		int index = getUnusedParticle();
-		ParticleObject &particle = particles[index];
-
+	for (int i = 0; i < amount && particles.size() < MAX_AMOUNT_OF_PARTICLES; i++) {
+		ParticleObject particle;
 		particle.position = origin;
 		particle.speed = speed * glm::vec3(distr(eng) / 100.0f, distr(eng) / 100.0f, distr(eng) / 100.0f);
-		particle.size = size * distr(eng) / 100.0f;
+		particle.size = size;
 		particle.remainingLifeTime = lifeLength;
+		particles.push_back(particle);
 	}
 }
 
 void Particles::updateParticles(float deltaTime) {
-	extern Camera *camera;
-
-	particleCounter = 0;
-	for (int i = 0; i < maxParticles; i++) {
-		ParticleObject &particle = particles[i];
-		if (particle.remainingLifeTime > 0.0f) {
-			// update remaining life time of the particle
-			particle.remainingLifeTime -= deltaTime;
-			if (particle.remainingLifeTime > 0.0f) {
-				// particle simulation
-				particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.5f;
-				particle.position += particle.speed * deltaTime;
-				particle.cameraDistance = glm::length(particle.position - camera->getPosition());
-				
-				positions[4 * particleCounter + 0] = particle.position.x;
-				positions[4 * particleCounter + 1] = particle.position.y;
-				positions[4 * particleCounter + 2] = particle.position.z;
-				positions[4 * particleCounter + 3] = particle.size;
-			}
-		} else {
-			particle.cameraDistance = 0.0f;
+	// clear positions vector
+	positions.clear();
+	for (int i = 0; i < particles.size(); i++) {
+		ParticleObject &particle = particles.at(i);
+		// update remaining life time of the particle
+		particle.remainingLifeTime -= deltaTime;
+		// delete dead particle from particles vector
+		if (particle.remainingLifeTime <= 0.0f) {
+			particles.erase(particles.begin() + i);
 		}
-		particleCounter++;
-	}
-
-	// generate 1 new particle each millisecond
-	int amountOfNewParticles = (int)(deltaTime * 100.0f);
-	// limiter to 16 ms (60 FPS)
-	if (amountOfNewParticles > (int)(0.016f * 100.0f)) {
-		amountOfNewParticles = (int)(0.016f * 100.0f);
-	}
-	createNewParticles(amountOfNewParticles);
-}
-
-int Particles::getUnusedParticle() {
-	for (int i = lastUsedParticle; i < maxParticles; i++) {
-		if (particles[i].remainingLifeTime <= 0.0f) {
-			lastUsedParticle = i;
-			return i;
+		// alive particle
+		else {
+			// update particle's speed & position
+			particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.5f;
+			particle.position += particle.speed * deltaTime;
+			// inster particle into positions vector
+			positions.push_back(particle.position.x);
+			positions.push_back(particle.position.y);
+			positions.push_back(particle.position.z);
+			positions.push_back(particle.size);
 		}
 	}
 
-	for (int i = 0; i < lastUsedParticle; i++) {
-		if (particles[i].remainingLifeTime <= 0.0f) {
-			lastUsedParticle = i;
-			return i;
-		}
+	secondCounter += deltaTime;
+	if (secondCounter >= particleSpawningRate) {
+		secondCounter = 0.0f;
+		createNewParticles(1);
 	}
-
-	return 0; // all particles are taken, override the first one
-}
-
-void Particles::sortParticles() {
-	std::sort(&particles[0], &particles[maxParticles]);
 }
 
 void Particles::draw(float deltaTime) {
-	updateParticles(deltaTime);
+	// check if particle spawning is enabled
+	if (enabledForSeconds == -1.0f || enabledForSeconds > 0.0f) {
+		if (enabledForSeconds > 0.0f) {
+			enabledForSeconds -= deltaTime;
+		}
 
-	// update buffer
-	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-	glBufferData(GL_ARRAY_BUFFER, 4 * maxParticles * sizeof(float), nullptr, GL_STREAM_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, particleCounter * sizeof(GLfloat) * 4, positions);
+		updateParticles(deltaTime);
 
-	// render
-	shader->use();
-	
-	extern Camera *camera;
-	glm::mat4 viewMatrix = camera->getViewMatrix();
+		// update buffer
+		glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(float), positions.data());
 
-	shader->setUniform("cameraRightWorldspace", glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
-	shader->setUniform("cameraUpWorldspace", glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]));
-	shader->setUniform("viewProjectionMatrix", camera->getProjectionMatrix() * camera->getViewMatrix());
+		// render
+		shader->use();
 
-	glBindVertexArray(vao);
+		extern Camera *camera;
+		glm::mat4 viewMatrix = camera->getViewMatrix();
+		shader->setUniform("cameraRightWorldspace", glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
+		shader->setUniform("cameraUpWorldspace", glm::vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]));
+		shader->setUniform("viewProjectionMatrix", camera->getProjectionMatrix() * camera->getViewMatrix());
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleCounter);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureHandle);
+		shader->setUniform("textureUnit", 0);
 
-	glBindVertexArray(0);
+		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_BLEND); // enable rendering semi-transparent materials
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
 
-	shader->unuse();
+		glBindVertexArray(vao);
+		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, positions.size() / 4);
+		glBindVertexArray(0);
+
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_BLEND);
+
+		shader->unuse();
+	}
+}
+
+void Particles::enable() {
+	enabledForSeconds = -1.0f;
+}
+
+void Particles::disable() {
+	enabledForSeconds = 0.0f;
+}
+
+void Particles::enableFor(float seconds) {
+	enabledForSeconds = seconds;
 }

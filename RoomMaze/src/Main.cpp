@@ -333,7 +333,7 @@ void initContent() {
 	/* ------------- */
 	// LOAD PARTICLES
 	/* ------------- */
-	Particles *testParticles = new Particles(glm::vec3(0.0f), glm::vec3(0.5f, 2.0f, 0.5f), 0.025f, 0.001f, 4.0f);
+	Particles *testParticles = new Particles(0.1f, glm::vec3(-4.1f, 1.415f, -1.687f), glm::vec3(1.0f, 0.4f, 0.1f), 0.025f, 0.1f, 0.5f, "assets/particles/spark.png", true);
 	renderParticles.push_back(testParticles);
 }
 
