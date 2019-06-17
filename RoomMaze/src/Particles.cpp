@@ -86,7 +86,7 @@ void Particles::updateParticles(float deltaTime) {
 				particle.cameraDistance = glm::length(particle.position - camera->getPosition());
 			}
 		} else {
-
+			particle.cameraDistance = 0.0f;
 		}
 	}
 

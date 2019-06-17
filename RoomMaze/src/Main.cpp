@@ -296,8 +296,8 @@ void initContent() {
 	/* ------------- */
 	// LOAD PARTICLES
 	/* ------------- */
-	Particles *testParticles = new Particles(glm::vec3(0.0f), glm::vec3(0.0f, 2.0f, 0.0f), 0.0f, 2.0f, 0.05f);
-	renderParticles.push_back(testParticles);
+	//Particles *testParticles = new Particles(glm::vec3(1.0f), glm::vec3(0.0f), 0.0f, 0.0f, 0.05f);
+	//renderParticles.push_back(testParticles);
 }
 
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader) {
