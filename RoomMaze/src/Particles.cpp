@@ -157,9 +157,9 @@ void Particles::draw(float deltaTime) {
 		glBindTexture(GL_TEXTURE_2D, textureHandle);
 		shader->setUniform("textureUnit", 0);
 
-		glDisable(GL_DEPTH_TEST);
+		//glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND); // enable rendering semi-transparent materials
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // set how blendig is accomplished
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // set how blendig is accomplished
 
 		glBindVertexArray(vao);
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, positions.size() / 4);

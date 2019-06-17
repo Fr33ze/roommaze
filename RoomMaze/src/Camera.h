@@ -107,11 +107,11 @@ public:
 	 */
 	void setUniforms(std::shared_ptr<Shader> shader);
 
+	void setLights(std::shared_ptr<Shader> shader);
+
 	glm::mat4 getViewMatrix();
 
 	glm::mat4 getProjectionMatrix();
-
-	glm::vec3 getPosition();
 
 	/**
 	 * Updates the camera concerning the pressed key.

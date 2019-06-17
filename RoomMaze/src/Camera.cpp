@@ -40,6 +40,8 @@ void Camera::setSpotLightParameters(float brightness, glm::vec3 intensity, float
 }
 
 void Camera::setUniforms(std::shared_ptr<Shader> shader) {
+	setLights(shader);
+
 	shader->setUniform("viewMatrix", getViewMatrix());
 	shader->setUniform("projectionMatrix", projectionMatrix);
 	
@@ -53,6 +55,20 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	shader->setUniform("camera.innerCutOff", glm::cos(glm::radians(cameraLight.innerAngle))); // cos()-calculation outside shader (saves valuable time)
 	shader->setUniform("camera.outerCutOff", glm::cos(glm::radians(cameraLight.outerAngle)));
 	shader->setUniform("camera.attenuation", cameraLight.attenuation);
+}
+
+void Camera::setLights(std::shared_ptr<Shader> shader) {
+	// electric box light
+	shader->setUniform("pointLights[0].color", glm::vec3(0.5f, 0.125f, 0.0f));
+	shader->setUniform("pointLights[0].position", glm::vec3(-3.95f, 1.2f, -1.75f));
+	shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.8f, 1.0f));
+
+	// elevator light
+	shader->setUniform("pointLights[1].color", glm::vec3(1.0f));
+	shader->setUniform("pointLights[1].position", glm::vec3(-6.0f, 2.0f, 0.0f));
+	shader->setUniform("pointLights[1].attenuation", glm::vec3(1.0f, 0.8f, 2.0f));
+
+	shader->setUniform("amountOfPointLights", 2);
 }
 
 Camera::Camera() {
@@ -83,12 +99,6 @@ glm::mat4 Camera::getViewMatrix() {
 
 glm::mat4 Camera::getProjectionMatrix() {
 	return projectionMatrix;
-}
-
-glm::vec3 Camera::getPosition() {
-	physx::PxExtendedVec3 pos = controller->getFootPosition();
-	glm::vec3 position = glm::vec3(pos.x, pos.y + CHARACTER_EYE_HEIGHT, pos.z);
-	return position;
 }
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
