@@ -1,7 +1,7 @@
 #include "Particles.h"
 
-Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, std::string texturePath, bool isEnabled)
-	: particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
+Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float lifeLength, std::string texturePath, bool isEnabled)
+	: particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), lifeLength(lifeLength), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
@@ -88,14 +88,14 @@ void Particles::initTexture(std::string texturePath) {
 void Particles::createNewParticles(int amount) {
 	std::random_device rd;
 	std::mt19937 eng(rd());
-	std::uniform_int_distribution<> distr(0, 1000);
+	std::uniform_real_distribution<> distr(0.5, 2.0);
 
 	for (int i = 0; i < amount && particles.size() < MAX_AMOUNT_OF_PARTICLES; i++) {
 		ParticleObject particle;
 		particle.position = origin;
-		particle.speed = speed * glm::vec3(distr(eng) / 100.0f, distr(eng) / 100.0f, distr(eng) / 100.0f);
-		particle.size = size;
-		particle.remainingLifeTime = lifeLength;
+		particle.speed = speed * glm::vec3(distr(eng), distr(eng), distr(eng));
+		particle.size = size * distr(eng);
+		particle.remainingLifeTime = lifeLength * distr(eng);
 		particles.push_back(particle);
 	}
 }
@@ -113,8 +113,8 @@ void Particles::updateParticles(float deltaTime) {
 		}
 		// alive particle
 		else {
-			// update particle's speed & position
-			particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * 0.5f;
+			// simulate particle
+			particle.speed += glm::vec3(0.0f, -9.81f, 0.0f) * deltaTime * particle.size * 1.5f;
 			particle.position += particle.speed * deltaTime;
 			// inster particle into positions vector
 			positions.push_back(particle.position.x);
@@ -129,6 +129,10 @@ void Particles::updateParticles(float deltaTime) {
 		secondCounter = 0.0f;
 		createNewParticles(1);
 	}
+}
+
+void Particles::setOrigin(glm::vec3 position) {
+	origin = position;
 }
 
 void Particles::draw(float deltaTime) {

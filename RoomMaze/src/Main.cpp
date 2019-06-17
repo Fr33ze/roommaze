@@ -234,6 +234,12 @@ void initContent() {
 	gui = new GUI(settings.width, settings.height);
 
 	/* ------------- */
+	// LOAD PARTICLES
+	/* ------------- */
+	Particles *electroBoxParticles = new Particles(0.15f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.2f, 0.1f, 0.002f), 0.025f, 2.0f, "assets/particles/spark.png", true);
+	renderParticles.push_back(electroBoxParticles);
+
+	/* ------------- */
 	// LOAD OBJECTS (type==-1)
 	/* ------------- */
 	INIReader positions("assets/positions.ini");
@@ -330,11 +336,6 @@ void initContent() {
 	for (std::string section : sections) {
 		readObjectsFromINI(positions, animations, section, shader);
 	}
-	/* ------------- */
-	// LOAD PARTICLES
-	/* ------------- */
-	Particles *testParticles = new Particles(0.25f, glm::vec3(-4.1f, 1.415f, -1.687f), glm::vec3(0.2f, 0.1f, 0.002f), 0.05f, 0.1f, 0.5f, "assets/particles/spark.png", true);
-	renderParticles.push_back(testParticles);
 }
 
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader) {

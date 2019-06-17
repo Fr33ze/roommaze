@@ -30,11 +30,11 @@ protected:
 	float secondCounter = 0.0f;
 
 	glm::vec3 origin, speed;
-	float size, weight, lifeLength;
+	float size, lifeLength;
 
 	struct ParticleObject {
 		glm::vec3 position, speed;
-		float size, weight, remainingLifeTime;
+		float size, remainingLifeTime;
 	};
 	std::vector<ParticleObject> particles;
 	std::vector<float> positions;
@@ -59,16 +59,17 @@ public:
 	 * @param origin: position where all particles spawn
 	 * @param speed: defines the particle's direction (length of the vector is the speed)
 	 * @param size: defines the size in meters of a single particle
-	 * @param weight: defines the particle's weight
 	 * @param lifeLength: defines after how many seconds a particle disappears
 	 * @param texturePath: path to the texture for the particles
 	 * @param isEnabled: defines whether particle spawning is enabled or not
 	 */
-	Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, std::string texturePath, bool isEnabled);
+	Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float lifeLength, std::string texturePath, bool isEnabled);
 	
 	Particles();
 
 	~Particles();
+
+	void setOrigin(glm::vec3 position);
 
 	void draw(float deltaTime);
 
