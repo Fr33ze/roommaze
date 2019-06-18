@@ -64,4 +64,6 @@ public:
 	// returns the actor of this Object3D
 	physx::PxRigidActor* getActor();
 	void enable(bool b);
+
+	physx::PxShape* getShape();
 };

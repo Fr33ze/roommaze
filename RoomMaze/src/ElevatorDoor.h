@@ -34,5 +34,9 @@ protected:
 	bool playclose = false;
 	// current state of doors (true = open, false = closed)
 	bool open = false;
+
+	ALuint audioSource;
+	ALuint openBuffer;
+	ALuint closeBuffer;
 };
 

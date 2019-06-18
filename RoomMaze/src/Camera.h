@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <math.h>
 #include <AL\alut.h>
+#include <random>
 
 #include "Shader.h"
 #include "CharacterCallback.h"
@@ -22,7 +23,8 @@ enum Key {
 enum ActiveGroup
 {
 	COLLISION = (1 << 0),
-	INTERACTABLE = (1 << 1)
+	INTERACTABLE = (1 << 1),
+	WATER = (1 << 2)
 };
 
 // default camera values
@@ -34,17 +36,29 @@ static const float CHARACTER_HEIGHT = 1.7f;
 static const float CHARACTER_RADIUS = 0.2f;
 static const float CHARACTER_EYE_HEIGHT = 1.6f;
 
-class Camera {
-
+class Camera : public physx::PxUserControllerHitReport {
+	// Implements PxUserControllerHitReport
+	virtual void onShapeHit(const physx::PxControllerShapeHit& hit);
+	virtual void onControllerHit(const physx::PxControllersHit& hit) {}
+	virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) {}
 protected:
 	// audio source for concrete and water footsteps
 	ALuint audioSource;
 
 	// audio buffers for concrete and water footsteps
-	ALuint concreteBuffer;
-	ALuint waterBuffer;
+	ALuint concreteBuffers[5];
+	ALuint waterBuffers[5];
 
+	// step is played when this is true
 	bool playstepsound = false;
+
+	// step sound (true for concrete, false for water)
+	bool stepsound = true;
+
+	// random device for steps
+	std::random_device rd;
+	std::default_random_engine generator;
+	std::uniform_int_distribution<> distr;
 
 	// displacement (movement) vector
 	physx::PxVec3 displacement;

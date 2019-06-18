@@ -168,6 +168,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Static3D.cpp" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="src\Water3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Button3D.h" />
@@ -196,6 +197,7 @@
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Static3D.h" />
     <ClInclude Include="src\stb_image.h" />
+    <ClInclude Include="src\Water3D.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\redist\PhysXCommon_32.dll" />

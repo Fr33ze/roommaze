@@ -10,10 +10,10 @@ ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::sha
 	pxActorRight = mPhysics->createRigidStatic(modelMatrix);
 
 	std::vector<Animation::KeyFrame> keyframesLeft = {
-		Animation::KeyFrame(1, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f))
+		Animation::KeyFrame(2.2, physx::PxVec3(0.f, 0.f, .95f), physx::PxVec3(0.f))
 	};
 	std::vector<Animation::KeyFrame> keyframesRight = {
-		Animation::KeyFrame(1, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f))
+		Animation::KeyFrame(2.2, physx::PxVec3(0.f, 0.f, -.95f), physx::PxVec3(0.f))
 	};
 	animLeft = new Animation(pxActor, keyframesLeft);
 	animRight = new Animation(pxActorRight, keyframesRight);
@@ -30,6 +30,14 @@ ElevatorDoor::ElevatorDoor(const char *pathLeft, const char *pathRight, std::sha
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
 	pxScene->addActor(*pxActorRight);
+
+	openBuffer = alutCreateBufferFromFile("assets/audio/elevator_open.wav");
+	closeBuffer = alutCreateBufferFromFile("assets/audio/elevator_close.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
 }
 
 ElevatorDoor::ElevatorDoor(const ElevatorDoor &o, physx::PxTransform modelMatrix)
@@ -79,7 +87,6 @@ bool ElevatorDoor::isOpen()
 
 void ElevatorDoor::use(GUI *gui)
 {
-	//TODO play sound
 }
 
 void ElevatorDoor::openDoor() {
@@ -89,6 +96,8 @@ void ElevatorDoor::openDoor() {
 		if (!open) {
 			playopen = true;
 			open = true;
+			alSourcei(audioSource, AL_BUFFER, openBuffer);
+			alSourcePlay(audioSource);
 		}
 	}
 }
@@ -100,6 +109,8 @@ void ElevatorDoor::closeDoor() {
 		if (open) {
 			playclose = true;
 			open = false;
+			alSourcei(audioSource, AL_BUFFER, closeBuffer);
+			alSourcePlay(audioSource);
 		}
 	}
 }

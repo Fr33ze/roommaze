@@ -36,6 +36,15 @@ Door3D::Door3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransf
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	lockedBuffer = alutCreateBufferFromFile("assets/audio/door_locked.wav");
+	openBuffer = alutCreateBufferFromFile("assets/audio/door_open.wav");
+	keyBuffer = alutCreateBufferFromFile("assets/audio/door_unlock.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, keytrans.p.x, keytrans.p.y, keytrans.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
 }
 
 Door3D::Door3D(const Door3D &o, physx::PxTransform modelMatrix)
@@ -67,6 +76,15 @@ Door3D::Door3D(const Door3D &o, physx::PxTransform modelMatrix)
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	lockedBuffer = alutCreateBufferFromFile("assets/audio/door_locked.wav");
+	openBuffer = alutCreateBufferFromFile("assets/audio/door_open.wav");
+	keyBuffer = alutCreateBufferFromFile("assets/audio/door_unlock.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, keytrans.p.x, keytrans.p.y, keytrans.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
 }
 
 
@@ -79,6 +97,10 @@ void Door3D::use(GUI *gui)
 	if (gui->hasKey()) {
 		openDoor();
 	}
+	else {
+		alSourcei(audioSource, AL_BUFFER, lockedBuffer);
+		alSourcePlay(audioSource);
+	}
 }
 
 std::string Door3D::guitext(GUI *gui)
@@ -89,6 +111,8 @@ std::string Door3D::guitext(GUI *gui)
 void Door3D::openDoor()
 {
 	if (!open) {
+		alSourcei(audioSource, AL_BUFFER, keyBuffer);
+		alSourcePlay(audioSource);
 		animatedKey->enable(true);
 		playkey = true;
 		open = true;
@@ -106,6 +130,8 @@ void Door3D::draw(float dt)
 	if (playkey) {
 		playkey = animKey->animate(dt);
 		if (!playkey) {
+			alSourcei(audioSource, AL_BUFFER, openBuffer);
+			alSourcePlay(audioSource);
 			playopen = true;
 			animatedKey->enable(false);
 		}

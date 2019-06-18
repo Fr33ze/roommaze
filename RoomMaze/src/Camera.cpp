@@ -8,12 +8,12 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	alListener3f(AL_POSITION, position.x, position.y, position.z);
 	alListener3f(AL_VELOCITY, position.x + front.x, position.y + front.y, position.z + front.z);
 
-	//TODO: reference real audio files
-	concreteBuffer = alutCreateBufferFromFile("assets/audio/test.wav");
-	waterBuffer = alutCreateBufferFromFile("assets/audio/test.wav");
+	for (int i = 0; i < 5; i++) {
+		concreteBuffers[i] = alutCreateBufferFromFile(("assets/audio/concrete_steps/" + std::to_string(i) + ".wav").c_str());
+		waterBuffers[i] = alutCreateBufferFromFile(("assets/audio/water_steps/" + std::to_string(i) + ".wav").c_str());
+	}
 
 	alGenSources(1, &audioSource);
-	alSourcei(audioSource, AL_BUFFER, concreteBuffer);
 	alSourcef(audioSource, AL_PITCH, 1);
 	alSourcef(audioSource, AL_GAIN, 1);
 
@@ -30,7 +30,7 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	desc.position = physx::PxExtendedVec3(position.x, position.y, position.z);
 	desc.upDirection = physx::PxVec3(0.0f, 1.0f, 0.0f);
 	cctCallbacks = new CharacterCallback();
-	desc.reportCallback = cctCallbacks;
+	desc.reportCallback = this;
 	desc.behaviorCallback = cctCallbacks;
 	desc.material = mPhysics->createMaterial(physx::PxReal(1.0f), physx::PxReal(1.0f), physx::PxReal(0.05));
 	controller = cManager->createController(desc);
@@ -41,6 +41,8 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	updateCameraVectors();
 
 	cameraLight.isTurnedOn = true;
+
+	distr = std::uniform_int_distribution<>(0, 4);
 }
 
 void Camera::setSpotLightParameters(float brightness, glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation) {
@@ -174,6 +176,10 @@ void Camera::move(float deltaTime)
 	alListener3f(AL_VELOCITY, position.x + front.x, position.y + front.y, position.z + front.z);
 
 	if (playstepsound) {
+		if (stepsound)
+			alSourcei(audioSource, AL_BUFFER, concreteBuffers[distr(generator)]);
+		else
+			alSourcei(audioSource, AL_BUFFER, waterBuffers[distr(generator)]);
 		alSourcePlay(audioSource);
 		playstepsound = false;
 	}
@@ -207,4 +213,9 @@ void Camera::turnSpotlightOn() {
 
 void Camera::turnSpotlightOff() {
 	cameraLight.isTurnedOn = false;
+}
+
+void Camera::onShapeHit(const physx::PxControllerShapeHit& hit)
+{
+	stepsound = hit.shape->getSimulationFilterData().word3 != WATER;
 }

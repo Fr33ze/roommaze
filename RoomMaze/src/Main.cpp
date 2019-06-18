@@ -29,21 +29,14 @@
 #include "Door3D.h"
 #include "Button3D.h"
 #include "ButtonPanel.h"
+#include "Water3D.h"
 #include "Particles.h"
 
 /* TODO
-Code:
-
 -> Bloom-Johnnyboy
 -> GUI (Startscreen / Endscreen)
--> Sound:
-	- Ambient
-	- Gehen auf Stein
-	- Gehen auf Wasser
-	- Aufzugtüren bewegen sich
-	- Schlüssel sperrt auf (die zwei Türe in Raum 2)
-	- Türen in Raum 2 öffnen sich
-	- Knopf wird gedrückt (im Aufzug)
+-> Sound gleichmäßiger machen
+-> Mehr sounds?
 */
 
 /* ----------- */
@@ -150,6 +143,17 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
+	ALuint ambientBuffer = alutCreateBufferFromFile("assets/audio/ambient.wav");
+	ALuint ambientSource;
+	alGenSources(1, &ambientSource);
+	alSource3f(ambientSource, AL_POSITION, 0, 0, 0);
+	alSourcef(ambientSource, AL_PITCH, 1);
+	alSourcef(ambientSource, AL_GAIN, 0.15);
+	alSourcei(ambientSource, AL_LOOPING, AL_TRUE);
+	alSourcei(ambientSource, AL_BUFFER, ambientBuffer);
+	alSourcePlay(ambientSource);
+
+
 	/* ----------- */
 	// PHYSX INIT
 	/* ----------- */
@@ -172,7 +176,7 @@ int main(int argc, char **argv) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// compute the frame time delta
-		timeCurrentFrame = (float) glfwGetTime();
+		timeCurrentFrame = (float)glfwGetTime();
 		deltaTime = timeCurrentFrame - timeLastFrame;
 		timeLastFrame = timeCurrentFrame;
 
@@ -212,7 +216,7 @@ void readSettings() {
 	settings.height = reader.GetInteger("window", "height", 720);
 	settings.refresh_rate = reader.GetInteger("window", "refresh_rate", 60);
 	settings.fullscreen = reader.GetBoolean("window", "fullscreen", false);
-	
+
 	settings.field_of_view = reader.GetReal("camera", "fov", 50.0f);
 	settings.brightness = reader.GetReal("camera", "brightness", 1.f);
 }
@@ -380,6 +384,7 @@ void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string
 			createObject(path.c_str(), type, transformation, shader);
 		}
 	}
+
 	lastGenerated = nullptr;
 }
 
@@ -443,6 +448,20 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 		else
 			lastGenerated = new Door3D(
 				*((Door3D*)lastGenerated),
+				trans
+			);
+		renderObjects.push_back(lastGenerated);
+		break;
+	case 6: //Water3D
+		if (!lastGenerated)
+			lastGenerated = new Water3D(
+				path,
+				shader,
+				trans
+			);
+		else
+			lastGenerated = new Water3D(
+				*((Water3D*)lastGenerated),
 				trans
 			);
 		renderObjects.push_back(lastGenerated);
@@ -736,16 +755,16 @@ void focusInteractable() {
 
 void mouseMovementCallback(GLFWwindow *window, double xPos, double yPos) {
 	if (firstMouse) {
-		lastXPosition = (float) xPos;
-		lastYPosition = (float) yPos;
+		lastXPosition = (float)xPos;
+		lastYPosition = (float)yPos;
 		firstMouse = false;
 	}
 
-	float xOffset = (float) xPos - lastXPosition;
-	float yOffset = lastYPosition - (float) yPos; // reversed since y-coordinates go from bottom to top
-	
-	lastXPosition = (float) xPos;
-	lastYPosition = (float) yPos;
+	float xOffset = (float)xPos - lastXPosition;
+	float yOffset = lastYPosition - (float)yPos; // reversed since y-coordinates go from bottom to top
+
+	lastXPosition = (float)xPos;
+	lastYPosition = (float)yPos;
 
 	camera->processMouseMovement(xOffset, yOffset);
 

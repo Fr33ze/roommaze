@@ -22,5 +22,7 @@ protected:
 	// resistance without collision that is shown from the beginning
 	NoCollision3D *shownRes;
 	ElevatorDoor *elevatorDoor;
+	ALuint audioSource;
+	ALuint lightningBuffer;
 };
 

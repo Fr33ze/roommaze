@@ -2,12 +2,7 @@
 
 #include <physx\PxPhysicsAPI.h>
 
-class CharacterCallback : public physx::PxUserControllerHitReport, public physx::PxControllerBehaviorCallback, public physx::PxQueryFilterCallback {
-	// Implements PxUserControllerHitReport
-	virtual void onShapeHit(const physx::PxControllerShapeHit& hit);
-	virtual void onControllerHit(const physx::PxControllersHit& hit) {}
-	virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) {}
-
+class CharacterCallback : public physx::PxControllerBehaviorCallback, public physx::PxQueryFilterCallback {
 	// Implements PxControllerBehaviorCallback
 	virtual physx::PxControllerBehaviorFlags getBehaviorFlags(const physx::PxShape& shape, const physx::PxActor& actor);
 	virtual physx::PxControllerBehaviorFlags getBehaviorFlags(const physx::PxController& controller);

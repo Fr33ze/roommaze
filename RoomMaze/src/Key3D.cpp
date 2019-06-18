@@ -12,6 +12,14 @@ Key3D::Key3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransfor
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/key_take.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Key3D::Key3D(const Key3D &o, physx::PxTransform modelMatrix)
@@ -27,6 +35,14 @@ Key3D::Key3D(const Key3D &o, physx::PxTransform modelMatrix)
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/key_take.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Key3D::~Key3D()
@@ -54,6 +70,7 @@ void Key3D::use(GUI *gui) {
 		particles->enableFor(0.5f);
 	}
 
+	alSourcePlay(audioSource);
 	gui->addKey();
 	pxActor->detachShape(*pxShape);
 	enabled = false;

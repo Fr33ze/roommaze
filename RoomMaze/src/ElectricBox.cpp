@@ -14,6 +14,16 @@ ElectricBox::ElectricBox(const char *path, std::shared_ptr<Shader> shader, physx
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	lightningBuffer = alutCreateBufferFromFile("assets/audio/electric_box_lightning.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 0.5);
+	alSourcei(audioSource, AL_LOOPING, AL_TRUE);
+	alSourcei(audioSource, AL_BUFFER, lightningBuffer);
+	alSourcePlay(audioSource);
 }
 
 ElectricBox::ElectricBox(const ElectricBox &o, physx::PxTransform modelMatrix)
@@ -29,6 +39,16 @@ ElectricBox::ElectricBox(const ElectricBox &o, physx::PxTransform modelMatrix)
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	lightningBuffer = alutCreateBufferFromFile("assets/audio/electric_box_lightning.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 0.5);
+	alSourcei(audioSource, AL_LOOPING, AL_TRUE);
+	alSourcei(audioSource, AL_BUFFER, lightningBuffer);
+	alSourcePlay(audioSource);
 }
 
 
@@ -42,6 +62,10 @@ void ElectricBox::use(GUI *gui)
 		gui->removeResistance();
 		hiddenRes->enable(true);
 		elevatorDoor->openDoor();
+
+		gui->removeResistance();
+
+		alSourcePause(audioSource);
 
 		extern Camera *camera;
 		camera->turnElectricBoxOff();

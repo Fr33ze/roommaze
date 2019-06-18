@@ -49,3 +49,8 @@ void Object3D::enable(bool b)
 {
 	enabled = b;
 }
+
+physx::PxShape * Object3D::getShape()
+{
+	return pxShape;
+}

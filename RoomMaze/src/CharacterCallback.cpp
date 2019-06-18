@@ -1,10 +1,5 @@
 #include "CharacterCallback.h"
 
-void CharacterCallback::onShapeHit(const physx::PxControllerShapeHit& hit)
-{
-	//TODO action to perform on shape hit
-}
-
 physx::PxControllerBehaviorFlags CharacterCallback::getBehaviorFlags(const physx::PxShape& shape, const physx::PxActor& actor)
 {
 	return physx::PxControllerBehaviorFlag::eCCT_CAN_RIDE_ON_OBJECT;

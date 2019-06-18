@@ -22,5 +22,9 @@ protected:
 	bool playkey = false;
 	Animation *animOpen;
 	Animation *animKey;
+	ALuint audioSource;
+	ALuint lockedBuffer;
+	ALuint openBuffer;
+	ALuint keyBuffer;
 };
 
