@@ -122,7 +122,7 @@ glm::mat4 Camera::getProjectionMatrix() {
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
 	bool before = sin(bobbingTime) < 0;
-	bobbingTime = fmod((bobbingTime + deltaTime * 7 /*change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
+	bobbingTime = fmod((bobbingTime + deltaTime * 5 /*change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
 	playstepsound = sin(bobbingTime) < 0 != before;
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 	switch (key) {
