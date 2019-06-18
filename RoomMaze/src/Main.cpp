@@ -46,11 +46,12 @@
 void readSettings();
 GLFWwindow* initOpenGL();
 void initPhysX();
+void initFramebuffers();
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader);
 void createObject(const char *path, int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
 void initContent();
 void update(float deltaT);
-void draw(float deltaT);
+void draw(float deltaT, bool bloom);
 void cleanup();
 
 void processInput(GLFWwindow *window);
@@ -65,6 +66,13 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 /* ----------------- */
 // GLOBAL VARIABLES
 /* ----------------- */
+
+// framebuffer stuff for bloom effect
+GLuint fboHDR, colorBuffers[2], depthBuffer, attachments[2], fboPingPong[2], colorBuffersPingPong[2];
+Shader blurShader, bloomShader;
+bool bloom = true;
+bool bloomKeyPressed = false;
+float exposure = 1.0f;
 
 //settings
 struct Settings {
@@ -188,7 +196,7 @@ int main(int argc, char **argv) {
 		update(deltaTime);
 
 		// draw all game components
-		draw(deltaTime);
+		draw(deltaTime, false);
 		glfwSwapBuffers(window);
 
 		// physx make simulation step
@@ -648,21 +656,132 @@ void initPhysX() {
 	pxScene = mPhysics->createScene(sceneDesc);
 }
 
+void initFramebuffers() {
+	glGenFramebuffers(1, &fboHDR);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
+
+	// create color buffers (one for normal rendering, other for brightness treshold values)
+	glGenTextures(2, colorBuffers);
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, settings.width, settings.height, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// clamp to the edge otherwise the blur filter will sample repeated texture values
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// attach texture to framebuffer
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+	}
+
+	// create and attach depth buffer (renderbuffer)
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, settings.width, settings.height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+	attachments[0] = GL_COLOR_ATTACHMENT0;
+	attachments[1] = GL_COLOR_ATTACHMENT1;
+	glDrawBuffers(2, attachments);
+
+	// finally check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		glfwTerminate();
+		std::cout << "Framebuffer not complete." << std::endl;
+		std::cout << "Press ENTER to close this window." << std::endl;
+		getchar();
+		exit(-1);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	// ping-pong-framebuffer for blurring
+	glGenFramebuffers(2, fboPingPong);
+	glGenTextures(2, colorBuffersPingPong);
+	for (unsigned int i = 0; i < 2; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[i]);
+		glBindTexture(GL_TEXTURE_2D, colorBuffersPingPong[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, settings.width, settings.height, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		// clamp to the edge otherwise the blur filter will sample repeated texture values
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffersPingPong[i], 0);
+		// also check if framebuffers are complete (no need for depth buffer)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+			glfwTerminate();
+			std::cout << "Framebuffer not complete." << std::endl;
+			std::cout << "Press ENTER to close this window." << std::endl;
+			getchar();
+			exit(-1);
+		}
+	}
+}
+
 void update(float deltaT) {
 	camera->move(deltaT);
 	gui->updateTime(deltaT);
 }
 
-void draw(float deltaT) {
-	for (unsigned int i = 0; i < renderObjects.size(); i++) {
-		renderObjects.at(i)->draw(deltaT);
-	}
+void draw(float deltaT, bool bloom) {
+	if (bloom) {
+		/* ---------------------------------------------- */
+		//  RENDER SCENE INTO FLOATING POINT FRAMEBUFFER
+		/* ---------------------------------------------- */
+		glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		// draw all game components
+		for (unsigned int i = 0; i < renderObjects.size(); i++) {
+			renderObjects.at(i)->draw(deltaT);
+		}
+		for (unsigned int i = 0; i < renderParticles.size(); i++) {
+			renderParticles.at(i)->draw(deltaT);
+		}
+		gui->draw();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	for (unsigned int i = 0; i < renderParticles.size(); i++) {
-		renderParticles.at(i)->draw(deltaT);
-	}
+		/* --------------------------------------------------- */
+		//  BLUR BRIGHT FRAGMENTS WITH TWO-PASS GAUSSIAN BLUR
+		/* --------------------------------------------------- */
+		bool horizontal = true, firstIteration = true;
+		unsigned int amount = 10;
+		blurShader.use();
+		for (unsigned int i = 0; i < amount; i++) {
+			glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[horizontal]);
+			blurShader.setUniform("horizontal", horizontal);
+			glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : colorBuffersPingPong[!horizontal]); // bind texture of other framebuffer (or scene if first iteration)
+			//renderQuad();
+			horizontal = !horizontal;
+			if (firstIteration)
+				firstIteration = false;
+		}
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	gui->draw();
+		/* --------------------------------------------------------------------------------------------------------------------- */
+		//  RENDER FLOATING POINT COLOR BUFFER TO 2D QUAD AND TONEMAP HDR COLORS TO DEFAULT FRAMEBUFFER'S (CLAMPED) COLOR RANGE
+		/* --------------------------------------------------------------------------------------------------------------------- */
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		bloomShader.use();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, colorBuffersPingPong[!horizontal]);
+		bloomShader.setUniform("bloom", bloom);
+		bloomShader.setUniform("exposure", exposure);
+		//renderQuad();
+
+		std::cout << "bloom: " << (bloom ? "on" : "off") << "| exposure: " << exposure << std::endl;
+	}
+	else {
+		for (unsigned int i = 0; i < renderObjects.size(); i++) {
+			renderObjects.at(i)->draw(deltaT);
+		}
+		for (unsigned int i = 0; i < renderParticles.size(); i++) {
+			renderParticles.at(i)->draw(deltaT);
+		}
+		gui->draw();
+	}
 }
 
 void cleanup() {
@@ -680,7 +799,6 @@ void cleanup() {
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	// ESC = exit
-	// F = toggle nightvision on / off
 	// SPACE = insert new battery into the camera
 
 	if (action != GLFW_RELEASE)
@@ -689,9 +807,6 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	switch (key) {
 	case GLFW_KEY_ESCAPE:
 		glfwSetWindowShouldClose(window, true);
-		break;
-	case GLFW_KEY_F:
-		std::cout << "TOGGLE NIGHTVISION" << std::endl;
 		break;
 	case GLFW_KEY_SPACE:
 		gui->removeBattery();
@@ -732,6 +847,25 @@ void processInput(GLFWwindow *window) {
 		gui->addButton();
 		gui->addKey();
 		gui->addResistance();
+	}
+
+	// bloom stuff
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !bloomKeyPressed) {
+		bloom = !bloom;
+		bloomKeyPressed = true;
+	}
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE) {
+		bloomKeyPressed = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
+		if (exposure > 0.0f)
+			exposure -= 0.001f;
+		else
+			exposure = 0.0f;
+	}
+	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
+		exposure += 0.001f;
 	}
 }
 

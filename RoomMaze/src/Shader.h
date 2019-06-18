@@ -54,6 +54,8 @@ public:
 	 */
 	Shader(std::string filePathVertexShader, std::string filePathFragmentShader);
 
+	Shader();
+
 	~Shader();
 
 	// Uses the shader with glUseProgram(program).

@@ -4,6 +4,10 @@ Shader::Shader(std::string pathVertexShader, std::string pathFragmentShader) {
 	loadShader(pathVertexShader, pathFragmentShader);
 }
 
+Shader::Shader() {
+
+}
+
 Shader::~Shader() {
 	glDeleteProgram(program);
 }
