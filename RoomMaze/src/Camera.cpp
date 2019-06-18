@@ -2,7 +2,7 @@
 
 Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	: projectionMatrix(glm::perspective(glm::radians(fieldOfView), aspectRatio, 0.1f, 100.0f)), front(glm::vec3(0.0f, 0.0f, -1.0f)), yaw(-90.0f), pitch(0.0f) {
-	
+
 	displacement = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
 	alListener3f(AL_POSITION, position.x, position.y, position.z);
@@ -13,9 +13,11 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 		waterBuffers[i] = alutCreateBufferFromFile(("assets/audio/water_steps/" + std::to_string(i) + ".wav").c_str());
 	}
 
-	alGenSources(1, &audioSource);
-	alSourcef(audioSource, AL_PITCH, 1);
-	alSourcef(audioSource, AL_GAIN, 1);
+	alGenSources(2, audioSources);
+	alSourcef(audioSources[0], AL_PITCH, 1);
+	alSourcef(audioSources[0], AL_GAIN, 1);
+	alSourcef(audioSources[1], AL_PITCH, 1);
+	alSourcef(audioSources[1], AL_GAIN, 1);
 
 	//create physx controller
 	extern physx::PxScene* pxScene;
@@ -43,6 +45,7 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 	cameraLight.isTurnedOn = true;
 
 	distr = std::uniform_int_distribution<>(0, 4);
+	alSourcei(audioSources[0], AL_BUFFER, concreteBuffers[distr(generator)]);
 }
 
 void Camera::setSpotLightParameters(float brightness, glm::vec3 intensity, float innerAngle, float outerAngle, glm::vec3 attenuation) {
@@ -58,7 +61,7 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 
 	shader->setUniform("viewMatrix", getViewMatrix());
 	shader->setUniform("projectionMatrix", projectionMatrix);
-	
+
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
 	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
 	shader->setUniform("camera.position", position);
@@ -77,7 +80,7 @@ void Camera::setLights(std::shared_ptr<Shader> shader) {
 	shader->setUniform("pointLights[0].position", glm::vec3(-6.0f, 1.8f, 0.0f));
 	shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.8f, 2.0f));
 	pointLightAmount++;
-	
+
 	// electric box light
 	if (electricBoxLight) {
 		shader->setUniform("pointLights[1].color", glm::vec3(0.5f, 0.125f, 0.0f));
@@ -112,7 +115,7 @@ void Camera::updateCameraVectors() {
 glm::mat4 Camera::getViewMatrix() {
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
 	glm::vec3 position = glm::vec3(pos.x, pos.y + CHARACTER_EYE_HEIGHT, pos.z);
-	float cam_offset = sin(bobbingTime) / 15; //change divisor to make the bobbing effect weaker
+	float cam_offset = sin(bobbingTime) / 12; //higher value makes the bobbing effect weaker
 	return glm::lookAt(position + right * cam_offset, (position + front) + right * cam_offset, up);
 }
 
@@ -122,7 +125,7 @@ glm::mat4 Camera::getProjectionMatrix() {
 
 void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
 	bool before = sin(bobbingTime) < 0;
-	bobbingTime = fmod((bobbingTime + deltaTime * 5 /*change this Value to make the bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
+	bobbingTime = fmod((bobbingTime + deltaTime * 4.5f /*higher value makes bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
 	playstepsound = sin(bobbingTime) < 0 != before;
 	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
 	switch (key) {
@@ -168,7 +171,7 @@ void Camera::move(float deltaTime)
 
 	// new source position
 	physx::PxExtendedVec3 position = controller->getFootPosition();
-	alSource3f(audioSource, AL_POSITION, position.x, position.y, position.z);
+	alSource3f(audioSources[usesource], AL_POSITION, position.x, position.y, position.z);
 
 	// new listener position and velocity
 	position.y += CHARACTER_EYE_HEIGHT;
@@ -176,11 +179,12 @@ void Camera::move(float deltaTime)
 	alListener3f(AL_VELOCITY, position.x + front.x, position.y + front.y, position.z + front.z);
 
 	if (playstepsound) {
-		if (stepsound)
-			alSourcei(audioSource, AL_BUFFER, concreteBuffers[distr(generator)]);
+		if (water_concrete)
+			alSourcei(audioSources[!usesource], AL_BUFFER, concreteBuffers[distr(generator)]);
 		else
-			alSourcei(audioSource, AL_BUFFER, waterBuffers[distr(generator)]);
-		alSourcePlay(audioSource);
+			alSourcei(audioSources[!usesource], AL_BUFFER, waterBuffers[distr(generator)]);
+		alSourcePlay(audioSources[usesource]);
+		usesource = !usesource;
 		playstepsound = false;
 	}
 
@@ -217,5 +221,5 @@ void Camera::turnSpotlightOff() {
 
 void Camera::onShapeHit(const physx::PxControllerShapeHit& hit)
 {
-	stepsound = hit.shape->getSimulationFilterData().word3 != WATER;
+	water_concrete = hit.shape->getSimulationFilterData().word3 != WATER;
 }

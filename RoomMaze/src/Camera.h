@@ -43,7 +43,7 @@ class Camera : public physx::PxUserControllerHitReport {
 	virtual void onObstacleHit(const physx::PxControllerObstacleHit& hit) {}
 protected:
 	// audio source for concrete and water footsteps
-	ALuint audioSource;
+	ALuint audioSources[2];
 
 	// audio buffers for concrete and water footsteps
 	ALuint concreteBuffers[5];
@@ -53,7 +53,10 @@ protected:
 	bool playstepsound = false;
 
 	// step sound (true for concrete, false for water)
-	bool stepsound = true;
+	bool water_concrete = true;
+
+	// audiosource to play and buffer
+	bool usesource = 0;
 
 	// random device for steps
 	std::random_device rd;
