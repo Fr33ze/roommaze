@@ -1,7 +1,7 @@
 #include "Particles.h"
 
-Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled)
-	: particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), randomizeSpeedFactor(randomizeSpeedFactor), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
+Particles::Particles(int particleSpawningAmount, float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled)
+	: particleSpawningAmount(particleSpawningAmount), particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), randomizeSpeedFactor(randomizeSpeedFactor), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
@@ -39,7 +39,7 @@ Particles::Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 spe
 	// unbind VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	createNewParticles(5);
+	createNewParticles(particleSpawningAmount);
 }
 
 Particles::Particles() {
@@ -130,7 +130,7 @@ void Particles::updateParticles(float deltaTime) {
 		secondCounter += deltaTime;
 		if (secondCounter >= particleSpawningRate) {
 			secondCounter = 0.0f;
-			createNewParticles(5);
+			createNewParticles(particleSpawningAmount);
 		}
 	}
 }

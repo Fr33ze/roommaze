@@ -26,6 +26,7 @@ protected:
 	// >0.0f == enabled with timer
 	float enabledForSeconds;
 
+	int particleSpawningAmount;
 	float particleSpawningRate;
 	float secondCounter = 0.0f;
 
@@ -55,6 +56,7 @@ public:
 	 * CONSTRUCTOR
 	 * Creates particles around the specified origin.
 	 *
+	 * @param particleSpawningAmount: defines how many particles spawn at once
 	 * @param particleSpawningRate: defines after how many seconds a new particle should spawn
 	 * @param origin: position where all particles spawn
 	 * @param speed: defines the particle's direction (length of the vector is the speed)
@@ -65,7 +67,7 @@ public:
 	 * @param texturePath: path to the texture for the particles
 	 * @param isEnabled: defines whether particle spawning is enabled or not
 	 */
-	Particles(float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled);
+	Particles(int particleSpawningAmount, float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled);
 	
 	Particles();
 
