@@ -354,6 +354,9 @@ void initContent() {
 	for (std::string section : sections) {
 		readObjectsFromINI(positions, animations, section, shader);
 	}
+
+	//starts the looping sound of electric box after loading the game, because it is FUCKING ANNOYING
+	electricBox->startSound();
 }
 
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader) {

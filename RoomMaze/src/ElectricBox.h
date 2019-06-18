@@ -15,6 +15,7 @@ public:
 	void setHiddenRes(NoCollision3D *hiddenRes);
 	void setShownRes(NoCollision3D *shownRes);
 	void setElevatorDoor(ElevatorDoor *elevatorDoor);
+	void startSound();
 protected:
 	physx::PxShape* createShape(const char *path) override;
 	// resistance without collision that is activated in use()

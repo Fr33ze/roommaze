@@ -23,7 +23,6 @@ ElectricBox::ElectricBox(const char *path, std::shared_ptr<Shader> shader, physx
 	alSourcef(audioSource, AL_GAIN, 0.5);
 	alSourcei(audioSource, AL_LOOPING, AL_TRUE);
 	alSourcei(audioSource, AL_BUFFER, lightningBuffer);
-	alSourcePlay(audioSource);
 }
 
 ElectricBox::ElectricBox(const ElectricBox &o, physx::PxTransform modelMatrix)
@@ -94,6 +93,11 @@ void ElectricBox::setShownRes(NoCollision3D *shownRes)
 void ElectricBox::setElevatorDoor(ElevatorDoor *elevatorDoor)
 {
 	this->elevatorDoor = elevatorDoor;
+}
+
+void ElectricBox::startSound()
+{
+	alSourcePlay(audioSource);
 }
 
 physx::PxShape* ElectricBox::createShape(const char *path)
