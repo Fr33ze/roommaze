@@ -63,6 +63,10 @@ void ElevatorDoor::draw(float dt) {
 	if (playclose) {
 		playclose = animLeft->reverse(dt);
 		playclose = animRight->reverse(dt);
+		if (!playclose) {
+			extern GUI *gui;
+			gui->showEndScreen(true);
+		}
 	}
 
 	//left door

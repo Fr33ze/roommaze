@@ -251,25 +251,10 @@ void initForFirstScreen() {
 }
 
 void initContent() {
-	// mouse stuff
-	lastXPosition = settings.width / 2.0f;
-	lastYPosition = settings.height / 2.0f;
-
-	// scene stuff
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-
 	// shaders
 	std::shared_ptr<Shader> phongShader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
 	blurShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/blur.frag");
 	bloomShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/bloom.frag");
-
-	// camera (includes character controller)
-	camera = new Camera(glm::vec3(0.0f, 0.5f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
-	camera->setSpotLightParameters(settings.brightness, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
-
-	// GUI
-	gui = new GUI(settings.width, settings.height);
 
 	/* ------------- */
 	// LOAD PARTICLES

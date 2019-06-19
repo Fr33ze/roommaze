@@ -16,6 +16,12 @@ GUI::GUI(int windowWidth, int windowHeight)
 	batteryStatus = GUIText(fontPath, std::to_string(batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
 	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.8f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
+
+	ghostBuffer = alutCreateBufferFromFile("assets/audio/ghost_attack.wav");
+	alGenSources(1, &audioSource);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, ghostBuffer);
 }
 
 GUI::GUI() {
@@ -46,7 +52,12 @@ void GUI::updateTime(float deltaT) {
 		}
 	}
 	else {
+		overtime += deltaT;
 		camera->turnSpotlightOff();
+		if (overtime > 5) {
+			alSourcePlay(audioSource);
+			showGameOverScreen(true);
+		}
 	}
 }
 

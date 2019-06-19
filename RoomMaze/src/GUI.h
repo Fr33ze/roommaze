@@ -34,6 +34,9 @@ protected:
 	bool button = false;
 	bool resistance = false;
 
+	float overtime = 0.f;
+	ALuint audioSource;
+	ALuint ghostBuffer;
 public:
 
 	/**
