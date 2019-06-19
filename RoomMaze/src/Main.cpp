@@ -743,6 +743,8 @@ void update(float deltaT) {
 }
 
 void draw(float deltaT) {
+	//drawBloomObjects(deltaT);
+
 	// draw all game components which are affected by the flashlight
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
 		renderObjects.at(i)->draw(deltaT);
@@ -751,8 +753,6 @@ void draw(float deltaT) {
 		renderParticles.at(i)->draw(deltaT);
 	}
 	gui->draw();
-
-	drawBloomObjects(deltaT);
 }
 
 unsigned int quadVAO = 0;

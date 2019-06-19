@@ -6,10 +6,10 @@ GUI::GUI(int windowWidth, int windowHeight)
 	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
 	
-	battery = GUIComponent("assets/gui/battery.png", glm::vec2(windowWidth * 0.002f, windowHeight * 0.98f), 0.05f, windowWidth, windowHeight);
-	startScreen = GUIComponent("assets/gui/start_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight);
-	gameOverScreen = GUIComponent("assets/gui/game_over_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight);
-	endScreen = GUIComponent("assets/gui/end_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight);
+	battery = GUIComponent("assets/gui/battery.png", glm::vec2(windowWidth * 0.002f, windowHeight * 0.98f), 0.05f, windowWidth, windowHeight, false);
+	startScreen = GUIComponent("assets/gui/start_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
+	gameOverScreen = GUIComponent("assets/gui/game_over_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
+	endScreen = GUIComponent("assets/gui/end_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
 
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
@@ -51,14 +51,12 @@ void GUI::updateTime(float deltaT) {
 }
 
 void GUI::draw() {
-	if (startScreenIsEnabled || gameOverScreenIsEnabled || endScreenIsEnabled) {
-		if (startScreenIsEnabled)
-			startScreen.draw(componentShader);
-		else if (gameOverScreenIsEnabled)
-			gameOverScreen.draw(componentShader);
-		else
-			endScreen.draw(componentShader);
-	}
+	if (startScreenIsEnabled)
+		startScreen.draw(componentShader);
+	else if (gameOverScreenIsEnabled)
+		gameOverScreen.draw(componentShader);
+	else if (endScreenIsEnabled)
+		endScreen.draw(componentShader);
 	else {
 		battery.draw(componentShader);
 		batteryStatus.draw(textShader);

@@ -33,8 +33,9 @@ public:
 	 * @param size: defines the size of the component as a percentage of the screen width (!) it occupies (must be between 0.0f & 1.0f)
 	 * @param windowWidth: the width of the window
 	 * @param windowHeight: the height of the window
+	 * @param scaleToScreenSize: defines whether the texture should be scaled up so that it covers the whole screen
 	 */
-	GUIComponent(std::string texturePath, glm::vec2 position, float size, int windowWidth, int windowHeight);
+	GUIComponent(std::string texturePath, glm::vec2 position, float size, int windowWidth, int windowHeight, bool scaleToScreenSize);
 	
 	GUIComponent();
 

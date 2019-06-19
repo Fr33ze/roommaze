@@ -1,6 +1,6 @@
 #include "GUIComponent.h"
 
-GUIComponent::GUIComponent(std::string texturePath, glm::vec2 position, float size, int windowWidth, int windowHeight)
+GUIComponent::GUIComponent(std::string texturePath, glm::vec2 position, float size, int windowWidth, int windowHeight, bool scaleToScreenSize)
 	: projectionMatrix(glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight)) {
 
 	initTexture(texturePath);
@@ -12,12 +12,21 @@ GUIComponent::GUIComponent(std::string texturePath, glm::vec2 position, float si
 	// VBO for vertices
 	glGenBuffers(1, &vboVertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-	size = windowWidth * size;
-	float vertices[] = { position.x, position.y,
+	if (scaleToScreenSize) {
+		float vertices[] = { position.x, position.y,
+		position.x, position.y - windowHeight,
+		position.x + windowWidth, position.y,
+		position.x + windowWidth, position.y - windowHeight };
+		glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
+	}
+	else {
+		size = windowWidth * size;
+		float vertices[] = { position.x, position.y,
 		position.x, position.y - size,
 		position.x + size, position.y,
 		position.x + size, position.y - size };
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
+	}
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
