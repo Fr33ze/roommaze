@@ -19,6 +19,7 @@ GUI::GUI(int windowWidth, int windowHeight)
 
 	ghostBuffer = alutCreateBufferFromFile("assets/audio/ghost_attack.wav");
 	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, 0, 0, 0);
 	alSourcef(audioSource, AL_PITCH, 1);
 	alSourcef(audioSource, AL_GAIN, 1);
 	alSourcei(audioSource, AL_BUFFER, ghostBuffer);

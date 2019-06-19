@@ -191,22 +191,21 @@ int main(int argc, char **argv) {
 			showStartScreen = false;
 			gui->showStartScreen(false);
 		}
-		else {
-			// react to user input
-			glfwPollEvents();
-			processInput(window);
 
-			// update all game components
-			update(deltaTime);
+		// react to user input
+		glfwPollEvents();
+		processInput(window);
 
-			// draw all game components
-			draw(deltaTime);
-			glfwSwapBuffers(window);
+		// update all game components
+		update(deltaTime);
 
-			// physx make simulation step
-			pxScene->simulate(deltaTime);
-			pxScene->fetchResults(true);
-		}
+		// draw all game components
+		draw(deltaTime);
+		glfwSwapBuffers(window);
+
+		// physx make simulation step
+		pxScene->simulate(deltaTime);
+		pxScene->fetchResults(true);
 
 		// check for errors
 		if (glGetError() != GL_NO_ERROR)
