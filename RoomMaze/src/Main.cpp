@@ -72,7 +72,6 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 bool bloom = true;
 GLuint fboHDR, colorBuffers[2], depthBuffer, attachments[2], fboPingPong[2], colorBuffersPingPong[2];
 std::shared_ptr<Shader> blurShader, bloomShader;
-std::vector<Object3D*> renderBloomObjects;
 
 //settings
 struct Settings {
@@ -269,7 +268,6 @@ void initContent() {
 
 	// shaders
 	std::shared_ptr<Shader> phongShader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
-	std::shared_ptr<Shader> phongBloomShader = std::make_shared<Shader>("assets/shaders/phongBloom.vert", "assets/shaders/phongBloom.frag");
 	blurShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/blur.frag");
 	bloomShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/bloom.frag");
 
@@ -305,17 +303,6 @@ void initContent() {
 		transformation
 	);
 	renderObjects.push_back(elevatorDoors);
-
-	trans = physx::PxVec3(physx::PxIdentity);
-	rot = physx::PxVec4(0.f);
-	sscanf_s(positions.Get("ElevatorLamp", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
-	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
-	Static3D *elevatorLamp = new Static3D(
-		positions.Get("ElevatorLamp", "path", "assets/objects/elevator_lamp.obj").c_str(),
-		phongBloomShader,
-		transformation
-	);
-	renderBloomObjects.push_back(elevatorLamp);
 
 	trans = physx::PxVec3(physx::PxIdentity);
 	rot = physx::PxVec4(0.f);
@@ -771,19 +758,6 @@ void update(float deltaT) {
 	gui->updateTime(deltaT);
 }
 
-void draw(float deltaT) {
-	//drawBloomObjects(deltaT);
-
-	// draw all game components which are affected by the flashlight
-	for (unsigned int i = 0; i < renderObjects.size(); i++) {
-		renderObjects.at(i)->draw(deltaT);
-	}
-	for (unsigned int i = 0; i < renderParticles.size(); i++) {
-		renderParticles.at(i)->draw(deltaT);
-	}
-	gui->draw();
-}
-
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad() {
@@ -813,16 +787,20 @@ void renderQuad() {
 	glBindVertexArray(0);
 }
 
-void drawBloomObjects(float deltaT) {
+void draw(float deltaT) {
 	/* ---------------------------------------------- */
 	//  RENDER SCENE INTO FLOATING POINT FRAMEBUFFER
 	/* ---------------------------------------------- */
 	glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// draw all game components which arent affected by the flashlight
-	for (unsigned int i = 0; i < renderBloomObjects.size(); i++) {
-		renderBloomObjects.at(i)->draw(deltaT);
+	// draw all game components
+	for (unsigned int i = 0; i < renderObjects.size(); i++) {
+		renderObjects.at(i)->draw(deltaT);
 	}
+	for (unsigned int i = 0; i < renderParticles.size(); i++) {
+		renderParticles.at(i)->draw(deltaT);
+	}
+	gui->draw();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	/* --------------------------------------------------- */
@@ -857,6 +835,7 @@ void drawBloomObjects(float deltaT) {
 	bloomShader->setUniform("bloomBlur", 1);
 	bloomShader->setUniform("bloom", bloom);
 	renderQuad();
+	
 }
 
 void cleanup() {
