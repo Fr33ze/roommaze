@@ -30,9 +30,6 @@ void Shader::loadShader(std::string filePathVertexShader, std::string filePathFr
 	glAttachShader(program, vertexHandle);
 	glAttachShader(program, fragmentHandle);
 
-	// bind output
-	glBindFragDataLocation(program, 0, "color");
-
 	// link program
 	glLinkProgram(program);
 

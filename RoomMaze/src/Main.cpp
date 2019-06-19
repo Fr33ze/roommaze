@@ -33,7 +33,6 @@
 #include "Particles.h"
 
 /* TODO
--> Bloom-Johnnyboy
 -> GUI (Startscreen / Endscreen)
 -> Sound gleichmäßiger machen
 -> Mehr sounds?
@@ -51,7 +50,7 @@ void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string
 void createObject(const char *path, int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
 void initContent();
 void update(float deltaT);
-void draw(float deltaT, bool bloom);
+void draw(float deltaT);
 void cleanup();
 
 void processInput(GLFWwindow *window);
@@ -68,11 +67,9 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 /* ----------------- */
 
 // framebuffer stuff for bloom effect
-GLuint fboHDR, colorBuffers[2], depthBuffer, attachments[2], fboPingPong[2], colorBuffersPingPong[2];
-Shader blurShader, bloomShader;
 bool bloom = true;
-bool bloomKeyPressed = false;
-float exposure = 1.0f;
+GLuint fboHDR, colorBuffers[2], depthBuffer, attachments[2], fboPingPong[2], colorBuffersPingPong[2];
+std::shared_ptr<Shader> blurShader, bloomShader;
 
 //settings
 struct Settings {
@@ -171,6 +168,7 @@ int main(int argc, char **argv) {
 	// GAME CONTENT INIT
 	/* --------------- */
 	initContent();
+	initFramebuffers();
 
 	/* --------------- */
 	// MAIN GAME LOOP
@@ -196,7 +194,7 @@ int main(int argc, char **argv) {
 		update(deltaTime);
 
 		// draw all game components
-		draw(deltaTime, false);
+		draw(deltaTime);
 		glfwSwapBuffers(window);
 
 		// physx make simulation step
@@ -240,6 +238,8 @@ void initContent() {
 
 	// shaders
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
+	blurShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/blur.frag");
+	bloomShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/bloom.frag");
 
 	// camera (includes character controller)
 	camera = new Camera(glm::vec3(0.0f, 0.5f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
@@ -720,6 +720,7 @@ void initFramebuffers() {
 			exit(-1);
 		}
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void update(float deltaT) {
@@ -727,64 +728,83 @@ void update(float deltaT) {
 	gui->updateTime(deltaT);
 }
 
-void draw(float deltaT, bool bloom) {
-	if (bloom) {
-		/* ---------------------------------------------- */
-		//  RENDER SCENE INTO FLOATING POINT FRAMEBUFFER
-		/* ---------------------------------------------- */
-		glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		// draw all game components
-		for (unsigned int i = 0; i < renderObjects.size(); i++) {
-			renderObjects.at(i)->draw(deltaT);
-		}
-		for (unsigned int i = 0; i < renderParticles.size(); i++) {
-			renderParticles.at(i)->draw(deltaT);
-		}
-		gui->draw();
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad() {
+	if (quadVAO == 0) {
+		float quadVertices[] = {
+			// positions        // texture coords
+			-1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+			-1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+			 1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+			 1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		};
+		// setup plane VAO
+		glGenVertexArrays(1, &quadVAO);
+		glBindVertexArray(quadVAO);
 
-		/* --------------------------------------------------- */
-		//  BLUR BRIGHT FRAGMENTS WITH TWO-PASS GAUSSIAN BLUR
-		/* --------------------------------------------------- */
-		bool horizontal = true, firstIteration = true;
-		unsigned int amount = 10;
-		blurShader.use();
-		for (unsigned int i = 0; i < amount; i++) {
-			glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[horizontal]);
-			blurShader.setUniform("horizontal", horizontal);
-			glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : colorBuffersPingPong[!horizontal]); // bind texture of other framebuffer (or scene if first iteration)
-			//renderQuad();
-			horizontal = !horizontal;
-			if (firstIteration)
-				firstIteration = false;
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		/* --------------------------------------------------------------------------------------------------------------------- */
-		//  RENDER FLOATING POINT COLOR BUFFER TO 2D QUAD AND TONEMAP HDR COLORS TO DEFAULT FRAMEBUFFER'S (CLAMPED) COLOR RANGE
-		/* --------------------------------------------------------------------------------------------------------------------- */
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		bloomShader.use();
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, colorBuffersPingPong[!horizontal]);
-		bloomShader.setUniform("bloom", bloom);
-		bloomShader.setUniform("exposure", exposure);
-		//renderQuad();
-
-		std::cout << "bloom: " << (bloom ? "on" : "off") << "| exposure: " << exposure << std::endl;
+		glGenBuffers(1, &quadVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	}
-	else {
-		for (unsigned int i = 0; i < renderObjects.size(); i++) {
-			renderObjects.at(i)->draw(deltaT);
-		}
-		for (unsigned int i = 0; i < renderParticles.size(); i++) {
-			renderParticles.at(i)->draw(deltaT);
-		}
-		gui->draw();
+
+	glBindVertexArray(quadVAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindVertexArray(0);
+}
+
+void draw(float deltaT) {
+	/* ---------------------------------------------- */
+	//  RENDER SCENE INTO FLOATING POINT FRAMEBUFFER
+	/* ---------------------------------------------- */
+	glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// draw all game components
+	for (unsigned int i = 0; i < renderObjects.size(); i++) {
+		renderObjects.at(i)->draw(deltaT);
 	}
+	for (unsigned int i = 0; i < renderParticles.size(); i++) {
+		renderParticles.at(i)->draw(deltaT);
+	}
+	gui->draw();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	/* --------------------------------------------------- */
+	//  BLUR BRIGHT FRAGMENTS WITH TWO-PASS GAUSSIAN BLUR
+	/* --------------------------------------------------- */
+	bool horizontal = true, firstIteration = true;
+	unsigned int amount = 2;
+	blurShader->use();
+	for (unsigned int i = 0; i < amount; i++) {
+		glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[horizontal]);
+		blurShader->setUniform("horizontal", horizontal);
+		glBindTexture(GL_TEXTURE_2D, firstIteration ? colorBuffers[1] : colorBuffersPingPong[!horizontal]); // bind texture of other framebuffer (or scene if first iteration)
+		blurShader->setUniform("image", 0);
+		renderQuad();
+
+		horizontal = !horizontal;
+		if (firstIteration)
+			firstIteration = false;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	/* --------------------------------------------------------------------------------------------------------------------- */
+	//  RENDER FLOATING POINT COLOR BUFFER TO 2D QUAD AND TONEMAP HDR COLORS TO DEFAULT FRAMEBUFFER'S (CLAMPED) COLOR RANGE
+	/* --------------------------------------------------------------------------------------------------------------------- */
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	bloomShader->use();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+	bloomShader->setUniform("scene", 0);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, colorBuffersPingPong[!horizontal]);
+	bloomShader->setUniform("bloomBlur", 1);
+	bloomShader->setUniform("bloom", bloom);
+	renderQuad();
 }
 
 void cleanup() {
@@ -803,6 +823,8 @@ void cleanup() {
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
 	// ESC = exit
 	// SPACE = insert new battery into the camera
+	// B = toggle bloom
+	// F10 = get all items
 
 	if (action != GLFW_RELEASE)
 		return;
@@ -814,6 +836,15 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
 	case GLFW_KEY_SPACE:
 		gui->removeBattery();
 		break;
+	case GLFW_KEY_B:
+		bloom = !bloom;
+		break;
+	case GLFW_KEY_F10:
+		gui->setInfoText("I'm a noob and need cheats!");
+		gui->addBattery();
+		gui->addButton();
+		gui->addKey();
+		gui->addResistance();
 	}
 }
 
@@ -843,32 +874,6 @@ void processInput(GLFWwindow *window) {
 	}
 	if (processInteractables) {
 		focusInteractable();
-	}
-	if (glfwGetKey(window, GLFW_KEY_F10) == GLFW_PRESS) {
-		gui->setInfoText("I'm a noob and need cheats!");
-		gui->addBattery();
-		gui->addButton();
-		gui->addKey();
-		gui->addResistance();
-	}
-
-	// bloom stuff
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS && !bloomKeyPressed) {
-		bloom = !bloom;
-		bloomKeyPressed = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_RELEASE) {
-		bloomKeyPressed = false;
-	}
-
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-		if (exposure > 0.0f)
-			exposure -= 0.001f;
-		else
-			exposure = 0.0f;
-	}
-	else if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-		exposure += 0.001f;
 	}
 }
 
