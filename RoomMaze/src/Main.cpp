@@ -791,7 +791,7 @@ void drawBloomObjects(float deltaT) {
 	glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// draw all game components which arent affected by the flashlight
-	for (unsigned int i = 0; i < renderObjects.size(); i++) {
+	for (unsigned int i = 0; i < renderBloomObjects.size(); i++) {
 		renderBloomObjects.at(i)->draw(deltaT);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
