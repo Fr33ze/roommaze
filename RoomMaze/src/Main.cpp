@@ -51,6 +51,7 @@ void createObject(const char *path, int &type, physx::PxTransform &trans, std::s
 void initContent();
 void update(float deltaT);
 void draw(float deltaT);
+void drawBloomObjects(float deltaT);
 void cleanup();
 
 void processInput(GLFWwindow *window);
@@ -70,6 +71,7 @@ std::string FormatDebugOutput(GLenum source, GLenum type, GLuint id, GLenum seve
 bool bloom = true;
 GLuint fboHDR, colorBuffers[2], depthBuffer, attachments[2], fboPingPong[2], colorBuffersPingPong[2];
 std::shared_ptr<Shader> blurShader, bloomShader;
+std::vector<Object3D*> renderBloomObjects;
 
 //settings
 struct Settings {
@@ -237,7 +239,8 @@ void initContent() {
 	glEnable(GL_DEPTH_TEST);
 
 	// shaders
-	std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
+	std::shared_ptr<Shader> phongShader = std::make_shared<Shader>("assets/shaders/phong.vert", "assets/shaders/phong.frag");
+	std::shared_ptr<Shader> phongBloomShader = std::make_shared<Shader>("assets/shaders/phongBloom.vert", "assets/shaders/phongBloom.frag");
 	blurShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/blur.frag");
 	bloomShader = std::make_shared<Shader>("assets/shaders/blur.vert", "assets/shaders/bloom.frag");
 
@@ -259,6 +262,10 @@ void initContent() {
 	/* ------------- */
 	// LOAD OBJECTS (type==-1)
 	/* ------------- */
+
+	//Static3D *elevatorLamp = new Static3D("assets/objects/elevator_lamp.obj".c_str(), phongBloomShader, glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 2.2f, 0.0f)));
+	//renderBloomObjects.push_back(elevatorLamp);
+
 	INIReader positions("assets/positions.ini");
 	INIReader animations("assets/animations.ini");
 
@@ -269,7 +276,7 @@ void initContent() {
 	ElevatorDoor *elevatorDoors = new ElevatorDoor(
 		positions.Get("ElevatorDoors", "pathLeft", "assets/objects/elevator_left_doors.obj").c_str(),
 		positions.Get("ElevatorDoors", "pathRight", "assets/objects/elevator_right_doors.obj").c_str(),
-		shader,
+		phongShader,
 		transformation
 	);
 	renderObjects.push_back(elevatorDoors);
@@ -280,7 +287,7 @@ void initContent() {
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	NoCollision3D *shownRes = new NoCollision3D(
 		positions.Get("Resistance", "path", "assets/objects/resistance.obj").c_str(),
-		shader,
+		phongShader,
 		transformation
 	);
 	renderObjects.push_back(shownRes);
@@ -302,7 +309,7 @@ void initContent() {
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	ElectricBox *electricBox = new ElectricBox(
 		positions.Get("ElectricBox", "path", "assets/objects/electric_box.obj").c_str(),
-		shader,
+		phongShader,
 		transformation
 	);
 	electricBox->setElevatorDoor(elevatorDoors);
@@ -317,7 +324,7 @@ void initContent() {
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	NoCollision3D *shownButton = new NoCollision3D(
 		positions.Get("Button", "path", "assets/objects/button.obj").c_str(),
-		shader,
+		phongShader,
 		transformation
 	);
 	renderObjects.push_back(shownButton);
@@ -339,7 +346,7 @@ void initContent() {
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	ButtonPanel *buttonPanel = new ButtonPanel(
 		positions.Get("ButtonPanel", "path", "assets/objects/button_panel.obj").c_str(),
-		shader,
+		phongShader,
 		transformation
 	);
 	buttonPanel->setElevatorDoor(elevatorDoors);
@@ -352,7 +359,7 @@ void initContent() {
 	/* ------------- */
 	std::set<std::string> sections = positions.Sections();
 	for (std::string section : sections) {
-		readObjectsFromINI(positions, animations, section, shader);
+		readObjectsFromINI(positions, animations, section, phongShader);
 	}
 
 	//starts the looping sound of electric box after loading the game, because it is FUCKING ANNOYING
@@ -728,6 +735,19 @@ void update(float deltaT) {
 	gui->updateTime(deltaT);
 }
 
+void draw(float deltaT) {
+	// draw all game components which are affected by the flashlight
+	for (unsigned int i = 0; i < renderObjects.size(); i++) {
+		renderObjects.at(i)->draw(deltaT);
+	}
+	for (unsigned int i = 0; i < renderParticles.size(); i++) {
+		renderParticles.at(i)->draw(deltaT);
+	}
+	gui->draw();
+
+	//drawBloomObjects(deltaT);
+}
+
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad() {
@@ -757,20 +777,16 @@ void renderQuad() {
 	glBindVertexArray(0);
 }
 
-void draw(float deltaT) {
+void drawBloomObjects(float deltaT) {
 	/* ---------------------------------------------- */
 	//  RENDER SCENE INTO FLOATING POINT FRAMEBUFFER
 	/* ---------------------------------------------- */
 	glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// draw all game components
+	// draw all game components which arent affected by the flashlight
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
-		renderObjects.at(i)->draw(deltaT);
+		renderBloomObjects.at(i)->draw(deltaT);
 	}
-	for (unsigned int i = 0; i < renderParticles.size(); i++) {
-		renderParticles.at(i)->draw(deltaT);
-	}
-	gui->draw();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	/* --------------------------------------------------- */
