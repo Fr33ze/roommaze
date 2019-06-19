@@ -30,4 +30,6 @@ public:
 protected:
 	// in this case only creates a sphere query shape (for raycasts)
 	physx::PxShape* createShape(const char *path) override;
+	GLuint audioSource;
+	GLuint takeBuffer;
 };

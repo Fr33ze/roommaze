@@ -54,7 +54,18 @@ void ButtonPanel::use(GUI *gui)
 
 std::string ButtonPanel::guitext(GUI *gui)
 {
-	return (gui->hasResistance() ? "Insert Button" : "Find and insert a Button to repair");
+	if (gui->hasButton() && !buttonplaced) {
+		return "Put button into panel.";
+	}
+	else if (buttonplaced) {
+		return "Whoa, I really hope it is working now.";
+	}
+	else if (!(gui->hasButton() || elevatorDoor->isOpen())) {
+		return "Yes! It is finally moving up.";
+	}
+	else {
+		return "It seems the button has fallen off. It must lie arround somewhere.";
+	}
 }
 
 void ButtonPanel::setHiddenButton(NoCollision3D *hiddenButton)

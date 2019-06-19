@@ -105,7 +105,16 @@ void Door3D::use(GUI *gui)
 
 std::string Door3D::guitext(GUI *gui)
 {
-	return (open ? "" : "Find and use a key to open");
+	if (!open && gui->hasKey()) {
+		return "I'm lucky! The key fits the lock perfectly.";
+	}
+	else if (!open && !gui->hasKey()) {
+		return "It doesn't move one bit! I will need the key to get through here.";
+	}
+	else {
+		return "";
+	}
+	
 }
 
 void Door3D::openDoor()

@@ -29,6 +29,12 @@ protected:
 	glm::vec2 position;
 	float scale;
 
+	// used when the centered text overflows max_width
+	float overflowscale = 1.f;
+	float max_width = 0.7f;
+
+	int windowWidth;
+
 	glm::mat4 projectionMatrix;
 	float alpha;
 	GLuint vao;
@@ -61,4 +67,6 @@ public:
 
 	void updateText(std::string text);
 
+	//updates text and centers it horizontally (y coordinate still used)
+	void updateTextCenter(std::string text);
 };

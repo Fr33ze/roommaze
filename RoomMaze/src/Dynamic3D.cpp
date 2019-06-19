@@ -60,7 +60,9 @@ physx::PxShape* Dynamic3D::createShape(const char *path) {
 	physx::PxConvexMesh* convexMesh = mPhysics->createConvexMesh(input);
 
 	physx::PxMaterial *mat = mPhysics->createMaterial(physx::PxReal(0.5f), physx::PxReal(0.5f), physx::PxReal(0.7f));
-	return mPhysics->createShape(physx::PxConvexMeshGeometry(convexMesh), *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE);
+	physx::PxShape *temp = mPhysics->createShape(physx::PxConvexMeshGeometry(convexMesh), *mat, false, physx::PxShapeFlag::eSIMULATION_SHAPE | physx::PxShapeFlag::eSCENE_QUERY_SHAPE);
+	temp->setSimulationFilterData(physx::PxFilterData(COLLISION, 0, 0, 0));
+	return temp;
 }
 
 void Dynamic3D::createActor(physx::PxTransform transform) {

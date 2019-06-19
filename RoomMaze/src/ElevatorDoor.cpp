@@ -117,7 +117,13 @@ void ElevatorDoor::closeDoor() {
 
 std::string ElevatorDoor::guitext(GUI *gui)
 {
-	return "Repair the switch box to your right.";
+	if (!(open || gui->hasResistance())) {
+		return "The elevator is lacking electricity. Maybe I can reactivate it somewhere?";
+	}
+	else if (!open && gui->hasResistance()) {
+		return "This resistor I found could be useful for this.";
+	}
+	
 }
 
 physx::PxShape* ElevatorDoor::createShape(const char *path)

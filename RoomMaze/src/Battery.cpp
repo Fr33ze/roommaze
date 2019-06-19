@@ -12,6 +12,14 @@ Battery::Battery(const char *path, std::shared_ptr<Shader> shader, physx::PxTran
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/item_pickup.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Battery::Battery(const Battery &o, physx::PxTransform modelMatrix)
@@ -27,6 +35,14 @@ Battery::Battery(const Battery &o, physx::PxTransform modelMatrix)
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/item_pickup.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Battery::~Battery()
@@ -54,11 +70,12 @@ void Battery::use(GUI *gui) {
 		particles->enableFor(0.5f);
 	}
 
+	alSourcePlay(audioSource);
 	gui->addBattery();
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
 std::string Battery::guitext(GUI *gui) {
-	return (enabled ? "Take Battery" : "");
+	return (enabled ? "Pick up Battery" : "");
 }

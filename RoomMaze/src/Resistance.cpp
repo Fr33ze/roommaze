@@ -14,6 +14,14 @@ Resistance::Resistance(const char *path, std::shared_ptr<Shader> shader, physx::
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/item_pickup.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Resistance::Resistance(const Resistance &o, physx::PxTransform modelMatrix)
@@ -29,6 +37,14 @@ Resistance::Resistance(const Resistance &o, physx::PxTransform modelMatrix)
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/item_pickup.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Resistance::~Resistance()
@@ -60,11 +76,12 @@ void Resistance::use(GUI *gui) {
 		particles->enableFor(0.5f);
 	}
 
+	alSourcePlay(audioSource);
 	gui->addResistance();
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
 std::string Resistance::guitext(GUI *gui) {
-	return (enabled ? "Take Resistance" : "");
+	return (enabled ? "Pick up Resistance" : "");
 }

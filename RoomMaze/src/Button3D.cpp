@@ -12,6 +12,14 @@ Button3D::Button3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTr
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/item_pickup.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Button3D::Button3D(const Button3D &o, physx::PxTransform modelMatrix)
@@ -27,6 +35,14 @@ Button3D::Button3D(const Button3D &o, physx::PxTransform modelMatrix)
 
 	extern physx::PxScene *pxScene;
 	pxScene->addActor(*pxActor);
+
+	takeBuffer = alutCreateBufferFromFile("assets/audio/item_pickup.wav");
+
+	alGenSources(1, &audioSource);
+	alSource3f(audioSource, AL_POSITION, modelMatrix.p.x, modelMatrix.p.y, modelMatrix.p.z);
+	alSourcef(audioSource, AL_PITCH, 1);
+	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcei(audioSource, AL_BUFFER, takeBuffer);
 }
 
 Button3D::~Button3D()
@@ -54,11 +70,12 @@ void Button3D::use(GUI *gui) {
 		particles->enableFor(0.5f);
 	}
 
+	alSourcePlay(audioSource);
 	gui->addButton();
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }
 
 std::string Button3D::guitext(GUI *gui) {
-	return (enabled ? "Take Elevator button" : "");
+	return (enabled ? "Pick up Elevator button" : "");
 }

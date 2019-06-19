@@ -1,7 +1,7 @@
 #include "GUI.h"
 
 GUI::GUI(int windowWidth, int windowHeight)
-	: batteryTime(120.0f) {
+	: batteryTime(120.0f), windowWidth(windowWidth) {
 
 	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
@@ -12,7 +12,7 @@ GUI::GUI(int windowWidth, int windowHeight)
 
 	batteryStatus = GUIText(fontPath, std::to_string(batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 1.2f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
-	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.03f), windowWidth / 1920.0f * 0.4f, 0.75f, windowWidth, windowHeight);
+	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.8f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 }
 
 GUI::GUI() {
@@ -59,7 +59,7 @@ void GUI::draw() {
 }
 
 void GUI::setInfoText(std::string text) {
-	infoText.updateText(text);
+	infoText.updateTextCenter(text);
 }
 
 void GUI::addBattery()

@@ -77,7 +77,15 @@ void ElectricBox::use(GUI *gui)
 
 std::string ElectricBox::guitext(GUI *gui)
 {
-	return (gui->hasResistance() ? "Insert Resistance" : "Find and insert a Resistance to repair");
+	if (gui->hasResistance()) {
+		return "Insert Resistor";
+	}
+	else if (elevatorDoor->isOpen()) {
+		return "Oh, the elevator is provided with electricity again!";
+	}
+	else {
+		return "This switch box serves as power supply. The missing resistor is causing a shortage.";
+	}
 }
 
 void ElectricBox::setHiddenRes(NoCollision3D *hiddenRes)

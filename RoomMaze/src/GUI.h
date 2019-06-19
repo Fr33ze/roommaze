@@ -24,6 +24,9 @@ protected:
 	GUIComponent battery;
 	GUIText batteryStatus, batteryCountdown, infoText;
 
+	// width (X-resolution) of the window
+	int windowWidth;
+
 	// inventory of player
 	unsigned int batteries = 5;
 	bool key = false;

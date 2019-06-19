@@ -1,7 +1,7 @@
 #include "GUIText.h"
 
 GUIText::GUIText(std::string fontPath, std::string text, glm::vec2 position, float scale, float alpha, int windowWidth, int windowHeight)
-	: text(text), position(position), scale(scale), alpha(alpha), projectionMatrix(glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight)) {
+	: text(text), position(position), scale(scale), alpha(alpha), projectionMatrix(glm::ortho(0.0f, (float)windowWidth, 0.0f, (float)windowHeight)), windowWidth(windowWidth) {
 	
 	initFont(fontPath);
 
@@ -116,13 +116,13 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 		// iterate through all characters
 		std::string::const_iterator interator;
 		for (interator = text.begin(); interator != text.end(); interator++) {
-			Character character = characters[*interator];
+			Character &character = characters[*interator];
 
-			float xPos = pointer + character.bearing.x * scale;
-			float yPos = position.y - (character.size.y - character.bearing.y) * scale;
+			float xPos = pointer + character.bearing.x * scale * overflowscale;
+			float yPos = position.y - (character.size.y - character.bearing.y) * scale * overflowscale;
 
-			float width = character.size.x * scale;
-			float height = character.size.y * scale;
+			float width = character.size.x * scale * overflowscale;
+			float height = character.size.y * scale * overflowscale;
 
 			// set vertices
 			float vertices[] = { xPos, yPos + height, xPos, yPos, xPos + width, yPos + height, xPos + width, yPos };
@@ -135,7 +135,7 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 			// advance cursors for next glyph (advance is number of 1/64 pixels)
-			pointer += (character.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+			pointer += (character.advance >> 6) * scale * overflowscale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 		}
 
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -150,4 +150,28 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 
 void GUIText::updateText(std::string text) {
 	GUIText::text = text;
+}
+
+void GUIText::updateTextCenter(std::string text)
+{
+	if ((GUIText::text = text) == "")
+		return;
+	
+	float totalXsize = 0;
+	std::string::const_iterator iterator;
+	for (iterator = text.begin(); iterator != text.end(); iterator++) {
+		Character &character = characters[*iterator];
+		totalXsize += character.size.x + (character.advance >> 6) * scale;
+	}
+
+	totalXsize *= scale;
+
+	if (totalXsize > max_width * windowWidth) {
+		overflowscale = max_width / (totalXsize / windowWidth);
+	}
+	else {
+		overflowscale = 1.f;
+	}
+
+	position = glm::vec2(windowWidth / 2 - (totalXsize * overflowscale) / 2, position.y);
 }
