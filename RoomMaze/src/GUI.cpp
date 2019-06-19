@@ -7,6 +7,9 @@ GUI::GUI(int windowWidth, int windowHeight)
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
 	
 	battery = GUIComponent("assets/gui/battery.png", glm::vec2(windowWidth * 0.002f, windowHeight * 0.98f), 0.05f, windowWidth, windowHeight);
+	startScreen = GUIComponent("assets/gui/start_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight);
+	gameOverScreen = GUIComponent("assets/gui/game_over_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight);
+	endScreen = GUIComponent("assets/gui/end_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight);
 
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
@@ -48,18 +51,40 @@ void GUI::updateTime(float deltaT) {
 }
 
 void GUI::draw() {
-	battery.draw(componentShader);
-	batteryStatus.draw(textShader);
-
-	if (!(batteryTime <= 10.0f && (int)(batteryTime * 2) % 2 == 0) || batteryTime <= 0.5f) {
-		batteryCountdown.draw(textShader);
+	if (startScreenIsEnabled || gameOverScreenIsEnabled || endScreenIsEnabled) {
+		if (startScreenIsEnabled)
+			startScreen.draw(componentShader);
+		else if (gameOverScreenIsEnabled)
+			gameOverScreen.draw(componentShader);
+		else
+			endScreen.draw(componentShader);
 	}
+	else {
+		battery.draw(componentShader);
+		batteryStatus.draw(textShader);
 
-	infoText.draw(textShader);
+		if (!(batteryTime <= 10.0f && (int)(batteryTime * 2) % 2 == 0) || batteryTime <= 0.5f) {
+			batteryCountdown.draw(textShader);
+		}
+
+		infoText.draw(textShader);
+	}
 }
 
 void GUI::setInfoText(std::string text) {
 	infoText.updateTextCenter(text);
+}
+
+void GUI::showStartScreen(bool b) {
+	startScreenIsEnabled = b;
+}
+
+void GUI::showGameOverScreen(bool b) {
+	gameOverScreenIsEnabled = b;
+}
+
+void GUI::showEndScreen(bool b) {
+	endScreenIsEnabled = b;
 }
 
 void GUI::addBattery()

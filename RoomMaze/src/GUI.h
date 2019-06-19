@@ -21,7 +21,8 @@ protected:
 	std::shared_ptr<Shader> textShader;
 
 	float batteryTime;
-	GUIComponent battery;
+	GUIComponent battery, startScreen, gameOverScreen, endScreen;
+	bool startScreenIsEnabled, gameOverScreenIsEnabled, endScreenIsEnabled;
 	GUIText batteryStatus, batteryCountdown, infoText;
 
 	// width (X-resolution) of the window
@@ -55,6 +56,10 @@ public:
 	void draw();
 
 	void setInfoText(std::string text);
+
+	void showStartScreen(bool b);
+	void showGameOverScreen(bool b);
+	void showEndScreen(bool b);
 
 	void addBattery();
 	void removeBattery();
