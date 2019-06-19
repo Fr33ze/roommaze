@@ -189,6 +189,7 @@ int main(int argc, char **argv) {
 			initContent();
 			initFramebuffers();
 			showStartScreen = false;
+			gui->showStartScreen(false);
 		}
 		else {
 			// react to user input
