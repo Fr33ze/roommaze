@@ -279,6 +279,17 @@ void initContent() {
 
 	trans = physx::PxVec3(physx::PxIdentity);
 	rot = physx::PxVec4(0.f);
+	sscanf_s(positions.Get("ElevatorLamp", "0", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
+	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
+	Static3D *elevatorLamp = new Static3D(
+		positions.Get("ElevatorLamp", "path", "assets/objects/elevator_lamp.obj").c_str(),
+		phongBloomShader,
+		transformation
+	);
+	renderBloomObjects.push_back(elevatorLamp);
+
+	trans = physx::PxVec3(physx::PxIdentity);
+	rot = physx::PxVec4(0.f);
 	sscanf_s(positions.Get("Resistance", "shown", "0 0 0 1 0 0 0").c_str(), "%f %f %f %f %f %f %f", &trans.x, &trans.y, &trans.z, &rot.w, &rot.x, &rot.y, &rot.z);
 	transformation = physx::PxTransform(trans, physx::PxQuat(rot.x, rot.y, rot.z, rot.w));
 	NoCollision3D *shownRes = new NoCollision3D(
@@ -741,7 +752,7 @@ void draw(float deltaT) {
 	}
 	gui->draw();
 
-	//drawBloomObjects(deltaT);
+	drawBloomObjects(deltaT);
 }
 
 unsigned int quadVAO = 0;
