@@ -52,7 +52,6 @@ void initContent();
 void initForFirstScreen();
 void update(float deltaT);
 void draw(float deltaT);
-void drawBloomObjects(float deltaT);
 void cleanup();
 
 void processInput(GLFWwindow *window);
@@ -807,7 +806,7 @@ void draw(float deltaT) {
 	//  BLUR BRIGHT FRAGMENTS WITH TWO-PASS GAUSSIAN BLUR
 	/* --------------------------------------------------- */
 	bool horizontal = true, firstIteration = true;
-	unsigned int amount = 2;
+	unsigned int amount = 10;
 	blurShader->use();
 	for (unsigned int i = 0; i < amount; i++) {
 		glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[horizontal]);
@@ -835,7 +834,6 @@ void draw(float deltaT) {
 	bloomShader->setUniform("bloomBlur", 1);
 	bloomShader->setUniform("bloom", bloom);
 	renderQuad();
-	
 }
 
 void cleanup() {
