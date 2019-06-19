@@ -11,6 +11,10 @@ GUI::GUI(int windowWidth, int windowHeight)
 	resistanceComp = GUIComponent("assets/gui/resistance.png", glm::vec2(windowWidth * 0.003f, windowHeight * 0.8f), 0.05f, windowWidth, windowHeight, false);
 	buttonComp = GUIComponent("assets/gui/button.png", glm::vec2(windowWidth * 0.003f, windowHeight * 0.8f), 0.05f, windowWidth, windowHeight, false);
 
+	startScreen = GUIComponent("assets/gui/start_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
+	gameOverScreen = GUIComponent("assets/gui/game_over_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
+	endScreen = GUIComponent("assets/gui/end_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
+
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
 	batteryStatus = GUIText(fontPath, std::to_string(batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
