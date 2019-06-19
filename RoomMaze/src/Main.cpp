@@ -167,11 +167,10 @@ int main(int argc, char **argv) {
 	// MAIN GAME LOOP
 	/* --------------- */
 
-	float timeCurrentFrame = (float)glfwGetTime();
-	float timeLastFrame = timeCurrentFrame;
-
 	bool showStartScreen = true;
 
+	float timeCurrentFrame = (float)glfwGetTime();
+	float timeLastFrame = timeCurrentFrame;
 	while (!glfwWindowShouldClose(window)) {
 		// clear the frame and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -190,8 +189,9 @@ int main(int argc, char **argv) {
 			initFramebuffers();
 			showStartScreen = false;
 			gui->showStartScreen(false);
+			timeCurrentFrame = (float)glfwGetTime();
+			timeLastFrame = timeCurrentFrame;
 		}
-
 		// react to user input
 		glfwPollEvents();
 		processInput(window);
