@@ -1,7 +1,7 @@
 #include "GUI.h"
 
 GUI::GUI(int windowWidth, int windowHeight)
-	: batteryTime(120.0f), windowWidth(windowWidth) {
+	: batteryTime(60.0f), windowWidth(windowWidth) {
 
 	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
@@ -14,7 +14,7 @@ GUI::GUI(int windowWidth, int windowHeight)
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
 	batteryStatus = GUIText(fontPath, std::to_string(batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
-	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 1.2f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
+	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
 	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.8f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 }
 
@@ -34,7 +34,7 @@ void GUI::updateTime(float deltaT) {
 	extern Camera *camera;
 	if (batteryTime - deltaT > 0.0f) {
 		batteryTime -= deltaT;
-		batteryCountdown.updateText(std::to_string((int)(batteryTime / 1.2f)) + " %");
+		batteryCountdown.updateText(std::to_string((int)(batteryTime / 0.6f)) + " %");
 
 		if (batteryTime <= 2.0f) {
 			if ((int)(batteryTime * 100) % 2 == 0) { // TODO: random flickering
@@ -97,7 +97,7 @@ void GUI::removeBattery()
 	if (batteries > 0) {
 		extern Camera *camera;
 		batteryStatus.updateText(std::to_string(batteries) + "/10");
-		batteryTime = 120.0f;
+		batteryTime = 60.0f;
 		camera->turnSpotlightOn();
 	}
 }

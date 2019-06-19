@@ -32,12 +32,6 @@
 #include "Water3D.h"
 #include "Particles.h"
 
-/* TODO
--> GUI (Startscreen / Endscreen)
--> Sound gleichmäßiger machen
--> Mehr sounds?
-*/
-
 /* ----------- */
 // PROTOTYPES
 /* ----------- */
