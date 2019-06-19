@@ -221,5 +221,12 @@ void Camera::turnSpotlightOff() {
 
 void Camera::onShapeHit(const physx::PxControllerShapeHit& hit)
 {
-	water_concrete = hit.shape->getSimulationFilterData().word3 != WATER;
+	if (water_concrete = hit.shape->getSimulationFilterData().word3 != WATER) {
+		alSourcei(audioSources[usesource], AL_BUFFER, concreteBuffers[distr(generator)]);
+		alSourcei(audioSources[!usesource], AL_BUFFER, concreteBuffers[distr(generator)]);
+	}
+	else {
+		alSourcei(audioSources[usesource], AL_BUFFER, waterBuffers[distr(generator)]);
+		alSourcei(audioSources[!usesource], AL_BUFFER, waterBuffers[distr(generator)]);
+	}
 }
