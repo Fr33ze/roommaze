@@ -87,7 +87,6 @@ uniform int amountOfSpotLights;
 vec3 calculateDirectionalLight(int i, vec3 normalizedNormal);
 vec3 calculatePointLight(int i, vec3 normalizedNormal);
 vec3 calculateSpotLight(int i, vec3 normalizedNormal);
-vec3 calculateCameraLight(vec3 normalizedNormal);
 
 /* ----- */
 // MAIN
@@ -128,7 +127,7 @@ void main() {
 	for (int i = 0; i < amountOfSpotLights; i++)
 		spotLight += calculateSpotLight(i, normalizedNormal);
 
-	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight(normalizedNormal);
+	vec3 light = ambientLight + directionalLight + pointLight + spotLight;
 	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).a : material.alpha;
 	if (alphaChannel < 0.1)
 		discard;
@@ -223,39 +222,6 @@ vec3 calculateSpotLight(int i, vec3 normalizedNormal) {
 	float theta = dot(normalizedLightDirection, normalize(-spotLights[i].direction));
 	float epsilon = spotLights[i].innerCutOff - spotLights[i].outerCutOff;
 	float coneIntensity = clamp((theta - spotLights[i].outerCutOff) / epsilon, 0.0, 1.0); // if outside only black color will be returned
-
-	return coneIntensity * attenuation * (diffuseLight + specularLight);
-}
-
-vec3 calculateCameraLight(vec3 normalizedNormal) {
-	// DIFFUSE LIGHT (lightIntensity x (diffuseColor || diffuseTextureMap) x (normal x lightDirection))
-	// ================================================================================================
-	vec3 normalizedLightDirection = normalize(camera.position - vertexData.positionWorld);
-
-	vec3 diffuseLight = camera.intensity * (material.hasDiffuseTextureMap ? texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.diffuseColor) * max(dot(normalizedNormal, normalizedLightDirection), 0.0);
-
-	// SPECULAR LIGHT (lightIntensity x (specularColor || specularTextureMap) x (viewDirection x reflectionDirection)^shininess)
-	// =========================================================================================================================
-	vec3 normalizedViewDirection = normalize(camera.position - vertexData.positionWorld);
-	vec3 reflectionDirection = reflect(-normalizedLightDirection, normalizedNormal);
-
-	// phong model
-	//vec3 specularLight = camera.intensity * material.specularColor * pow(max(dot(normalizedViewDirection, reflectionDirection), 0.0), material.shininess);
-
-	// blinn-phong model (shininess needs to be 4 times greater than with phong model)
-	vec3 normalizedHalfwayDirection = normalize(normalizedLightDirection + normalizedViewDirection);
-	vec3 specularLight = camera.intensity * (material.hasSpecularTextureMap ? vec3(texture(material.specularTextureMapUnit, vertexData.UVCoords).r) : material.specularColor) * pow(max(dot(normalizedNormal, normalizedHalfwayDirection), 0.0), material.shininess * 4.0);
-
-	// ATTENUATION (1.0 / (constant + (linear * distanceToLight) + (quadratic * (distanceToLight * distanceToLight))))
-	// ===============================================================================================================
-	float distanceToLight = length(camera.position - vertexData.positionWorld);
-	float attenuation = 1.0 / (camera.attenuation[0] + (camera.attenuation[1] * distanceToLight) + (camera.attenuation[2] * (distanceToLight * distanceToLight)));
-
-	// check if inside light cone and if so calculate a smooth light cone edge
-	// =======================================================================
-	float theta = dot(normalizedLightDirection, normalize(camera.direction));
-	float epsilon = camera.innerCutOff - camera.outerCutOff;
-	float coneIntensity = clamp((theta - camera.outerCutOff) / epsilon, 0.0, 1.0); // if outside only black color will be returned
 
 	return coneIntensity * attenuation * (diffuseLight + specularLight);
 }

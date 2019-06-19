@@ -262,10 +262,6 @@ void initContent() {
 	/* ------------- */
 	// LOAD OBJECTS (type==-1)
 	/* ------------- */
-
-	//Static3D *elevatorLamp = new Static3D("assets/objects/elevator_lamp.obj".c_str(), phongBloomShader, glm::translate(glm::mat4(1.0f), glm::vec3(-6.0f, 2.2f, 0.0f)));
-	//renderBloomObjects.push_back(elevatorLamp);
-
 	INIReader positions("assets/positions.ini");
 	INIReader animations("assets/animations.ini");
 
