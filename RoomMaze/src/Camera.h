@@ -85,6 +85,8 @@ protected:
 	// turn this pointlights on or off
 	bool electricBoxLight = true;
 
+	int pointLightAmount = 0;
+
 	// the light of the camera is a spot light
 	struct CameraLight {
 		float brightness;
