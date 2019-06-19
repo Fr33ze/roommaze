@@ -49,6 +49,7 @@ void initFramebuffers();
 void readObjectsFromINI(INIReader &positions, INIReader &animations, std::string &section, std::shared_ptr<Shader> shader);
 void createObject(const char *path, int &type, physx::PxTransform &trans, std::shared_ptr<Shader> shader);
 void initContent();
+void initForFirstScreen();
 void update(float deltaT);
 void draw(float deltaT);
 void drawBloomObjects(float deltaT);
@@ -160,17 +161,15 @@ int main(int argc, char **argv) {
 	alSourcei(ambientSource, AL_BUFFER, ambientBuffer);
 	alSourcePlay(ambientSource);
 
-
 	/* ----------- */
 	// PHYSX INIT
 	/* ----------- */
 	initPhysX();
 
-	/* --------------- */
-	// GAME CONTENT INIT
-	/* --------------- */
-	initContent();
-	initFramebuffers();
+	/* ------------------------- */
+	// SETTING UP CAMERA AND GUI
+	/* ------------------------- */
+	initForFirstScreen();
 
 	/* --------------- */
 	// MAIN GAME LOOP
@@ -178,6 +177,8 @@ int main(int argc, char **argv) {
 
 	float timeCurrentFrame = (float)glfwGetTime();
 	float timeLastFrame = timeCurrentFrame;
+
+	bool showStartScreen = true;
 
 	while (!glfwWindowShouldClose(window)) {
 		// clear the frame and depth buffer
@@ -188,20 +189,31 @@ int main(int argc, char **argv) {
 		deltaTime = timeCurrentFrame - timeLastFrame;
 		timeLastFrame = timeCurrentFrame;
 
-		// react to user input
-		glfwPollEvents();
-		processInput(window);
+		// show startscreen when content is loading
+		if (showStartScreen) {
+			gui->showStartScreen(true);
+			gui->draw();
+			glfwSwapBuffers(window);
+			initContent();
+			initFramebuffers();
+			showStartScreen = false;
+		}
+		else {
+			// react to user input
+			glfwPollEvents();
+			processInput(window);
 
-		// update all game components
-		update(deltaTime);
+			// update all game components
+			update(deltaTime);
 
-		// draw all game components
-		draw(deltaTime);
-		glfwSwapBuffers(window);
+			// draw all game components
+			draw(deltaTime);
+			glfwSwapBuffers(window);
 
-		// physx make simulation step
-		pxScene->simulate(deltaTime);
-		pxScene->fetchResults(true);
+			// physx make simulation step
+			pxScene->simulate(deltaTime);
+			pxScene->fetchResults(true);
+		}
 
 		// check for errors
 		if (glGetError() != GL_NO_ERROR)
@@ -227,6 +239,23 @@ void readSettings() {
 
 	settings.field_of_view = reader.GetReal("camera", "fov", 50.0f);
 	settings.brightness = reader.GetReal("camera", "brightness", 1.f);
+}
+
+void initForFirstScreen() {
+	// mouse stuff
+	lastXPosition = settings.width / 2.0f;
+	lastYPosition = settings.height / 2.0f;
+
+	// scene stuff
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glEnable(GL_DEPTH_TEST);
+
+	// camera (includes character controller)
+	camera = new Camera(glm::vec3(0.0f, 0.5f, 0.0f), settings.field_of_view, (float)settings.width / (float)settings.height);
+	camera->setSpotLightParameters(settings.brightness, glm::vec3(1.0f, 1.0f, 0.95f), 0.0f, 25.0f, glm::vec3(1.0f, 0.045f, 0.0075f));
+
+	// GUI
+	gui = new GUI(settings.width, settings.height);
 }
 
 void initContent() {
