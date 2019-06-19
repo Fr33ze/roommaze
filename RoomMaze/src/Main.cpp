@@ -779,7 +779,6 @@ void draw(float deltaT) {
 	for (unsigned int i = 0; i < renderParticles.size(); i++) {
 		renderParticles.at(i)->draw(deltaT);
 	}
-	gui->draw();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	/* --------------------------------------------------- */
@@ -814,6 +813,7 @@ void draw(float deltaT) {
 	bloomShader->setUniform("bloomBlur", 1);
 	bloomShader->setUniform("bloom", bloom);
 	renderQuad();
+	gui->draw();
 }
 
 void cleanup() {
