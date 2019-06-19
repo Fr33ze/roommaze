@@ -21,7 +21,7 @@ protected:
 	std::shared_ptr<Shader> textShader;
 
 	float batteryTime;
-	GUIComponent battery, startScreen, gameOverScreen, endScreen;
+	GUIComponent battery, keyComp, resistanceComp, buttonComp, startScreen, gameOverScreen, endScreen;
 	bool startScreenIsEnabled, gameOverScreenIsEnabled, endScreenIsEnabled;
 	GUIText batteryStatus, batteryCountdown, infoText;
 

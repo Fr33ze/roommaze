@@ -7,9 +7,9 @@ GUI::GUI(int windowWidth, int windowHeight)
 	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
 	
 	battery = GUIComponent("assets/gui/battery.png", glm::vec2(windowWidth * 0.002f, windowHeight * 0.98f), 0.05f, windowWidth, windowHeight, false);
-	startScreen = GUIComponent("assets/gui/start_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
-	gameOverScreen = GUIComponent("assets/gui/game_over_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
-	endScreen = GUIComponent("assets/gui/end_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
+	keyComp = GUIComponent("assets/gui/key.png", glm::vec2(windowWidth * 0.007f, windowHeight * 0.88f), 0.05f, windowWidth, windowHeight, false);
+	resistanceComp = GUIComponent("assets/gui/resistance.png", glm::vec2(windowWidth * 0.003f, windowHeight * 0.8f), 0.05f, windowWidth, windowHeight, false);
+	buttonComp = GUIComponent("assets/gui/button.png", glm::vec2(windowWidth * 0.003f, windowHeight * 0.8f), 0.05f, windowWidth, windowHeight, false);
 
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
@@ -76,6 +76,14 @@ void GUI::draw() {
 		if (!(batteryTime <= 10.0f && (int)(batteryTime * 2) % 2 == 0) || batteryTime <= 0.5f) {
 			batteryCountdown.draw(textShader);
 		}
+
+		if (key)
+			keyComp.draw(componentShader);
+
+		if (resistance)
+			resistanceComp.draw(componentShader);
+		else if (button)
+			buttonComp.draw(componentShader);
 
 		infoText.draw(textShader);
 	}
