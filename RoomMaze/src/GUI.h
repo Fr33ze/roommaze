@@ -64,7 +64,7 @@ public:
 	void showGameOverScreen(bool b);
 	void showEndScreen(bool b);
 
-	void addBattery();
+	void addBattery(bool isCheater);
 	void removeBattery();
 	unsigned int getBatteries();
 	void addKey();

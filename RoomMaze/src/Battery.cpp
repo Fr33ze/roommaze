@@ -71,7 +71,7 @@ void Battery::use(GUI *gui) {
 	}
 
 	alSourcePlay(audioSource);
-	gui->addBattery();
+	gui->addBattery(false);
 	pxActor->detachShape(*pxShape);
 	enabled = false;
 }

@@ -3,13 +3,13 @@
 GUI::GUI(int windowWidth, int windowHeight)
 	: batteryTime(60.0f), windowWidth(windowWidth) {
 
-	componentShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiComponent.frag");
-	textShader = std::make_shared<Shader>("assets/shaders/gui.vert", "assets/shaders/guiText.frag");
+	componentShader = std::make_shared<Shader>("assets/shaders/quad.vert", "assets/shaders/guiComponent.frag");
+	textShader = std::make_shared<Shader>("assets/shaders/quad.vert", "assets/shaders/guiText.frag");
 	
-	battery = GUIComponent("assets/gui/battery.png", glm::vec2(windowWidth * 0.002f, windowHeight * 0.98f), 0.05f, windowWidth, windowHeight, false);
-	keyComp = GUIComponent("assets/gui/key.png", glm::vec2(windowWidth * 0.007f, windowHeight * 0.88f), 0.05f, windowWidth, windowHeight, false);
-	resistanceComp = GUIComponent("assets/gui/resistance.png", glm::vec2(windowWidth * 0.003f, windowHeight * 0.8f), 0.05f, windowWidth, windowHeight, false);
-	buttonComp = GUIComponent("assets/gui/button.png", glm::vec2(windowWidth * 0.003f, windowHeight * 0.8f), 0.05f, windowWidth, windowHeight, false);
+	battery = GUIComponent("assets/gui/battery.png", glm::vec2(0.0f, windowHeight * 0.99f), 0.05f, windowWidth, windowHeight, false);
+	keyComp = GUIComponent("assets/gui/key.png", glm::vec2(windowWidth * 0.005f, windowHeight * 0.9f), 0.05f, windowWidth, windowHeight, false);
+	resistanceComp = GUIComponent("assets/gui/resistance.png", glm::vec2(windowWidth * 0.004f, windowHeight * 0.81f), 0.05f, windowWidth, windowHeight, false);
+	buttonComp = GUIComponent("assets/gui/button.png", glm::vec2(windowWidth * 0.004f, windowHeight * 0.81f), 0.05f, windowWidth, windowHeight, false);
 
 	startScreen = GUIComponent("assets/gui/start_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
 	gameOverScreen = GUIComponent("assets/gui/game_over_screen.jpg", glm::vec2(0.0f, windowHeight), 1.0f, windowWidth, windowHeight, true);
@@ -17,8 +17,8 @@ GUI::GUI(int windowWidth, int windowHeight)
 
 	std::string fontPath = "assets/gui/Roboto-Regular.ttf";
 
-	batteryStatus = GUIText(fontPath, std::to_string(batteries) + "/10", glm::vec2(windowWidth * 0.055f, windowHeight * 0.93f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
-	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.055f, windowHeight * 0.895f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
+	batteryStatus = GUIText(fontPath, "x" + std::to_string(batteries), glm::vec2(windowWidth * 0.045f, windowHeight * 0.955f), windowWidth / 1920.0f * 0.3f, 0.75f, windowWidth, windowHeight);
+	batteryCountdown = GUIText(fontPath, std::to_string((int)(batteryTime / 0.6f)) + " %", glm::vec2(windowWidth * 0.045f, windowHeight * 0.915f), windowWidth / 1920.0f * 0.4f, 0.75f, windowWidth, windowHeight);
 	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.8f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 
 	ghostBuffer = alutCreateBufferFromFile("assets/audio/ghost_attack.wav");
@@ -109,19 +109,24 @@ void GUI::showEndScreen(bool b) {
 	endScreenIsEnabled = b;
 }
 
-void GUI::addBattery()
-{
-	batteries++;
-	batteryStatus.updateText(std::to_string(batteries) + "/10");
+void GUI::addBattery(bool isCheater) {
+	if (isCheater) {
+		batteries = 99;
+		batteryStatus.updateText("x" + std::to_string(batteries));
+	}
+	else {
+		batteries++;
+		batteryStatus.updateText("x" + std::to_string(batteries));
+	}
 }
 
 void GUI::removeBattery()
 {
-	batteries--;
 	if (batteries > 0) {
-		extern Camera *camera;
-		batteryStatus.updateText(std::to_string(batteries) + "/10");
+		batteries--;
+		batteryStatus.updateText("x" + std::to_string(batteries));
 		batteryTime = 60.0f;
+		extern Camera *camera;
 		camera->turnSpotlightOn();
 	}
 }
