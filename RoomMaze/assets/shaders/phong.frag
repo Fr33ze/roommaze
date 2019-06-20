@@ -17,6 +17,7 @@ struct Camera {
 };
 
 struct Material {
+	bool isAffectedByLight;
 	vec3 ambientColor;
 	vec3 diffuseColor;
 	vec3 specularColor;
@@ -94,6 +95,19 @@ vec3 calculateCameraLight(vec3 normalizedNormal);
 /* ----- */
 
 void main() {
+
+	if (material.isAffectedByLight) {
+		vec3 diffuseColor = vec3(material.hasDiffuseTextureMap ? texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.diffuseColor);
+		color = vec4(diffuseColor * camera.brightness, 1.0);
+
+		// check whether color is higher than some threshold, if so, output as bloom threshold color
+		float brightness = dot(diffuseColor, vec3(0.2126, 0.7152, 0.0722));
+		if (brightness > 1.0)
+			brightColor = vec4(diffuseColor, 1.0);
+		else
+			brightColor = vec4(0.0, 0.0, 0.0, 1.0);
+		return;
+	}
 
 	// AMBIENT LIGHT (ambientIntensity x (ambientColor || (ambientTextureMap || diffuseTextureMap)))
 	// =============================================================================================

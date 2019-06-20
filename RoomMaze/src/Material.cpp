@@ -69,6 +69,7 @@ void Material::initTexture(std::string pathTextureMap, GLuint &textureMapHandle)
 }
 
 void Material::setUniforms(std::shared_ptr<Shader> shader) {
+	shader->setUniform("material.isAffectedByLight", ambientColor.x > 1.0f || ambientColor.y > 1.0f || ambientColor.z > 1.0f);
 	shader->setUniform("material.ambientColor", ambientColor);
 	shader->setUniform("material.diffuseColor", diffuseColor);
 	shader->setUniform("material.specularColor", specularColor);
