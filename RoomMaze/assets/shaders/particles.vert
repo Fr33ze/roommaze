@@ -4,8 +4,9 @@
 // IN-/OUT-VARIABLES & UNIFORMS
 /* ----------------------------- */
 
-layout(location = 0) in vec3 vertices;
-layout(location = 1) in vec4 xyzs;
+layout(location = 0) in vec2 vertices;
+layout(location = 1) in vec2 UVs;
+layout(location = 2) in vec4 xyzs;
 
 out vec2 UVCoords;
 
@@ -26,5 +27,5 @@ void main() {
 	
 	gl_Position = viewProjectionMatrix  * vec4(vertexPositionWorldspace, 1.0);
 
-	UVCoords = vertices.xy - vec2(0.5, 0.5);
+	UVCoords = UVs;
 }

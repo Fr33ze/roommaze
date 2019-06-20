@@ -8,6 +8,7 @@ in vec2 UVCoords;
 
 out vec4 color;
 
+uniform float brightness;
 uniform sampler2D textureUnit;
 
 /* ----- */

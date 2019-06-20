@@ -14,24 +14,28 @@ Particles::Particles(int particleSpawningAmount, float particleSpawningRate, glm
 	// VBO for vertices
 	glGenBuffers(1, &vboVertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vboVertices);
-	float vertices[] = {
-		-0.5,  0.5, 0.0f,
-		-0.5, -0.5, 0.0f,
-		 0.5,  0.5, 0.0f,
-		 0.5, -0.5, 0.0f
-	};
-	glBufferData(GL_ARRAY_BUFFER, 4 * 3 * sizeof(float), vertices, GL_STATIC_DRAW);
+	float vertices[] = { -0.5,  0.5, -0.5, -0.5, 0.5,  0.5, 0.5, -0.5 };
+	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices, GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glVertexAttribDivisor(0, 0);
+
+	// VBO for UV coords
+	glGenBuffers(1, &vboUVCoords);
+	glBindBuffer(GL_ARRAY_BUFFER, vboUVCoords);
+	float UVCoords[] = { 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f };
+	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), &UVCoords, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+	glVertexAttribDivisor(1, 0);
 
 	// VBO for positions and scaling
 	glGenBuffers(1, &vboPositionsAndScaling);
 	glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
 	glBufferData(GL_ARRAY_BUFFER, MAX_AMOUNT_OF_PARTICLES, nullptr, GL_STREAM_DRAW);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
-	glVertexAttribDivisor(1, 1);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
+	glVertexAttribDivisor(2, 1);
 
 	// unbind VAO
 	glBindVertexArray(0);
@@ -148,10 +152,6 @@ void Particles::draw(float deltaTime) {
 
 		updateParticles(deltaTime);
 
-		// update buffer
-		glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(float), positions.data());
-
 		// render
 		shader->use();
 
@@ -169,7 +169,14 @@ void Particles::draw(float deltaTime) {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // set how blendig is accomplished
 
 		glBindVertexArray(vao);
+
+		// update buffer
+		glBindBuffer(GL_ARRAY_BUFFER, vboPositionsAndScaling);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, positions.size() * sizeof(float), positions.data());
+
 		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, positions.size() / 4);
+		
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 
 		glDisable(GL_BLEND);

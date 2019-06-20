@@ -42,6 +42,7 @@ protected:
 
 	GLuint vao;
 	GLuint vboVertices;
+	GLuint vboUVCoords;
 	GLuint vboPositionsAndScaling;
 
 	GLuint textureHandle;
