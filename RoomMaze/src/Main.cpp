@@ -569,6 +569,11 @@ GLFWwindow* initOpenGL() {
 	}
 	glViewport(0, 0, settings.width, settings.width);
 
+	GLFWimage image;
+	image.pixels = stbi_load("assets/gui/icon.png", &image.width, &image.height, 0, 4); //rgba channels
+	glfwSetWindowIcon(window, 1, &image);
+	stbi_image_free(image.pixels);
+
 	glfwMakeContextCurrent(window);
 
 	// init glew
