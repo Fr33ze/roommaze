@@ -23,7 +23,6 @@ GUI::GUI(int windowWidth, int windowHeight)
 
 	ghostBuffer = alutCreateBufferFromFile("assets/audio/ghost_attack.wav");
 	alGenSources(1, &audioSource);
-	alSource3f(audioSource, AL_POSITION, 0, 0, 0);
 	alSourcef(audioSource, AL_PITCH, 1);
 	alSourcef(audioSource, AL_GAIN, 1);
 	alSourcei(audioSource, AL_BUFFER, ghostBuffer);
@@ -59,8 +58,10 @@ void GUI::updateTime(float deltaT) {
 	else {
 		overtime += deltaT;
 		camera->turnSpotlightOff();
-		if (overtime > 5) {
+		if (!gameoveraudioplayed && overtime > 5) {
 			alSourcePlay(audioSource);
+			gameoveraudioplayed = true;
+		} else if (overtime > 9 && !gameOverScreenIsEnabled) {
 			showGameOverScreen(true);
 		}
 	}

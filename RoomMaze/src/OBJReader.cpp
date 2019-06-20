@@ -145,8 +145,8 @@ robin_hood::unordered_flat_map<std::string, std::shared_ptr<Material>> OBJReader
 
 				//reset coefficients to default
 				ka = glm::vec3(0.2f, 0.2f, 0.2f);
-				kd = glm::vec3(0.8f, 0.8f, 0.8f);;
-				ks = glm::vec3(1.0f, 1.0f, 1.0f);;
+				kd = glm::vec3(0.8f, 0.8f, 0.8f);
+				ks = glm::vec3(1.0f, 1.0f, 1.0f);
 				alpha = 1.0f;
 				shininess = 0.0f;
 				memset(map_ka, 0, sizeof(map_ka));

@@ -37,6 +37,7 @@ protected:
 	float overtime = 0.f;
 	ALuint audioSource;
 	ALuint ghostBuffer;
+	bool gameoveraudioplayed = false;
 public:
 
 	/**
