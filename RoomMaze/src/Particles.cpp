@@ -156,7 +156,7 @@ void Particles::draw(float deltaTime, float sceneBrightness) {
 		shader->use();
 
 		shader->setUniform("sceneBrightness", sceneBrightness);
-		shader->setUniform("particleBrightness", enableBloom ? 2.0f : 1.0f);
+		shader->setUniform("particleBrightness", enableBloom ? 2.5f : 1.0f);
 		extern Camera *camera;
 		glm::mat4 viewMatrix = camera->getViewMatrix();
 		shader->setUniform("cameraRightWorldspace", glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
