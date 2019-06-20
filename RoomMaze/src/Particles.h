@@ -19,6 +19,7 @@ protected:
 
 	// shader used for rendering particles
 	std::shared_ptr<Shader> shader;
+	bool enableBloom;
 
 	// defines whether particle spawning is enabled or not
 	// -1.0f == enabled with no timer
@@ -66,9 +67,10 @@ public:
 	 * @param lifeLength: defines after how many seconds a particle disappears
 	 * @param randomizeSpeedFactor: defines how much the randomizer is allowed to change the speed vector (the lower the value, the higher the randomization)
 	 * @param texturePath: path to the texture for the particles
+	 * @param enableBloom: defines whether bloom effect is enabled or not
 	 * @param isEnabled: defines whether particle spawning is enabled or not
 	 */
-	Particles(int particleSpawningAmount, float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled);
+	Particles(int particleSpawningAmount, float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool enableBloom, bool isEnabled);
 	
 	Particles();
 
@@ -76,7 +78,7 @@ public:
 
 	void setOrigin(glm::vec3 position);
 
-	void draw(float deltaTime);
+	void draw(float deltaTime, float sceneBrightness);
 
 	void enable();
 

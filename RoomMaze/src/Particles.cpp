@@ -1,7 +1,7 @@
 #include "Particles.h"
 
-Particles::Particles(int particleSpawningAmount, float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool isEnabled)
-	: particleSpawningAmount(particleSpawningAmount), particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), randomizeSpeedFactor(randomizeSpeedFactor), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
+Particles::Particles(int particleSpawningAmount, float particleSpawningRate, glm::vec3 origin, glm::vec3 speed, float size, float weight, float lifeLength, float randomizeSpeedFactor, std::string texturePath, bool enableBloom, bool isEnabled)
+	: particleSpawningAmount(particleSpawningAmount), particleSpawningRate(particleSpawningRate), origin(origin), speed(speed), size(size), weight(weight), lifeLength(lifeLength), randomizeSpeedFactor(randomizeSpeedFactor), enableBloom(enableBloom), enabledForSeconds(isEnabled ? -1.0f : 0.0f) {
 
 	shader = std::make_shared<Shader>("assets/shaders/particles.vert", "assets/shaders/particles.frag");
 
@@ -143,7 +143,7 @@ void Particles::setOrigin(glm::vec3 position) {
 	origin = position;
 }
 
-void Particles::draw(float deltaTime) {
+void Particles::draw(float deltaTime, float sceneBrightness) {
 	// only render if particle spawing is enabled or there are still some particles alive
 	if (enabledForSeconds == -1.0f || enabledForSeconds > 0.0f || particles.size() > 0) {
 		if (enabledForSeconds > 0.0f) {
@@ -155,6 +155,8 @@ void Particles::draw(float deltaTime) {
 		// render
 		shader->use();
 
+		shader->setUniform("sceneBrightness", sceneBrightness);
+		shader->setUniform("particleBrightness", enableBloom ? 2.0f : 1.0f);
 		extern Camera *camera;
 		glm::mat4 viewMatrix = camera->getViewMatrix();
 		shader->setUniform("cameraRightWorldspace", glm::vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]));
@@ -165,8 +167,10 @@ void Particles::draw(float deltaTime) {
 		glBindTexture(GL_TEXTURE_2D, textureHandle);
 		shader->setUniform("textureUnit", 0);
 
-		glEnable(GL_BLEND); // enable rendering semi-transparent materials
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE); // set how blendig is accomplished
+		if (!enableBloom) {
+			glEnable(GL_BLEND); // enable rendering semi-transparent materials
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE); // set how blendig is accomplished
+		}
 
 		glBindVertexArray(vao);
 
@@ -179,7 +183,9 @@ void Particles::draw(float deltaTime) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindVertexArray(0);
 
-		glDisable(GL_BLEND);
+		if (!enableBloom) {
+			glDisable(GL_BLEND);
+		}
 
 		shader->unuse();
 	}

@@ -261,9 +261,9 @@ void initContent() {
 	/* ------------- */
 	// LOAD PARTICLES
 	/* ------------- */
-	Particles *electroBoxParticles = new Particles(15, 0.75f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.55f, 0.3f, 0.0f), 0.02f, 0.1f, 2.0f, 5.0f, "assets/particles/spark.png", true);
+	Particles *electroBoxParticles = new Particles(15, 0.75f, glm::vec3(-4.325f, 1.415f, -1.687f), glm::vec3(0.55f, 0.3f, 0.0f), 0.005f, 0.1f, 2.0f, 5.0f, "assets/particles/spark.png", true, true);
 	renderParticles.push_back(electroBoxParticles);
-	collectParticles = new Particles(3, 0.45f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), 0.1f, 0.1f, 1.0f, 2.5f, "assets/particles/hand.png", false);
+	collectParticles = new Particles(3, 0.45f, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.5f, 0.0f), 0.1f, 0.1f, 1.0f, 2.5f, "assets/particles/hand.png", false, false);
 	renderParticles.push_back(collectParticles);
 
 	/* ------------- */
@@ -570,7 +570,7 @@ GLFWwindow* initOpenGL() {
 	glViewport(0, 0, settings.width, settings.width);
 
 	GLFWimage image;
-	image.pixels = stbi_load("assets/gui/icon.png", &image.width, &image.height, 0, 4); //rgba channels
+	image.pixels = stbi_load("assets/icon.png", &image.width, &image.height, 0, 4); //rgba channels
 	glfwSetWindowIcon(window, 1, &image);
 	stbi_image_free(image.pixels);
 
@@ -778,13 +778,12 @@ void draw(float deltaT) {
 	glBindFramebuffer(GL_FRAMEBUFFER, fboHDR);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// draw all game components
-	for (unsigned int i = 0; i < renderParticles.size(); i++) {
-		renderParticles.at(i)->draw(deltaT);
-	}
 	for (unsigned int i = 0; i < renderObjects.size(); i++) {
 		renderObjects.at(i)->draw(deltaT);
 	}
-	
+	for (unsigned int i = 0; i < renderParticles.size(); i++) {
+		renderParticles.at(i)->draw(deltaT, settings.brightness);
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	/* --------------------------------------------------- */
