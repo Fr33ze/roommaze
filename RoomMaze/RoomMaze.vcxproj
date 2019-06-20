@@ -171,6 +171,7 @@
     <ClCompile Include="src\Water3D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="src\Button3D.h" />
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Battery.h" />
@@ -205,6 +206,12 @@
     <None Include="assets\redist\PhysXFoundation_32.dll" />
     <None Include="assets\redist\PhysXGpu_32.dll" />
     <None Include="assets\redist\PhysX_32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RoomMaze.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

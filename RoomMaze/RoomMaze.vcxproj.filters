@@ -182,6 +182,9 @@
     <ClInclude Include="src\Water3D.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\redist\PhysX_32.dll" />
@@ -189,5 +192,15 @@
     <None Include="assets\redist\PhysXCooking_32.dll" />
     <None Include="assets\redist\PhysXFoundation_32.dll" />
     <None Include="assets\redist\PhysXGpu_32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RoomMaze.rc">
+      <Filter>Ressourcendateien</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\icon.ico">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
   </ItemGroup>
 </Project>
