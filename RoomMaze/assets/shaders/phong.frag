@@ -7,6 +7,9 @@
 struct Camera {
 	vec3 position;
 
+	// for elevator lamp object and its pointlight
+	float brightnessModifier;
+
 	// light stuff
 	vec3 direction;
 	float brightness;
@@ -18,6 +21,7 @@ struct Camera {
 
 struct Material {
 	bool isAffectedByLight;
+
 	vec3 ambientColor;
 	vec3 diffuseColor;
 	vec3 specularColor;
@@ -98,7 +102,7 @@ void main() {
 
 	if (material.isAffectedByLight) {
 		vec3 diffuseColor = vec3(material.hasDiffuseTextureMap ? texture(material.diffuseTextureMapUnit, vertexData.UVCoords).rgb : material.diffuseColor);
-		color = vec4(diffuseColor * camera.brightness, 1.0);
+		color = vec4(diffuseColor * camera.brightness * camera.brightnessModifier, 1.0);
 
 		// check whether color is higher than some threshold, if so, output as bloom threshold color
 		float brightness = dot(diffuseColor, vec3(0.2126, 0.7152, 0.0722));
@@ -142,7 +146,7 @@ void main() {
 	for (int i = 0; i < amountOfSpotLights; i++)
 		spotLight += calculateSpotLight(i, normalizedNormal);
 
-	vec3 light = ambientLight + directionalLight + pointLight + spotLight + calculateCameraLight(normalizedNormal);
+	vec3 light = ambientLight + directionalLight + pointLight * camera.brightnessModifier + spotLight + calculateCameraLight(normalizedNormal);
 	float alphaChannel = material.hasAlphaTextureMap ? material.alpha * texture(material.alphaTextureMapUnit, vertexData.UVCoords).a : material.alpha;
 	if (alphaChannel < 0.1)
 		discard;

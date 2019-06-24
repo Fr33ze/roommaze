@@ -46,18 +46,19 @@ void GUI::updateTime(float deltaT) {
 		batteryTime -= deltaT;
 		batteryCountdown.updateText(std::to_string((int)(batteryTime / 0.6f)) + " %");
 
+		// start flickering when battery has only 2 seconds left
 		if (batteryTime <= 2.0f) {
-			if ((int)(batteryTime * 100) % 2 == 0) { // TODO: random flickering
-				camera->turnSpotlightOff();
-			}
-			else {
-				camera->turnSpotlightOn();
-			}
+			std::random_device rd;
+			std::mt19937 eng(rd());
+			std::uniform_real_distribution<> distr(0.0f, 1.0f);
+
+			distr(eng) <= 0.05f ? camera->turnSpotlightOff() : camera->turnSpotlightOn();
 		}
+
+		overtime = 0;
 	}
 	else {
 		overtime += deltaT;
-		camera->turnSpotlightOff();
 		if (!gameoveraudioplayed && overtime > 5) {
 			alSourcePlay(audioSource);
 			gameoveraudioplayed = true;

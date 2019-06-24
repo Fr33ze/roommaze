@@ -8,6 +8,7 @@
 
 #include "stb_image.h"
 #include "Shader.h"
+#include "GUI.h"
 
 class Material {
 

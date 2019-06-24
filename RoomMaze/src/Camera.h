@@ -82,10 +82,11 @@ protected:
 	// time to calculate bobbing effect (ranges from 0-2PI)
 	float bobbingTime;
 
-	// turn this pointlights on or off
+	// turn this pointlight on or off
 	bool electricBoxLight = true;
 
-	int pointLightAmount = 0;
+	// brightness modifier for elevator lamp object and its pointlight
+	float brightnessModifier = 1.0f;
 
 	// the light of the camera is a spot light
 	struct CameraLight {
@@ -176,5 +177,7 @@ public:
 	void turnSpotlightOn();
 
 	void turnSpotlightOff();
+
+	void updateBrightnessModifier();
 
 };

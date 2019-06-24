@@ -65,6 +65,7 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
 	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
 	shader->setUniform("camera.position", position);
+	shader->setUniform("camera.brightnessModifier", electricBoxLight ? 1.0f : brightnessModifier);
 	glm::mat4 viewmat = getViewMatrix();
 	shader->setUniform("camera.direction", glm::vec3(viewmat[0][2], viewmat[1][2], viewmat[2][2]));
 	shader->setUniform("camera.brightness", cameraLight.brightness);
@@ -75,22 +76,19 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 }
 
 void Camera::setLights(std::shared_ptr<Shader> shader) {
-	// elevator light
-	shader->setUniform("pointLights[0].color", glm::vec3(0.7f, 0.9f, 1.0f));
-	shader->setUniform("pointLights[0].position", glm::vec3(-6.0f, 1.7f, 0.0f));
-	shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.8f, 2.0f));
-	pointLightAmount++;
-
-	// electric box light
 	if (electricBoxLight) {
-		shader->setUniform("pointLights[1].color", glm::vec3(0.5f, 0.125f, 0.0f));
-		shader->setUniform("pointLights[1].position", glm::vec3(-3.95f, 1.2f, -1.75f));
-		shader->setUniform("pointLights[1].attenuation", glm::vec3(1.0f, 0.8f, 1.0f));
-		pointLightAmount++;
+		// electric box light
+		shader->setUniform("pointLights[0].color", glm::vec3(0.5f, 0.125f, 0.0f));
+		shader->setUniform("pointLights[0].position", glm::vec3(-3.95f, 1.2f, -1.75f));
+		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 1.4f, 3.6f));
 	}
-
-	shader->setUniform("amountOfPointLights", pointLightAmount);
-	pointLightAmount = 0;
+	else {
+		// elevator light
+		shader->setUniform("pointLights[0].color", glm::vec3(0.35f, 0.45f, 0.5f));
+		shader->setUniform("pointLights[0].position", glm::vec3(-6.0f, 1.8f, 0.0f));
+		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 5.6f, 14.4f));
+	}
+	shader->setUniform("amountOfPointLights", 1);
 }
 
 Camera::Camera() {
@@ -206,8 +204,7 @@ bool Camera::raycast(physx::PxRaycastBuffer &hit) {
 	return pxScene->raycast(origin, destination, range, hit, outputFlags, filterData);
 }
 
-void Camera::turnElectricBoxOff()
-{
+void Camera::turnElectricBoxOff() {
 	electricBoxLight = false;
 }
 
@@ -229,4 +226,11 @@ void Camera::onShapeHit(const physx::PxControllerShapeHit& hit)
 		alSourcei(audioSources[usesource], AL_BUFFER, waterBuffers[distr(generator)]);
 		alSourcei(audioSources[!usesource], AL_BUFFER, waterBuffers[distr(generator)]);
 	}
+}
+
+void Camera::updateBrightnessModifier() {
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	std::uniform_real_distribution<> distr(0.0f, 1.0f);
+	brightnessModifier = distr(eng) <= 0.05f ? 0.0f : 1.0f;
 }
