@@ -9,11 +9,12 @@ Door3D::Door3D(const char *path, std::shared_ptr<Shader> shader, physx::PxTransf
 	pxActor = mPhysics->createRigidStatic(modelMatrix);
 
 	physx::PxTransform keytrans = physx::PxTransform(physx::PxVec3(-0.2f, 1.015f, -0.9f), physx::PxQuat(0.f, 0.f, -0.f, 1.f));
+	keytrans = modelMatrix.transform(keytrans);
 
 	animatedKey = new NoCollision3D(
 		"assets/objects/key.obj",
 		shader,
-		modelMatrix.transform(keytrans)
+		keytrans
 	);
 	animatedKey->enable(false);
 
@@ -56,7 +57,9 @@ Door3D::Door3D(const Door3D &o, physx::PxTransform modelMatrix)
 	pxActor = mPhysics->createRigidStatic(modelMatrix);
 
 	physx::PxTransform keytrans = physx::PxTransform(physx::PxVec3(-0.2f, 1.015f, -0.9f), physx::PxQuat(0.f, 0.f, -0.f, 1.f));
-	animatedKey = new NoCollision3D(*o.animatedKey, modelMatrix.transform(keytrans));
+	keytrans = modelMatrix.transform(keytrans);
+
+	animatedKey = new NoCollision3D(*o.animatedKey, keytrans);
 	animatedKey->enable(false);
 	std::vector<Animation::KeyFrame> keyframesDoor = {
 		Animation::KeyFrame(1, physx::PxVec3(0.f), physx::PxVec3(0.f, -110.f, 0.f))
@@ -120,6 +123,7 @@ std::string Door3D::guitext(GUI *gui)
 void Door3D::openDoor()
 {
 	if (!open) {
+		alSourcef(audioSource, AL_PITCH, 1);
 		alSourcei(audioSource, AL_BUFFER, keyBuffer);
 		alSourcePlay(audioSource);
 		animatedKey->enable(true);

@@ -13,10 +13,10 @@
 
 // stores all directions
 enum Key {
-	W, // forward
-	S, // backward
-	A, // left
-	D // right
+	W = (1 << 0), // forward
+	S = (1 << 1), // backward
+	A = (1 << 2), // left
+	D = (1 << 3) // right
 };
 
 // scene query groups for shapes
@@ -44,10 +44,14 @@ class Camera : public physx::PxUserControllerHitReport {
 protected:
 	// audio source for concrete and water footsteps
 	ALuint audioSources[2];
+	
+	ALuint neonSource;
 
 	// audio buffers for concrete and water footsteps
 	ALuint concreteBuffers[5];
 	ALuint waterBuffers[5];
+
+	ALuint neonBuffer;
 
 	// step is played when this is true
 	bool playstepsound = false;
@@ -147,12 +151,12 @@ public:
 
 	/**
 	 * Updates the camera concerning the pressed key.
-	 * 
-	 * @param key: the pressed key
+	 *
+	 * @param keys: the pressed keys
 	 * @param isRunning: true if velocity should be higher as usual (running character)
 	 * @param deltaTime: time between current frame and last frame
 	 */
-	void processKeyEvent(Key key, bool isRunning, float deltaTime);
+	void processKeyEvent(unsigned char keys, bool isRunning, float deltaTime);
 
 	/**
 	 * Updates the camera concerning the mouse movement.

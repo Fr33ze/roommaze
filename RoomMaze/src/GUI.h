@@ -39,7 +39,12 @@ protected:
 
 	float overtime = 0.f;
 	ALuint audioSource;
+	ALuint batterySource;
+	ALuint flashlightSource;
 	ALuint ghostBuffer;
+	ALuint reloadBatteryBuffer;
+	ALuint flickerOnBuffer;
+	ALuint flickerOffBuffer;
 	bool gameoveraudioplayed = false;
 public:
 

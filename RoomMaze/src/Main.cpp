@@ -882,25 +882,19 @@ void processInput(GLFWwindow *window) {
 	// A = move character left
 	// D = move character right
 
-	bool processInteractables = false;
+	unsigned char movementFlags = 0;
 
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		camera->processKeyEvent(W, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-		processInteractables = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		camera->processKeyEvent(S, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-		processInteractables = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		camera->processKeyEvent(A, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-		processInteractables = true;
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		camera->processKeyEvent(D, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
-		processInteractables = true;
-	}
-	if (processInteractables) {
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		movementFlags |= W;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		movementFlags |= S;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		movementFlags |= A;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		movementFlags |= D;
+
+	if (movementFlags != 0) {
+		camera->processKeyEvent(movementFlags, glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS, deltaTime);
 		focusInteractable();
 	}
 }

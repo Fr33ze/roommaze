@@ -22,10 +22,26 @@ GUI::GUI(int windowWidth, int windowHeight)
 	infoText = GUIText(fontPath, "", glm::vec2(windowWidth * 0.015f, windowHeight * 0.8f), windowWidth / 1920.0f * 0.5f, 0.75f, windowWidth, windowHeight);
 
 	ghostBuffer = alutCreateBufferFromFile("assets/audio/ghost_attack.wav");
+	reloadBatteryBuffer = alutCreateBufferFromFile("assets/audio/battery_reload.wav");
+	flickerOnBuffer = alutCreateBufferFromFile("assets/audio/flashlight_on.wav");
+	flickerOffBuffer = alutCreateBufferFromFile("assets/audio/flashlight_off.wav");
+
+	alGenSources(1, &batterySource);
+	alSourcef(batterySource, AL_PITCH, 1);
+	alSourcef(batterySource, AL_GAIN, 1);
+	alSourcei(batterySource, AL_BUFFER, reloadBatteryBuffer);
+	alSourcei(batterySource, AL_SOURCE_RELATIVE, AL_TRUE);
+
+	alGenSources(1, &flashlightSource);
+	alSourcef(flashlightSource, AL_PITCH, 1);
+	alSourcef(flashlightSource, AL_GAIN, 1);
+	alSourcei(flashlightSource, AL_SOURCE_RELATIVE, AL_TRUE);
+
 	alGenSources(1, &audioSource);
 	alSourcef(audioSource, AL_PITCH, 1);
-	alSourcef(audioSource, AL_GAIN, 1);
+	alSourcef(audioSource, AL_GAIN, 0.5f);
 	alSourcei(audioSource, AL_BUFFER, ghostBuffer);
+
 }
 
 GUI::GUI() {
@@ -46,8 +62,8 @@ void GUI::updateTime(float deltaT) {
 		batteryTime -= deltaT;
 		batteryCountdown.updateText(std::to_string((int)(batteryTime / 0.6f)) + " %");
 
-		// if battery has 2 seconds left, simulate flickering
-		if (batteryTime <= 60.0f) {
+		// if battery has 3 seconds left, simulate flickering
+		if (batteryTime <= 3.f) {
 			// if flickeringCounter < 0 lamp is off
 			if (flickeringCounter < 0) {
 				// if flickeringCounter + deltaT >= 0 calculate new value
@@ -62,7 +78,8 @@ void GUI::updateTime(float deltaT) {
 					if (flickeringCounter >= 0) {
 						camera->turnSpotlightOn();
 						// possible sound comes here bitches ... hehe ;D
-
+						alSourcei(flashlightSource, AL_BUFFER, flickerOnBuffer);
+						alSourcePlay(flashlightSource);
 					}
 				}
 				else
@@ -82,7 +99,8 @@ void GUI::updateTime(float deltaT) {
 					if (flickeringCounter < 0) {
 						camera->turnSpotlightOff();
 						// possible sound comes here bitches ... hehe ;D
-
+						alSourcei(flashlightSource, AL_BUFFER, flickerOffBuffer);
+						alSourcePlay(flashlightSource);
 					}
 				}
 				else
@@ -95,6 +113,8 @@ void GUI::updateTime(float deltaT) {
 	}
 	else {
 		camera->turnSpotlightOff();
+		alSourcei(flashlightSource, AL_BUFFER, flickerOffBuffer);
+		alSourcePlay(flashlightSource);
 
 		overtime += deltaT;
 		if (!gameoveraudioplayed && overtime > 5) {
@@ -163,6 +183,7 @@ void GUI::addBattery(bool isCheater) {
 void GUI::removeBattery()
 {
 	if (batteries > 0) {
+		alSourcePlay(batterySource);
 		batteries--;
 		batteryStatus.updateText("x" + std::to_string(batteries));
 		batteryTime = 60.0f;

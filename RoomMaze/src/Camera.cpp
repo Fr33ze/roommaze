@@ -12,12 +12,24 @@ Camera::Camera(glm::vec3 position, float fieldOfView, float aspectRatio)
 		concreteBuffers[i] = alutCreateBufferFromFile(("assets/audio/concrete_steps/" + std::to_string(i) + ".wav").c_str());
 		waterBuffers[i] = alutCreateBufferFromFile(("assets/audio/water_steps/" + std::to_string(i) + ".wav").c_str());
 	}
+	neonBuffer = alutCreateBufferFromFile("assets/audio/neontube_hum.wav");
 
 	alGenSources(2, audioSources);
 	alSourcef(audioSources[0], AL_PITCH, 1);
 	alSourcef(audioSources[0], AL_GAIN, 1);
+	alSourcei(audioSources[0], AL_SOURCE_RELATIVE, AL_TRUE);
+	alSource3f(audioSources[0], AL_POSITION, 0, -CHARACTER_EYE_HEIGHT, 0);
 	alSourcef(audioSources[1], AL_PITCH, 1);
 	alSourcef(audioSources[1], AL_GAIN, 1);
+	alSourcei(audioSources[1], AL_SOURCE_RELATIVE, AL_TRUE);
+	alSource3f(audioSources[1], AL_POSITION, 0, -CHARACTER_EYE_HEIGHT, 0);
+	
+	alGenSources(1, &neonSource);
+	alSourcef(neonSource, AL_PITCH, 1);
+	alSourcef(neonSource, AL_GAIN, 1);
+	alSource3f(neonSource, AL_POSITION, -6.0f, 1.8f, 0.0f);
+	alSourcei(neonSource, AL_BUFFER, neonBuffer);
+	alSourcei(neonSource, AL_LOOPING, AL_TRUE);
 
 	//create physx controller
 	extern physx::PxScene* pxScene;
@@ -121,25 +133,23 @@ glm::mat4 Camera::getProjectionMatrix() {
 	return projectionMatrix;
 }
 
-void Camera::processKeyEvent(Key key, bool isRunning, float deltaTime) {
+void Camera::processKeyEvent(unsigned char keys, bool isRunning, float deltaTime) {
+	float velocity_multiplier = (isRunning ? 2.0f : 1.0f) * deltaTime * ((keys & S || keys & A || keys & D) ? 0.7f : 1.0f);
+
+	if (keys & W)
+		displacement += physx::PxVec3(front.x, 0, front.z);
+	if (keys & S)
+		displacement += physx::PxVec3(-front.x, 0, -front.z);
+	if (keys & A)
+		displacement += physx::PxVec3(-right.x, 0, -right.z);
+	if (keys & D)
+		displacement += physx::PxVec3(right.x, 0, right.z);
+
+	displacement = displacement.getNormalized() * MOVEMENT_SPEED * velocity_multiplier;
+
 	bool before = sin(bobbingTime) < 0;
-	bobbingTime = fmod((bobbingTime + deltaTime * 4.5f /*higher value makes bobbing effect faster*/ * (isRunning ? 2.0f : 1.0f)), (2 * M_PI));
+	bobbingTime = fmod(bobbingTime + 4.5f /*higher value makes bobbing effect faster*/ * velocity_multiplier, 2 * M_PI);
 	playstepsound = sin(bobbingTime) < 0 != before;
-	float velocity = MOVEMENT_SPEED * (isRunning ? 2.0f : 1.0f) * deltaTime;
-	switch (key) {
-	case(W):
-		displacement += physx::PxVec3(front.x, 0, front.z).getNormalized() * velocity;
-		break;
-	case(S):
-		displacement += physx::PxVec3(front.x, 0, front.z).getNormalized() * -velocity;
-		break;
-	case(A):
-		displacement += physx::PxVec3(right.x, 0, right.z).getNormalized() * -velocity;
-		break;
-	case(D):
-		displacement += physx::PxVec3(right.x, 0, right.z).getNormalized() * velocity;
-		break;
-	}
 }
 
 void Camera::processMouseMovement(float xOffset, float yOffset, bool constrainPitch) {
@@ -167,14 +177,12 @@ void Camera::move(float deltaTime)
 	// movement
 	controller->move(displacement, 0.01f, deltaTime, filters);
 
-	// new source position
+	// new listener position and orientation
 	physx::PxExtendedVec3 position = controller->getFootPosition();
-	alSource3f(audioSources[usesource], AL_POSITION, position.x, position.y, position.z);
-
-	// new listener position and velocity
 	position.y += CHARACTER_EYE_HEIGHT;
 	alListener3f(AL_POSITION, position.x, position.y, position.z);
-	alListener3f(AL_VELOCITY, position.x + front.x, position.y + front.y, position.z + front.z);
+	ALfloat ori[6] = { front.x, front.y, front.z, 0, 1, 0 };
+	alListenerfv(AL_ORIENTATION, ori);
 
 	if (playstepsound) {
 		if (water_concrete)
@@ -206,6 +214,7 @@ bool Camera::raycast(physx::PxRaycastBuffer &hit) {
 
 void Camera::turnElectricBoxOff() {
 	electricBoxLight = false;
+	alSourcePlay(neonSource);
 }
 
 void Camera::turnSpotlightOn() {
@@ -250,7 +259,7 @@ void Camera::updateBrightnessModifier(float deltaT) {
 			if (brightnessModifier - deltaT < 0) {
 				std::random_device rd;
 				std::mt19937 eng(rd());
-				std::uniform_real_distribution<> distr(-0.1f, 0.9f);
+				std::uniform_real_distribution<> distr(-0.1f, 0.3f);
 
 				brightnessModifier = distr(eng);
 			}
