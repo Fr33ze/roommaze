@@ -39,7 +39,7 @@ GUI::GUI(int windowWidth, int windowHeight)
 
 	alGenSources(1, &audioSource);
 	alSourcef(audioSource, AL_PITCH, 1);
-	alSourcef(audioSource, AL_GAIN, 0.5f);
+	alSourcef(audioSource, AL_GAIN, 0.3f);
 	alSourcei(audioSource, AL_BUFFER, ghostBuffer);
 
 }
@@ -113,8 +113,6 @@ void GUI::updateTime(float deltaT) {
 	}
 	else {
 		camera->turnSpotlightOff();
-		alSourcei(flashlightSource, AL_BUFFER, flickerOffBuffer);
-		alSourcePlay(flashlightSource);
 
 		overtime += deltaT;
 		if (!gameoveraudioplayed && overtime > 5) {
