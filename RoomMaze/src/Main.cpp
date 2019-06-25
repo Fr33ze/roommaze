@@ -181,7 +181,7 @@ int main(int argc, char **argv) {
 		// show startscreen when content is loading
 		if (showStartScreen) {
 			gui->showStartScreen(true);
-			gui->draw();
+			gui->draw(settings.brightness);
 			glfwSwapBuffers(window);
 			initContent();
 			initFramebuffers();
@@ -829,7 +829,7 @@ void draw(float deltaT) {
 	bloomShader->setUniform("bloom", bloom);
 	renderQuad();
 
-	gui->draw();
+	gui->draw(settings.brightness);
 }
 
 void cleanup() {

@@ -63,7 +63,7 @@ public:
 
 	~GUIText();
 
-	void draw(std::shared_ptr<Shader> shader);
+	void draw(std::shared_ptr<Shader> shader, float sceneBrightness);
 
 	void updateText(std::string text);
 

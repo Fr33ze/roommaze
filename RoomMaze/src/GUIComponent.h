@@ -41,6 +41,6 @@ public:
 
 	~GUIComponent();
 
-	void draw(std::shared_ptr<Shader> shader);
+	void draw(std::shared_ptr<Shader> shader, float sceneBrightness);
 
 };

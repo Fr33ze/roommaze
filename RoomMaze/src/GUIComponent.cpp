@@ -84,7 +84,7 @@ void GUIComponent::initTexture(std::string texturePath) {
 	stbi_image_free(data);
 }
 
-void GUIComponent::draw(std::shared_ptr<Shader> shader) {
+void GUIComponent::draw(std::shared_ptr<Shader> shader, float sceneBrightness) {
 	shader->use();
 
 	shader->setUniform("projectionMatrix", projectionMatrix);
@@ -92,6 +92,7 @@ void GUIComponent::draw(std::shared_ptr<Shader> shader) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureHandle);
 	shader->setUniform("textureUnit", 0);
+	shader->setUniform("sceneBrightness", sceneBrightness);
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND); // enable rendering semi-transparent materials

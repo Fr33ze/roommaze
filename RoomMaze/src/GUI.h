@@ -60,7 +60,7 @@ public:
 
 	void updateTime(float deltaT);
 
-	void draw();
+	void draw(float sceneBrightness);
 
 	void setInfoText(std::string text);
 

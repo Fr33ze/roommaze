@@ -8,6 +8,7 @@ in vec2 UVCoords;
 
 out vec4 color;
 
+uniform float sceneBrightness;
 uniform sampler2D textureUnit;
 
 /* ----- */
@@ -18,5 +19,5 @@ void main() {
 	float alphaChannel = texture(textureUnit, UVCoords).a;
 	if (alphaChannel < 0.1)
 		discard;
-	color = vec4(texture(textureUnit, UVCoords).rgb, alphaChannel);
+	color = vec4(texture(textureUnit, UVCoords).rgb * sceneBrightness, alphaChannel);
 }

@@ -106,30 +106,30 @@ void GUI::updateTime(float deltaT) {
 	}
 }
 
-void GUI::draw() {
+void GUI::draw(float sceneBrightness) {
 	if (startScreenIsEnabled)
-		startScreen.draw(componentShader);
+		startScreen.draw(componentShader, sceneBrightness);
 	else if (gameOverScreenIsEnabled)
-		gameOverScreen.draw(componentShader);
+		gameOverScreen.draw(componentShader, sceneBrightness);
 	else if (endScreenIsEnabled)
-		endScreen.draw(componentShader);
+		endScreen.draw(componentShader, sceneBrightness);
 	else {
-		battery.draw(componentShader);
-		batteryStatus.draw(textShader);
+		battery.draw(componentShader, sceneBrightness);
+		batteryStatus.draw(textShader, sceneBrightness);
 
 		if (!(batteryTime <= 10.0f && (int)(batteryTime * 2) % 2 == 0) || batteryTime <= 0.5f) {
-			batteryCountdown.draw(textShader);
+			batteryCountdown.draw(textShader, sceneBrightness);
 		}
 
 		if (key)
-			keyComp.draw(componentShader);
+			keyComp.draw(componentShader, sceneBrightness);
 
 		if (resistance)
-			resistanceComp.draw(componentShader);
+			resistanceComp.draw(componentShader, sceneBrightness);
 		else if (button)
-			buttonComp.draw(componentShader);
+			buttonComp.draw(componentShader, sceneBrightness);
 
-		infoText.draw(textShader);
+		infoText.draw(textShader, sceneBrightness);
 	}
 }
 

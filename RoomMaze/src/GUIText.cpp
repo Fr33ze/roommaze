@@ -95,7 +95,7 @@ void GUIText::initFont(std::string fontPath) {
 	FT_Done_FreeType(library);
 }
 
-void GUIText::draw(std::shared_ptr<Shader> shader) {
+void GUIText::draw(std::shared_ptr<Shader> shader, float sceneBrightness) {
 	if (!text.empty()) {
 		shader->use();
 
@@ -104,6 +104,8 @@ void GUIText::draw(std::shared_ptr<Shader> shader) {
 
 		glActiveTexture(GL_TEXTURE0);
 		shader->setUniform("textureUnit", 0);
+		shader->setUniform("sceneBrightness", sceneBrightness);
+
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND); // enable rendering semi-transparent materials
