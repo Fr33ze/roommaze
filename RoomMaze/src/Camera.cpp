@@ -80,13 +80,13 @@ void Camera::setLights(std::shared_ptr<Shader> shader) {
 		// electric box light
 		shader->setUniform("pointLights[0].color", glm::vec3(0.5f, 0.125f, 0.0f));
 		shader->setUniform("pointLights[0].position", glm::vec3(-3.95f, 1.2f, -1.75f));
-		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 1.4f, 3.6f));
+		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.7f, 1.8f));
 	}
 	else {
 		// elevator light
-		shader->setUniform("pointLights[0].color", glm::vec3(0.35f, 0.45f, 0.5f));
+		shader->setUniform("pointLights[0].color", glm::vec3(0.7f, 0.9f, 1.0f));
 		shader->setUniform("pointLights[0].position", glm::vec3(-6.0f, 1.8f, 0.0f));
-		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 5.6f, 14.4f));
+		shader->setUniform("pointLights[0].attenuation", glm::vec3(1.0f, 0.7f, 1.8f));
 	}
 	shader->setUniform("amountOfPointLights", 1);
 }
