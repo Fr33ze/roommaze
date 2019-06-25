@@ -170,16 +170,13 @@ int main(int argc, char **argv) {
 
 	bool showStartScreen = true;
 
-	float timeCurrentFrame = (float)glfwGetTime();
-	float timeLastFrame = timeCurrentFrame;
+	float frametime = 1.f / settings.refresh_rate;
+	float acum = 0.f;
+	float timeCurrentFrame; //set in loadingscreen
+	float timeLastFrame; //set in loadingscreen
 	while (!glfwWindowShouldClose(window)) {
 		// clear the frame and depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		// compute the frame time delta
-		timeCurrentFrame = (float)glfwGetTime();
-		deltaTime = timeCurrentFrame - timeLastFrame;
-		timeLastFrame = timeCurrentFrame;
 
 		// show startscreen when content is loading
 		if (showStartScreen) {
@@ -194,6 +191,11 @@ int main(int argc, char **argv) {
 			timeLastFrame = timeCurrentFrame;
 		}
 
+		// compute the frame time delta
+		timeCurrentFrame = (float)glfwGetTime();
+		deltaTime = timeCurrentFrame - timeLastFrame;
+		timeLastFrame = timeCurrentFrame;
+
 		// react to user input
 		glfwPollEvents();
 		processInput(window);
@@ -206,8 +208,12 @@ int main(int argc, char **argv) {
 		glfwSwapBuffers(window);
 
 		// physx make simulation step
-		pxScene->simulate(deltaTime);
-		pxScene->fetchResults(true);
+		acum += deltaTime;
+		while (acum >= frametime) {
+			pxScene->simulate(frametime);
+			pxScene->fetchResults(true);
+			acum -= frametime;
+		}
 
 		// check for errors
 		if (glGetError() != GL_NO_ERROR)
