@@ -65,7 +65,7 @@ void Camera::setUniforms(std::shared_ptr<Shader> shader) {
 	physx::PxExtendedVec3 pos = controller->getFootPosition();
 	glm::vec3 position = glm::vec3(pos.x, pos.y + 1.75f, pos.z);
 	shader->setUniform("camera.position", position);
-	shader->setUniform("camera.brightnessModifier", electricBoxLight ? 1.0f : brightnessModifier);
+	shader->setUniform("camera.brightnessModifier", brightnessModifier < 0 ? 0.0f : 1.0f);
 	glm::mat4 viewmat = getViewMatrix();
 	shader->setUniform("camera.direction", glm::vec3(viewmat[0][2], viewmat[1][2], viewmat[2][2]));
 	shader->setUniform("camera.brightness", cameraLight.brightness);
@@ -228,9 +228,34 @@ void Camera::onShapeHit(const physx::PxControllerShapeHit& hit)
 	}
 }
 
-void Camera::updateBrightnessModifier() {
-	std::random_device rd;
-	std::mt19937 eng(rd());
-	std::uniform_real_distribution<> distr(0.0f, 1.0f);
-	brightnessModifier = distr(eng) <= 0.05f ? 0.0f : 1.0f;
+void Camera::updateBrightnessModifier(float deltaT) {
+	// lamp starts flickering when electric box is repaired
+	if (!electricBoxLight) {
+		// if brightnessModifier < 0 lamp is off
+		if (brightnessModifier < 0) {
+			// if brightnessModifier + deltaT >= 0 calculate new value
+			if (brightnessModifier + deltaT >= 0) {
+				std::random_device rd;
+				std::mt19937 eng(rd());
+				std::uniform_real_distribution<> distr(-0.1f, 0.9f);
+
+				brightnessModifier = distr(eng);
+			}
+			else
+				brightnessModifier += deltaT;
+		}
+		// if brightnessModifier >= 0 lamp is on
+		else {
+			// if brightnessModifier - deltaT < 0 calculate new value
+			if (brightnessModifier - deltaT < 0) {
+				std::random_device rd;
+				std::mt19937 eng(rd());
+				std::uniform_real_distribution<> distr(-0.1f, 0.9f);
+
+				brightnessModifier = distr(eng);
+			}
+			else
+				brightnessModifier -= deltaT;
+		}
+	}
 }

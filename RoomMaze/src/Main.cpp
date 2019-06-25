@@ -746,7 +746,7 @@ void initFramebuffers() {
 
 void update(float deltaT) {
 	camera->move(deltaT);
-	camera->updateBrightnessModifier();
+	camera->updateBrightnessModifier(deltaT);
 	gui->updateTime(deltaT);
 }
 

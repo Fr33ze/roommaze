@@ -46,15 +46,51 @@ void GUI::updateTime(float deltaT) {
 		batteryTime -= deltaT;
 		batteryCountdown.updateText(std::to_string((int)(batteryTime / 0.6f)) + " %");
 
-		// start flickering when battery has only 2 seconds left
-		if (batteryTime <= 2.0f) {
-			std::random_device rd;
-			std::mt19937 eng(rd());
-			std::uniform_real_distribution<> distr(0.0f, 1.0f);
+		// if battery has 2 seconds left, simulate flickering
+		if (batteryTime <= 60.0f) {
+			// if flickeringCounter < 0 lamp is off
+			if (flickeringCounter < 0) {
+				// if flickeringCounter + deltaT >= 0 calculate new value
+				if (flickeringCounter + deltaT >= 0) {
+					std::random_device rd;
+					std::mt19937 eng(rd());
+					std::uniform_real_distribution<> distr(-0.1f, 0.3f);
 
-			distr(eng) <= 0.05f ? camera->turnSpotlightOff() : camera->turnSpotlightOn();
+					flickeringCounter = distr(eng);
+
+					// if light status changed
+					if (flickeringCounter >= 0) {
+						camera->turnSpotlightOn();
+						// possible sound comes here bitches ... hehe ;D
+
+					}
+				}
+				else
+					flickeringCounter += deltaT;
+			}
+			// if flickeringCounter >= 0 lamp is on
+			else {
+				// if flickeringCounter - deltaT < 0 calculate new value
+				if (flickeringCounter - deltaT < 0) {
+					std::random_device rd;
+					std::mt19937 eng(rd());
+					std::uniform_real_distribution<> distr(-0.1f, 0.3f);
+
+					flickeringCounter = distr(eng);
+
+					// if light status changed
+					if (flickeringCounter < 0) {
+						camera->turnSpotlightOff();
+						// possible sound comes here bitches ... hehe ;D
+
+					}
+				}
+				else
+					flickeringCounter -= deltaT;
+			}
 		}
 
+		// reset overtime when the player inserts a new battery
 		overtime = 0;
 	}
 	else {

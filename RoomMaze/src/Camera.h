@@ -178,6 +178,6 @@ public:
 
 	void turnSpotlightOff();
 
-	void updateBrightnessModifier();
+	void updateBrightnessModifier(float deltaT);
 
 };

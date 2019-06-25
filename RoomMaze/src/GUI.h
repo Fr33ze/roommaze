@@ -25,6 +25,9 @@ protected:
 	bool startScreenIsEnabled, gameOverScreenIsEnabled, endScreenIsEnabled;
 	GUIText batteryStatus, batteryCountdown, infoText;
 
+	// counter for flickering
+	float flickeringCounter = 0.0f;
+
 	// width (X-resolution) of the window
 	int windowWidth;
 
