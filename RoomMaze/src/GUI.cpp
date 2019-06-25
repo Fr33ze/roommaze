@@ -58,6 +58,8 @@ void GUI::updateTime(float deltaT) {
 		overtime = 0;
 	}
 	else {
+		camera->turnSpotlightOff();
+
 		overtime += deltaT;
 		if (!gameoveraudioplayed && overtime > 5) {
 			alSourcePlay(audioSource);
