@@ -83,5 +83,5 @@ void Resistance::use(GUI *gui) {
 }
 
 std::string Resistance::guitext(GUI *gui) {
-	return (enabled ? "Pick up Resistance" : "");
+	return (enabled ? "Pick up Resistor" : "");
 }
