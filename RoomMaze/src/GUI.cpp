@@ -111,7 +111,7 @@ void GUI::updateTime(float deltaT) {
 		// reset overtime when the player inserts a new battery
 		overtime = 0;
 	}
-	else {
+	else if (!endScreenIsEnabled) {
 		camera->turnSpotlightOff();
 
 		overtime += deltaT;
@@ -180,7 +180,7 @@ void GUI::addBattery(bool isCheater) {
 
 void GUI::removeBattery()
 {
-	if (batteries > 0) {
+	if (batteries > 0 && !endScreenIsEnabled) {
 		alSourcePlay(batterySource);
 		batteries--;
 		batteryStatus.updateText("x" + std::to_string(batteries));
